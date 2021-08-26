@@ -4,6 +4,7 @@
 #include <ESPAsyncWebServer.h>
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
+#include <SPIFFS.h>
 
 AsyncWebServer server(80);
 static bool eth_connected = false;
@@ -80,19 +81,19 @@ void network_conn()
   }
 }
 
-void notFound(AsyncWebServerRequest *request)
-{
-  request->send(404, "application/json", "{\"message\":\"Not found\"}");
-}
-
 void setup()
 {
   Serial.begin(115200);
+  if (!SPIFFS.begin(true))
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS ! Formatting in progress");
+    return;
+  }
   WiFi.onEvent(WiFiEvent);
   network_conn();
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "application/json", "{\"message\":\"Welcome\"}"); });
+  server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/index.html", "text/html"); });
 
   server.on("/get-message", HTTP_GET, [](AsyncWebServerRequest *request)
             {
@@ -111,7 +112,7 @@ void setup()
             });
 
   AsyncCallbackJsonWebHandler *handler =
-      new AsyncCallbackJsonWebHandler("/post-message", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/home", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<200> data;
                                         if (json.is<JsonArray>())
@@ -122,14 +123,21 @@ void setup()
                                         {
                                           data = json.as<JsonObject>();
                                         }
+
+                                        // String.println(data["message"]);
                                         String response;
+                                        String str = data["message"];
+                                        Serial.println(str);
                                         serializeJson(data, response);
+                                        serializeJson(data, Serial);
                                         request->send(200, "application/json", response);
-                                        Serial.println(response);
+                                        // Serial.println(response);
                                       });
   server.addHandler(handler);
 
-  server.onNotFound(notFound);
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
+  server.onNotFound([](AsyncWebServerRequest *request)
+                    { request->redirect("/home"); });
 
   server.begin();
 }
