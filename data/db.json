@@ -1,0 +1,7 @@
+{
+    "settings": {
+        "wifi_ssid": "Test_1",
+        "wifi_pass": "test_test_test",
+        "ap_ip": "192.168.100.10"
+    }
+}
