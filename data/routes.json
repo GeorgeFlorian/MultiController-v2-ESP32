@@ -1,3 +1,5 @@
 {
-    "api/settings/change": "/settings"
+    "/api/settings/change": "/change",
+    "/api/settings/request": "/settings",
+    "/api/info": "/info"
 }

@@ -31,12 +31,14 @@ async function get_json(api_path) {
   // of this timeout is reached before the request is completed, it will
   // be cancelled.
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, 1000);
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
   const response = await fetch(req_url, {
     signal: controller.signal,
   });
+
+  clearTimeout(timeout);
+
   if (!response.ok) {
     const message = `An error has occured: ${response.status}`;
     conn_status = 0;

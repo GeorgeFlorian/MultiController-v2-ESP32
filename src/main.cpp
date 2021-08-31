@@ -9,47 +9,47 @@
 AsyncWebServer server(80);
 static bool eth_connected = false;
 
-void WiFiEvent(WiFiEvent_t event)
-{
-  switch (event)
-  {
-  case SYSTEM_EVENT_ETH_START:
-    Serial.println("ETH Started");
-    //set eth hostname here
-    if (!ETH.setHostname("Metrici-MultiController-Eth"))
-    {
-      Serial.println("Ethernet hostname failed to configure");
-    }
-    break;
-  case SYSTEM_EVENT_ETH_CONNECTED:
-    Serial.println("ETH Connected");
-    break;
-  case SYSTEM_EVENT_ETH_GOT_IP:
-    eth_connected = true;
-    Serial.print("ETH MAC: ");
-    Serial.print(ETH.macAddress());
-    Serial.print(", IPv4: ");
-    Serial.print(ETH.localIP());
-    if (ETH.fullDuplex())
-    {
-      Serial.print(", FULL_DUPLEX");
-    }
-    Serial.print(", ");
-    Serial.print(ETH.linkSpeed());
-    Serial.println("Mbps");
-    break;
-  case SYSTEM_EVENT_ETH_DISCONNECTED:
-    Serial.println("ETH Disconnected");
-    eth_connected = false;
-    break;
-  case SYSTEM_EVENT_ETH_STOP:
-    Serial.println("ETH Stopped");
-    eth_connected = false;
-    break;
-  default:
-    break;
-  }
-}
+// void WiFiEvent(WiFiEvent_t event)
+// {
+//   switch (event)
+//   {
+//   case SYSTEM_EVENT_ETH_START:
+//     Serial.println("ETH Started");
+//     //set eth hostname here
+//     if (!ETH.setHostname("Metrici-MultiController-Eth"))
+//     {
+//       Serial.println("Ethernet hostname failed to configure");
+//     }
+//     break;
+//   case SYSTEM_EVENT_ETH_CONNECTED:
+//     Serial.println("ETH Connected");
+//     break;
+//   case SYSTEM_EVENT_ETH_GOT_IP:
+//     eth_connected = true;
+//     Serial.print("ETH MAC: ");
+//     Serial.print(ETH.macAddress());
+//     Serial.print(", IPv4: ");
+//     Serial.print(ETH.localIP());
+//     if (ETH.fullDuplex())
+//     {
+//       Serial.print(", FULL_DUPLEX");
+//     }
+//     Serial.print(", ");
+//     Serial.print(ETH.linkSpeed());
+//     Serial.println("Mbps");
+//     break;
+//   case SYSTEM_EVENT_ETH_DISCONNECTED:
+//     Serial.println("ETH Disconnected");
+//     eth_connected = false;
+//     break;
+//   case SYSTEM_EVENT_ETH_STOP:
+//     Serial.println("ETH Stopped");
+//     eth_connected = false;
+//     break;
+//   default:
+//     break;
+//   }
+// }
 
 void network_conn()
 {
@@ -89,15 +89,31 @@ void setup()
     Serial.println("An Error has occurred while mounting SPIFFS ! Formatting in progress");
     return;
   }
-  WiFi.onEvent(WiFiEvent);
-  network_conn();
+  // WiFi.onEvent(WiFiEvent);
+  // network_conn();
 
-  server.on("/home", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/index.html", "text/html"); });
+  WiFi.begin("Jorj_2.4", "cafea.amara");
 
-  server.on("/get-message", HTTP_GET, [](AsyncWebServerRequest *request)
+  int k = 0;
+  while (WiFi.status() != WL_CONNECTED && k < 20)
+  {
+    k++;
+    delay(1000);
+  }
+
+  if (WiFi.status() != WL_CONNECTED)
+    ESP.restart();
+
+  // server.on("/settings", HTTP_ANY, [](AsyncWebServerRequest *request)
+  //           { request->send(SPIFFS, "/index.html", "text/html"); });
+
+  // server.on("/settings", HTTP_POST, [](AsyncWebServerRequest *request)
+  //           { request->send(SPIFFS, "/index.html", "text/html"); });
+
+  // GET
+  server.on("/api/info", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              StaticJsonDocument<100> data;
+              StaticJsonDocument<200> data;
               if (request->hasParam("message"))
               {
                 data["message"] = request->getParam("message")->value();
@@ -108,11 +124,14 @@ void setup()
               }
               String response;
               serializeJson(data, response);
+              Serial.print("/api/info response: ");
+              Serial.println(response);
               request->send(200, "application/json", response);
             });
 
+  // POST
   AsyncCallbackJsonWebHandler *handler =
-      new AsyncCallbackJsonWebHandler("/home", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/api/settings/change", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<200> data;
                                         if (json.is<JsonArray>())
@@ -124,20 +143,19 @@ void setup()
                                           data = json.as<JsonObject>();
                                         }
 
-                                        // String.println(data["message"]);
+                                        // send the data that we receive back
                                         String response;
-                                        String str = data["message"];
-                                        Serial.println(str);
+                                        Serial.println("/api/settings/change response: ");
                                         serializeJson(data, response);
                                         serializeJson(data, Serial);
-                                        request->send(200, "application/json", response);
+                                        request->send(200);
                                         // Serial.println(response);
                                       });
   server.addHandler(handler);
 
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
   server.onNotFound([](AsyncWebServerRequest *request)
-                    { request->redirect("/home"); });
+                    { request->redirect("/"); });
 
   server.begin();
 }

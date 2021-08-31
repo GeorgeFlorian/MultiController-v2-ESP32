@@ -11,19 +11,19 @@
 
 <body>
     <div class="wrapper">
-        <form id="settings_form" class="settings_form">
-            <label for="ssid">Change SSID</label>
-            <input type="text" name="ssid" id="ssid" />
-            <!-- <datalist id="ssid">
-                <option>192.168.100.10</option>
-            </datalist> -->
+        <form id="settings_form" class="settings_form" onSubmit="return false">
+            <label for="wifi_ssid">Change SSID</label>
+            <input type="text" name="wifi_ssid" id="wifi_ssid" />
+            <label for="wifi_pass">Change Password</label>
+            <input type="text" name="wifi_pass" id="wifi_pass" />
 
-            <label for="ip">Change IP Address</label>
-            <input type="text" name="ip" list="ip" />
-            <datalist id="ip">
+            <label for="ap_ip">Change IP Address</label>
+            <input type="text" name="ap_ip" list="ap_ip" />
+            <datalist id="ap_ip">
                 <option>192.168.100.20</option>
             </datalist>
-            <button type="submit">Save Settings</button>
+            <!-- <button type="submit">Save Settings</button> -->
+            <input type="submit" value="Save Settings" id="submit_btn">
         </form>
     </div>
 </body>
