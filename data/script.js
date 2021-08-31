@@ -74,19 +74,19 @@ async function post_data(api_path, json_data) {
     const message = `An error has occured: ${response.status}`;
     throw new Error(message);
   }
-  console.log("post_data RESPOSNE: ");
-  console.log(response);
-  return await response.json();
+  // console.log("post_data RESPOSNE: ");
+  // console.log(response);
+  return response.status;
 }
 
 function save_settings() {
   let form = document.getElementById("settings_form");
   let json_data = toJSONstring(form);
-  console.log("json_data POSTed");
-  console.log(json_data);
-  post_data("api/settings/change", json_data).then((send_response) => {
-    console.log("api/settings/change RESPONSE: ");
-    console.log(send_response);
+  // console.log("json_data POSTed");
+  // console.log(json_data);
+  post_data("api/settings/change", json_data).then((response) => {
+    // console.log("api/settings/change RESPONSE: ");
+    // console.log(response);
     conn_status = 1;
     // logs to page
     // get_settings() // update interface with newer settings
