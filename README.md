@@ -1,16 +1,17 @@
 # esp32_json_server
 
-{
-"/": "/settings",
-"/settings": [
-"/relay",
-"/wiegand",
-"/rfid"
-],
-"/network": [
-"/dhcp",
-"/static"
-],
-"/files": "",
-"/update": ""
-}
+### Interface
+
+- Dashboard
+- Network Settings
+- Input Settings
+- Wiegand Settings
+- RFID Settings
+
+### File Browser
+
+### Update Page
+
+### To implement
+
+- Save settings to file
