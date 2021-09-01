@@ -1,0 +1,11 @@
+Konica Arrox Box Excavator
+
+- change network handlers
+- add 2 more relay handlers
+- atunci cand se apasa butonul de inchidere(cu LED), trimitem din ESP un GET Request catre NUC sa se inchida.
+- dupa ce consideram ca s-a inchis, inchidem LED-ul de pe buton, eventual si LED-urile sageti.
+
+
+- remake AP Mode to be simpler
+- remake STA Mode interface to be simpler to navigate
+- implement click to copy to clipboard
