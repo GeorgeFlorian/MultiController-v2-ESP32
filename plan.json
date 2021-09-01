@@ -1,0 +1,14 @@
+{
+    "/": "/settings",
+    "/settings": [
+        "/relay",
+        "/wiegand",
+        "/rfid"
+    ],
+    "/network": [
+        "/dhcp",
+        "/static"
+    ],
+    "/files": "",
+    "/update": ""
+}

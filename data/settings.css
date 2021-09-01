@@ -1,0 +1,38 @@
+@media only screen and (min-width: 768px) {
+  .container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 0.6fr 1.2fr 1.2fr;
+    grid-template-rows: 1fr 1.2fr 0.8fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "menu_wrapper network_wrapper input_wrapper"
+      "menu_wrapper wiegand_wrapper rfid_wrapper"
+      "menu_wrapper logs_wrapper logs_wrapper";
+  }
+
+  .menu_wrapper {
+    grid-area: menu_wrapper;
+  }
+
+  .network_wrapper {
+    grid-area: network_wrapper;
+  }
+
+  .input_wrapper {
+    grid-area: input_wrapper;
+  }
+
+  .wiegand_wrapper {
+    grid-area: wiegand_wrapper;
+  }
+
+  .rfid_wrapper {
+    grid-area: rfid_wrapper;
+  }
+
+  .logs_wrapper {
+    grid-area: logs_wrapper;
+  }
+}
