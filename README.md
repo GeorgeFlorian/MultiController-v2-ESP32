@@ -14,4 +14,4 @@
 
 ### To implement
 
-- Save settings to file
+- Save all settings to a single JSON file
