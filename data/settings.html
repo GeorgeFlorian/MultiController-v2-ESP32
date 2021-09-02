@@ -14,31 +14,50 @@
 
 <body class="d-flex justify-content-center h-100 w-100">
     <div class="container-fluid h-100 w-100 p-0">
-        <nav class="navbar navbar-expand navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Logo</a>
-                <div class="collapse navbar-collapse justify-content-md-center" id="navbarsExample02">
-                    <ul class="navbar-nav">
-                        <li class=" nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
+        <div class="row h-100 d-flex flex-column-reverse flex-sm-row justify-content-between m-0">
+            <div class="col-12 col-sm-3 p-0 bg-dark">
+                <nav class="d-flex flex-row flex-sm-column justify-content-center p-3 text-white bg-dark h-100">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none">
+                        <img src="#" alt="logo" class="me-3 m-sm-3">
+                    </a>
+                    <hr>
+                    <ul
+                        class="nav nav-pills  flex-row flex-sm-column flex-nowrap align-items-center align-items-sm-stretch mb-sm-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
+                            <a href="#" class="nav-link active" aria-current="page">
+                                Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link text-white">
+                                File Browser
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link text-white">
+                                Update
+                            </a>
                         </li>
                     </ul>
+                    <hr>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span>Metrici</span>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-sm-9 p-0">
+                <div class="row p-0 m-0">
+                    <div class="network_wrapper col-sm p-2">network_wrapper</div>
+                    <div class="input_wrapper col-sm p-2">input_wrapper</div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="wiegand_wrapper col-sm p-2">wiegand_wrapper</div>
+                    <div class="rfid_wrapper col-sm p-2">rfid_wrapper</div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="logs_wrapper col-sm p-2">logs_wrapper</div>
                 </div>
             </div>
-        </nav>
-        <div class="row align-items-center justify-content-center p-2">
-            <div class="network_wrapper col-md">network_wrapper</div>
-            <div class="input_wrapper col-md">input_wrapper</div>
-        </div>
-        <div class="row p-2">
-            <div class="wiegand_wrapper col-md">wiegand_wrapper</div>
-            <div class="rfid_wrapper col-md">rfid_wrapper</div>
-        </div>
-        <div class="row p-2">
-            <div class="logs_wrapper col-md">logs_wrapper</div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
