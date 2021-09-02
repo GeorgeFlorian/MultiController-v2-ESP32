@@ -15,3 +15,4 @@
 ### To implement
 
 - Save all settings to a single JSON file
+- Move from SPIFFS to NVS
