@@ -14,18 +14,19 @@
 
 <body class="d-flex justify-content-center h-100 w-100">
     <div class="container-fluid h-100 w-100 p-0">
-        <div class="row h-100 d-flex flex-column-reverse flex-sm-row justify-content-between m-0">
-            <div class="col-12 col-sm-3 p-0 bg-dark">
-                <nav
-                    class="d-flex flex-row flex-sm-column justify-content-center p-3 text-white bg-dark h-100 overflow-hidden">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none">
+        <div class="row min-vh-100 d-flex flex-column-reverse flex-md-row justify-content-between m-0">
+            <!-- Nav -->
+            <nav class="col-12 col-md-3 p-0 bg-dark">
+                <div class="d-flex flex-row flex-md-column justify-content-center flex-wrap p-1 text-white bg-dark h-100
+                overflow-hidden">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none me-1">
                         <img src="#" alt="logo" class="me-3 m-sm-3">
                     </a>
                     <hr>
                     <ul
-                        class="nav nav-pills  flex-row flex-sm-column flex-nowrap align-items-center align-items-sm-stretch mb-sm-auto">
+                        class="nav nav-pills  flex-row flex-md-column flex-nowrap align-items-center align-items-md-stretch mb-md-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link active" aria-current="page">
+                            <a href="#" class="nav-link active fs-6" aria-current="page">
                                 Settings
                             </a>
                         </li>
@@ -41,14 +42,16 @@
                         </li>
                     </ul>
                     <hr>
-                    <div class="d-flex justify-content-center align-items-center">
-                        <span>Metrici</span>
+                    <div class="d-none d-md-flex flex-column text-nowrap justify-content-center align-items-center">
+                        <p>Metrici © 2021</p>
+                        <p>All Rights Reserved.</p>
                     </div>
-                </nav>
-            </div>
-            <div class="col-sm-9 p-0">
+                </div>
+            </nav>
+            <!-- Content -->
+            <div class="col-md-9 p-0">
                 <div class="row p-0 m-0">
-                    <div class="container network_wrapper col-sm p-2">
+                    <div class="container network_wrapper col-md p-2">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Network Settings</h5>
@@ -62,30 +65,70 @@
                                     </li>
                                 </ul>
                             </div>
-                            <form class="card-body tab-content">
+                            <!-- Form -->
+                            <!-- Can't use form because Modal interacts with it -->
+                            <div class="card-body tab-content">
+                                <!-- DHCP tab -->
                                 <div class="tab-pane active" id="dhcp">
-                                    <p class="card-text">Change DHCP Network settings.</p>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlInput1" class="form-label">Email address</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1"
-                                            placeholder="name@example.com">
+                                    <p class="card-text">Change DHCP Network settings. <br>
+                                        Press on what you want to change.
+                                    </p>
+                                    <!-- Radio Buttons -->
+                                    <div class="form-check mb-3 d-flex justify-content-around">
+                                        <div>
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                id="dhcp_wifi" checked>
+                                            <label class="form-check-label" for="dhcp_wifi">
+                                                WiFi
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                id="dhcp_ethernet">
+                                            <label class="form-check-label" for="dhcp_ethernet">
+                                                Ethernet
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-1 d-flex justify-content-between">
+                                        <div class="col-auto d-flex align-items-center">
+                                            <span>SSID:</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <label for="ssid" class="visually-hidden">Password</label>
+                                            <input type="text" class="form-control" id="ssid" name="ssid"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-1 d-flex justify-content-between">
+                                        <div class="col-auto d-flex align-items-center">
+                                            <span>Password:</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <label for="ssid" class="visually-hidden">Password</label>
+                                            <input type="text" class="form-control" id="ssid" name="ssid"
+                                                placeholder="">
+                                        </div>
                                     </div>
                                 </div>
+                                <!-- Static Tab -->
                                 <div class="tab-pane" id="static">
                                     <p class=" card-text">Change Static Network settings.</p>
                                 </div>
                                 <button class="btn btn-primary" type="submit">Save</button>
-                            </form>
+                            </div>
                         </div>
                     </div>
-                    <div class="input_wrapper col-sm p-2">input_wrapper</div>
+                    <div class="input_wrapper col-md p-2">input_wrapper</div>
                 </div>
                 <div class="row p-0 m-0">
-                    <div class="wiegand_wrapper col-sm p-2">wiegand_wrapper</div>
-                    <div class="rfid_wrapper col-sm p-2">rfid_wrapper</div>
+                    <div class="wiegand_wrapper col-md p-2">wiegand_wrapper</div>
+                    <div class="rfid_wrapper col-md p-2">rfid_wrapper</div>
                 </div>
                 <div class="row p-0 m-0">
-                    <div class="logs_wrapper col-sm p-2">logs_wrapper</div>
+                    <div class="logs_wrapper col-md p-2">logs_wrapper</div>
                 </div>
             </div>
         </div>
