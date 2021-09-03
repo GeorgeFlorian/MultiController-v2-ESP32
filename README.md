@@ -16,3 +16,4 @@
 
 - Save all settings to a single JSON file
 - Move from SPIFFS to NVS
+- On page load fill inputs with current settings
