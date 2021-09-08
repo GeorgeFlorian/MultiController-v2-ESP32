@@ -18,7 +18,7 @@
 - Move from SPIFFS to NVS
 - On page load fill inputs with current settings
 - Move File Browser and Update to Settings Page
-- Rename File browser to Backup/Restore (Configuration)
+- Rename File browser to Backup/Restore (Configuration) / Save Settings to File
 - Rename Update to Upgrade Firmware
 - Reset to factory settings button
 - Reset to factory settings without resetting network settings button

@@ -6,23 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="settings.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 
     <title>Settings</title>
 </head>
 
 <body class="d-flex justify-content-center h-100 w-100">
     <div class="container-fluid h-100 w-100 p-0">
-        <div class="row min-vh-100 d-flex flex-column-reverse flex-md-row justify-content-between m-0">
+        <div class="row min-vh-100 d-flex flex-column-reverse flex-md-row m-0">
             <!-- Nav -->
-            <nav class="col-12 col-md-3 p-0 bg-dark">
+            <nav class="col-12 col-md-auto p-md-2 bg-dark">
                 <div class="d-flex flex-row flex-md-column justify-content-center flex-wrap p-1 text-white bg-dark h-100
                 overflow-hidden">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none me-1">
                         <img src="#" alt="logo" class="me-3 m-sm-3">
                     </a>
                     <hr>
-                    <ul class="nav nav-pills  flex-row flex-md-column flex-nowrap align-items-center align-items-md-stretch mb-md-auto">
+                    <ul
+                        class="nav nav-pills flex-row flex-md-column flex-nowrap align-items-center align-items-md-stretch mb-md-auto">
                         <li class="nav-item">
                             <a href="#" class="nav-link active fs-6 " aria-current="page">
                                 Settings
@@ -47,61 +49,106 @@
                 </div>
             </nav>
             <!-- Content -->
-            <div class="col-md-9 p-0">
+            <div class="col-md-9 p-0 mx-md-auto">
                 <div class="row p-0 m-0">
                     <!-- Network Settings -->
                     <div class="container network_wrapper col-md p-2">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Network Settings</h5>
-                                <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#dhcp">DHCP</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#static">Static</a>
-                                    </li>
-                                </ul>
                             </div>
                             <!-- Form -->
-                            <!-- Can't use form because Modal interacts with it -->
-                            <form class="card-body tab-content">
-                                <!-- DHCP tab -->
-                                <div class="tab-pane active" id="dhcp">
-                                    <p class="card-text">Change DHCP Network settings.
-                                    </p>
-                                    <!-- Radio Buttons -->
-                                    <div class="form-check mb-3 d-flex justify-content-around">
-                                        <div>
-                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="dhcp_wifi" checked>
-                                            <label class="form-check-label" for="dhcp_wifi">WiFi</label>
-                                        </div>
-                                        <div>
-                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="dhcp_ethernet">
-                                            <label class="form-check-label" for="dhcp_ethernet">Ethernet</label>
-                                        </div>
-                                    </div>
-                                    <!-- Input row -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label for="ssid" class="col-auto col-form-label">SSID:</label>
-                                        <div class="col-auto">
-                                            <input type="text" class="form-control" id="ssid" name="ssid">
-                                        </div>
-                                    </div>
-                                    <!-- Input row -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label for="password" class="col-auto col-form-label">Password:</label>
-                                        <div class="col-auto">
-                                            <input type="password" class="form-control" id="password" name="password">
-                                        </div>
+                            <!-- Can't use Bootstrap Modal inside <form> -->
+                            <form class="card-body">
+                                <!-- Radio Buttons -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between"
+                                    aria-label="Network Connection">
+                                    <label class="col-form-label col-4 text-nowrap">Connection: </label>
+                                    <div class="btn-group col" style="max-width: 200px;" id="check_network_connection">
+                                        <input type="radio" class="btn-check" name="connection" id="wifi"
+                                            autocomplete="off" checked>
+                                        <label class="btn btn-outline-primary shadow-none" for="wifi">WiFi</label>
+
+                                        <input type="radio" class="btn-check" name="connection" id="ethernet"
+                                            autocomplete="off">
+                                        <label class="btn btn-outline-primary shadow-none"
+                                            for="ethernet">Ethernet</label>
                                     </div>
                                 </div>
-                                <!-- Static Tab -->
-                                <div class="tab-pane" id="static">
-                                    <p class=" card-text">Change Static Network settings.</p>
+
+                                <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
+                                    <label class="col-form-label col-4 text-nowrap" for="dhcp">IP: </label>
+                                    <div class="btn-group col" style="max-width: 200px;" id="check_ip_type">
+                                        <input type="radio" class="btn-check" name="type" id="dhcp" autocomplete="off">
+                                        <label class="btn btn-outline-primary shadow-none" for="dhcp">DHCP</label>
+
+                                        <input type="radio" class="btn-check" name="type" id="static" autocomplete="off"
+                                            checked>
+                                        <label class="btn btn-outline-primary shadow-none" for="static">Static</label>
+                                    </div>
                                 </div>
+
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label for="ssid" class="col-form-label col-4 text-nowrap">SSID:</label>
+                                    <div class="col-auto">
+                                        <input type="text" class="connection form-control" id="ssid" name="ssid"
+                                            placeholder="Current value">
+                                    </div>
+                                </div>
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label for="password" class="col-form-label col-4 text-nowrap">Password:</label>
+                                    <div class="col-auto">
+                                        <input type="password" class="connection form-control" id="password"
+                                            name="password" placeholder="Password">
+                                    </div>
+                                </div>
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label for="ip_address" class="col-form-label col-4 text-nowrap">IP
+                                        Address:</label>
+                                    <div class="col-auto">
+                                        <input type="text" class="ip form-control" id="ip_address" name="ip_address"
+                                            placeholder="Current value">
+                                    </div>
+                                </div>
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label for="gateway" class="col-form-label col-4 text-nowrap">Gateway:</label>
+                                    <div class="col-auto">
+                                        <input type="text" class="ip form-control" id="gateway" name="gateway"
+                                            placeholder="Current value">
+                                    </div>
+                                </div>
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label for="subnet" class="col-form-label col-4 text-nowrap">Subnet
+                                        Mask:</label>
+                                    <div class="col-auto">
+                                        <input class="ip form-control" list="subnet_options" id="subnet"
+                                            placeholder="Current value">
+                                    </div>
+                                    <datalist id="subnet_options">
+                                        <option value="255.255.255.0">
+                                        <option value="255.255.0.0">
+                                    </datalist>
+                                </div>
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label for="dns" class="col-form-label col-4 text-nowrap">DNS:</label>
+                                    <div class="col-auto">
+                                        <input class="ip form-control" list="dns_options" id="dns"
+                                            placeholder="Current value">
+                                    </div>
+                                    <datalist id="dns_options">
+                                        <option value="8.8.8.8">
+                                        <option value="1.1.1.1">
+                                    </datalist>
+                                </div>
+                                <!-- </div> -->
                                 <!-- Submit Button -->
-                                <button class="btn btn-primary" type="submit" name="save_network">Save</button>
+                                <button class="btn btn-primary mx-auto" type="submit" name="save_network">Save</button>
                             </form>
                         </div>
                     </div>
@@ -112,7 +159,8 @@
                                 <h5 class="card-title">Relay Settings</h5>
                                 <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
                                     <li class="nav-item">
-                                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#input">Input</a>
+                                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab"
+                                            href="#input">Input</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" data-bs-toggle="tab" href="#output">Output</a>
@@ -120,30 +168,48 @@
                                 </ul>
                             </div>
                             <!-- Form -->
-                            <!-- Can't use form because Modal interacts with it -->
-                            <form class="card-body tab-content">
+                            <form class="card-body tab-content" style="min-height: 238px">
                                 <!-- Input tab -->
                                 <div class="tab-pane active" id="input">
-                                    <p class="card-text">Change Input settings.
-                                    </p>
+                                    <!-- <p class="card-text">Change Input settings.</p> -->
                                     <!-- Input row -->
                                     <span>Input 1 Address:</span>
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="IP Address" aria-label="ip_addr_1" name="ip_addr_1">
+                                        <input type="text" class="form-control" placeholder="IP Address"
+                                            aria-label="ip_addr_1" name="ip_addr_1">
                                         <span class="input-group-text">:</span>
-                                        <input type="text" class="form-control" placeholder="Port" aria-label="port_1" name="port_1">
+                                        <input type="text" class="form-control" placeholder="Port" aria-label="port_1"
+                                            name="port_1">
                                     </div>
                                     <!-- Input row -->
                                     <span>Input 2 Address:</span>
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="IP Address" aria-label="ip_addr_2" name="ip_addr_2">
+                                        <input type="text" class="form-control" placeholder="IP Address"
+                                            aria-label="ip_addr_2" name="ip_addr_2">
                                         <span class="input-group-text">:</span>
-                                        <input type="text" class="form-control" placeholder="Port" aria-label="port_2" name="port_2">
+                                        <input type="text" class="form-control" placeholder="Port" aria-label="port_2"
+                                            name="port_2">
                                     </div>
                                 </div>
                                 <!-- Output Tab -->
                                 <div class="tab-pane" id="output">
-                                    <p class=" card-text">Change Output settings.</p>
+                                    <!-- <p class=" card-text">Change Output settings.</p> -->
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-0 d-flex justify-content-between">
+                                        <label for="timer_1" class="col-form-label col-4 text-nowrap">Timer 1:</label>
+                                        <div class="col-auto">
+                                            <input type="text" class="form-control" id="timer_1"
+                                                placeholder="Current value">
+                                        </div>
+                                    </div>
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-0 d-flex justify-content-between">
+                                        <label for="timer_2" class="col-form-label col-4 text-nowrap">Timer 2:</label>
+                                        <div class="col-auto">
+                                            <input type="text" class="form-control" id="timer_2"
+                                                placeholder="Current value">
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- Submit Button -->
                                 <button class="btn btn-primary" type="submit" name="save_io">Save</button>
@@ -160,30 +226,36 @@
                             </div>
                             <!-- Form -->
                             <form class="card-body">
-                                <p class="card-text">Change Wiegand settings.</p>
+                                <!-- <p class="card-text">Change Wiegand settings.</p> -->
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
-                                    <label for="database_url" class="col-auto col-form-label">Metrici Database URL:</label>
+                                    <label for="database_url" class="col-form-label col-4 text-nowrap">Database
+                                        URL:</label>
                                     <div class="col-auto">
-                                        <input type="url" class="form-control" id="database_url">
+                                        <input type="url" class="form-control" id="database_url"
+                                            placeholder="Current value">
                                     </div>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
-                                    <label for="pulse_width" class="col-auto col-form-label">Pulse Width:</label>
+                                    <label for="pulse_width" class="col-form-label col-4 text-nowrap">Pulse
+                                        Width:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="form-control" id="pulse_width" name="pulse_width">
+                                        <input type="text" class="form-control" id="pulse_width" name="pulse_width"
+                                            placeholder="Current value">
                                     </div>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
-                                    <label for="database_url" class="col-auto col-form-label">Metrici Database URL:</label>
+                                    <label for="pulse_gap" class="col-form-label col-4 text-nowrap">Pulse
+                                        Gap:</label>
                                     <div class="col-auto">
-                                        <input type="url" class="form-control" id="database_url">
+                                        <input type="url" class="form-control" id="pulse_gap"
+                                            placeholder="Current value">
                                     </div>
                                 </div>
                                 <!-- Submit Button -->
-                                <button class="btn btn-primary" type="submit" name="save_io">Save</button>
+                                <button class="btn btn-primary" type="submit" name="save_wiegand">Save</button>
                             </form>
                         </div>
                     </div>
@@ -191,46 +263,25 @@
                     <div class="rfid_wrapper col-md p-2">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="card-title">Relay Settings</h5>
-                                <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#input">Input</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#output">Output</a>
-                                    </li>
-                                </ul>
+                                <h5 class="card-title">RFID Settings</h5>
                             </div>
                             <!-- Form -->
-                            <!-- Can't use form because Modal interacts with it -->
-                            <form class="card-body tab-content">
-                                <!-- Input tab -->
-                                <div class="tab-pane active" id="input">
-                                    <p class="card-text">Change Input settings.
-                                    </p>
-                                    <!-- Input row -->
-                                    <span>Input 1 Address:</span>
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="IP Address" aria-label="ip_addr_1" name="ip_addr_1">
-                                        <span class="input-group-text">:</span>
-                                        <input type="text" class="form-control" placeholder="Port" aria-label="port_1" name="port_1">
-                                    </div>
-                                    <!-- Input row -->
-                                    <span>Input 2 Address:</span>
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="IP Address" aria-label="ip_addr_2" name="ip_addr_2">
-                                        <span class="input-group-text">:</span>
-                                        <input type="text" class="form-control" placeholder="Port" aria-label="port_2" name="port_2">
-                                    </div>
-                                </div>
-                                <!-- Output Tab -->
-                                <div class="tab-pane" id="output">
-                                    <p class=" card-text">Change Output settings.</p>
+                            <form class="card-body">
+                                <!-- <p class="card-text">Change RFID settings.</p> -->
+                                <!-- Input row -->
+                                <span>RFID Address:</span>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="IP Address"
+                                        aria-label="rfid_ip" name="rfid_ip">
+                                    <span class="input-group-text">:</span>
+                                    <input type="text" class="form-control" placeholder="Port" aria-label="rfid_port"
+                                        name="rfid_port">
                                 </div>
                                 <!-- Submit Button -->
-                                <button class="btn btn-primary" type="submit" name="save_io">Save</button>
+                                <button class="btn btn-primary" type="submit" name="save_rfid">Save</button>
                             </form>
                         </div>
+
                     </div>
                 </div>
                 <div class="row p-0 m-0">
@@ -240,8 +291,10 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
-    <!-- <script src="script.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+    <script src="script.js"></script>
     <!-- <script>
         get_settings();
     </script> -->

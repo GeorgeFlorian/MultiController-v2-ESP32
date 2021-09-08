@@ -107,19 +107,51 @@
 //   });
 // });
 
-function get_settings(html_inputs, json) {
-  
-}
+function get_settings(html_inputs, json) {}
 
 window.addEventListener("load", function () {
-  console.log(`ROOT_URL: ${ROOT_URL}`);
-  let settings_form = document.getElementById("settings_form");
+  // console.log(`ROOT_URL: ${ROOT_URL}`);
+  // let settings_form = document.getElementById("settings_form");
 
-  get_settings();
+  // get_settings();
 
   // handle form submit
   // settings_form.addEventListener("submit", function (e) {
   //   e.preventDefault(); // before the code
   //   save_settings();
   // });
+
+  let check_network_connection = document.getElementById(
+    "check_network_connection"
+  );
+  check_network_connection.addEventListener("change", function (e) {
+    let target = e.target;
+    let wifi = document.querySelectorAll(".connection");
+    switch (target.id) {
+      case "wifi":
+        wifi.forEach((element) => element.removeAttribute("disabled"));
+        break;
+      case "ethernet":
+        wifi.forEach((element) => element.setAttribute("disabled", ""));
+        break;
+      default:
+        break;
+    }
+  });
+
+  let check_ip_type = document.getElementById("check_ip_type");
+  check_ip_type.addEventListener("change", function (e) {
+    let target = e.target;
+    let ip = document.querySelectorAll(".ip");
+    switch (target.id) {
+      case "dhcp":
+        ip.forEach((element) => element.setAttribute("disabled", ""));
+        break;
+      case "static":
+        ip.forEach((element) => element.removeAttribute("disabled"));
+        break;
+      default:
+        break;
+    }
+  });
 });
