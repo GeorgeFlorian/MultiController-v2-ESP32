@@ -16,18 +16,21 @@
 - Update
 - Reset
 
-### To implement
+### Implemented
 
-- On page load fill inputs with current settings (get_settings(){JSON})
 - Move File Browser and Update to Settings Page
 
-* Rename File Browser to Backup/Restore (Configuration) / Save Settings to File
-* Save all settings to a single JSON file
-* Rename Update to Upgrade Firmware
+- Rename File Browser to Backup/Restore (Configuration) / Save Settings to File
+- Rename Update to Upgrade Firmware
 
-- Reset to factory settings button
-- Reset to factory settings without resetting network settings button
+- Create Reset to factory settings without resetting network settings button (Reset)
+- Create Reset to factory settings button (Factory Reset)
 
+### To implement
+
+- Move all Save buttons to the right side of their respective card
+
+* On page load fill inputs with current settings (get_settings(){JSON})
 * Add Dashboard page with state (Relay ON - Relay OFF)
-
-- Move from SPIFFS to NVS
+* Save all settings to a single JSON file
+* Move from SPIFFS to NVS
