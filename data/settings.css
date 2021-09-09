@@ -1,5 +1,27 @@
+.btn {
+  min-width: 104px;
+}
+
 @media (min-width: 768px) {
   .wrapper-max-width {
     max-width: 500px !important;
+  }
+}
+/* 751 to  950*/
+
+@media only screen and (max-width: 950px) and (min-width: 751px) {
+  .form-control-small {
+    min-height: calc(1.5em + 0.5rem + 2px) !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.2rem !important;
+  }
+}
+@media only screen and (max-width: 300px) {
+  .form-control-small {
+    min-height: calc(1.5em + 0.5rem + 2px) !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.2rem !important;
   }
 }

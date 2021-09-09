@@ -49,6 +49,7 @@
             </nav>
             <!-- Content -->
             <div class="col-md-9 p-0 mx-md-auto" style="max-width: 1200px;">
+                <!-- First Row Wrapper -->
                 <div class="row p-0 m-0">
                     <!-- Network Settings -->
                     <div class="container network_wrapper col-md p-2">
@@ -63,7 +64,8 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
                                     aria-label="Network Connection">
                                     <label class="col-form-label col-4 text-nowrap">Connection: </label>
-                                    <div class="btn-group col" style="max-width: 200px;" id="check_network_connection">
+                                    <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
+                                        id="check_network_connection">
                                         <input type="radio" class="btn-check" name="connection" id="wifi"
                                             autocomplete="off" checked>
                                         <label class="btn btn-outline-primary shadow-none" for="wifi">WiFi</label>
@@ -77,7 +79,8 @@
                                 <!-- Radio Buttons IP Type -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
                                     <label class="col-form-label col-4 text-nowrap" for="dhcp">IP: </label>
-                                    <div class="btn-group col" style="max-width: 200px;" id="check_ip_type">
+                                    <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
+                                        id="check_ip_type">
                                         <input type="radio" class="btn-check" name="type" id="dhcp" autocomplete="off">
                                         <label class="btn btn-outline-primary shadow-none" for="dhcp">DHCP</label>
 
@@ -147,7 +150,7 @@
                                 </div>
                                 <!-- </div> -->
                                 <!-- Submit Button -->
-                                <button class="btn btn-primary mx-auto" type="submit" name="save_network">Save</button>
+                                <button class="btn btn-primary m-auto" type="submit" name="save_network">Save</button>
                             </form>
                         </div>
                     </div>
@@ -216,6 +219,8 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Second Row Wrapper -->
                 <div class="row p-0 m-0">
                     <!-- Wiegand Settings -->
                     <div class="container wiegand_wrapper col-md p-2">
@@ -225,7 +230,6 @@
                             </div>
                             <!-- Form -->
                             <form class="card-body mb-0">
-                                <!-- <p class="card-text">Change Wiegand settings.</p> -->
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="database_url" class="col-form-label col-4 text-nowrap">Database
@@ -266,7 +270,6 @@
                             </div>
                             <!-- Form -->
                             <form class="card-body mb-0">
-                                <!-- <p class="card-text">Change RFID settings.</p> -->
                                 <!-- Input row -->
                                 <span>RFID Address:</span>
                                 <div class="input-group mb-3">
@@ -280,12 +283,112 @@
                                 <button class="btn btn-primary" type="submit" name="save_rfid">Save</button>
                             </form>
                         </div>
-
                     </div>
                 </div>
+
+                <!-- Third Row Wrapper -->
+                <div class="row p-0 m-0">
+                    <!-- Backup/Restore -->
+                    <div class="container input_wrapper col-md p-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Backup/Restore Settings</h5>
+                                <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab"
+                                            href="#backup">Backup/Restore</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#reset">Factory Reset</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Form -->
+                            <form class="card-body tab-content mb-0" style="min-height: 200px">
+                                <!-- Backup/Restore tab -->
+                                <div class="tab-pane active" id="backup">
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-0 d-flex justify-content-between">
+                                        <label for="backup" class="col-form-label col-12 text-nowrap">Backup
+                                            Configuration to file:</label>
+                                        <div class="col-auto">
+                                            <button class="btn btn-primary" type="submit" name="backup" id="backup">Save
+                                                to file</button>
+                                        </div>
+                                    </div>
+                                    <!-- Input row -->
+                                    <label for="upload_file" class="form-label">Restore Configuration from
+                                        file:</label>
+                                    <div class="row g-2 d-flex justify-content-between">
+                                        <div class="col-12 col-sm-auto">
+                                            <input class="form-control form-control-small" type="file" id="upload_file">
+                                        </div>
+                                        <button class="btn btn-primary col-auto ms-1" type="submit" name="upload_btn"
+                                            id="upload_btn">Upload</button>
+                                    </div>
+                                </div>
+                                <!-- Factory Reset Tab -->
+                                <div class="tab-pane" id="reset">
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-0 d-flex justify-content-between">
+                                        <label for="reset" class="col-form-label col-12 ">Reset settings but
+                                            keep Network Configuration:</label>
+                                        <div class="col-auto">
+                                            <button class="btn btn-primary" type="submit" name="reset" id="reset"
+                                                style="min-width: 120px;">Reset</button>
+                                        </div>
+                                    </div>
+                                    <!-- Input row -->
+                                    <div class="row mb-2 g-0 d-flex justify-content-between">
+                                        <label for="reset_all" class="col-form-label col-12 text-nowrap">Reset all
+                                            settings:</label>
+                                        <div class="col-auto">
+                                            <button class="btn btn-primary" type="submit" name="reset_all"
+                                                id="reset_all" style="min-width: 120px;">Factory Reset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Update -->
+                    <div class="container rfid_wrapper col-md p-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Update</h5>
+                            </div>
+                            <!-- Form -->
+                            <form class="card-body mb-0">
+                                <!-- Input row -->
+                                <label for="update_file" class="form-label">Restore Configuration from
+                                    file:</label>
+                                <div class="row g-2 d-flex justify-content-between">
+                                    <div class="col-12 col-sm-auto">
+                                        <input class="form-control form-control-small" type="file" id="update_file"
+                                            multiple>
+                                    </div>
+                                    <button class="btn btn-primary col-auto ms-1" type="submit" name="update_btn"
+                                        id="update_btn">Upload</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Reset -->
+                </div>
+
+                <!-- Fourth Row Wrapper -->
                 <div class="row p-0 m-0">
                     <!-- Logs -->
-                    <div class="container logs_wrapper col-md p-2">logs_wrapper</div>
+                    <div class="container logs_wrapper col-md p-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Logs</h5>
+                            </div>
+                            <!-- Form -->
+                            <div class="card-body mb-0" id="logs">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
