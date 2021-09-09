@@ -2,13 +2,26 @@
   min-width: 104px;
 }
 
-@media (min-width: 768px) {
+.fixed {
+  position: fixed;
+  left: 0;
+}
+
+@media only screen and (max-width: 751px) {
+  .fixed {
+    position: fixed;
+    bottom: 0;
+    z-index: 10;
+  }
+}
+
+@media only screen and (min-width: 768px) {
   .wrapper-max-width {
     max-width: 500px !important;
   }
 }
-/* 751 to  950*/
 
+/* 751 to  950*/
 @media only screen and (max-width: 950px) and (min-width: 751px) {
   .form-control-small {
     min-height: calc(1.5em + 0.5rem + 2px) !important;
