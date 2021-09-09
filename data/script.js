@@ -127,12 +127,15 @@ window.addEventListener("load", function () {
   check_network_connection.addEventListener("change", function (e) {
     let target = e.target;
     let wifi = document.querySelectorAll(".connection");
+    let currentValue = "Current Value Placeholder";
     switch (target.id) {
       case "wifi":
         wifi.forEach((element) => element.removeAttribute("disabled"));
+        wifi.forEach((element) => element.setAttribute("placeholder", `${currentValue}`));
         break;
       case "ethernet":
         wifi.forEach((element) => element.setAttribute("disabled", ""));
+        wifi.forEach((element) => element.setAttribute("placeholder", "Ethernet Connection"));
         break;
       default:
         break;
@@ -143,12 +146,15 @@ window.addEventListener("load", function () {
   check_ip_type.addEventListener("change", function (e) {
     let target = e.target;
     let ip = document.querySelectorAll(".ip");
+    let currentValue = "Current Value Placeholder";
     switch (target.id) {
       case "dhcp":
         ip.forEach((element) => element.setAttribute("disabled", ""));
+        ip.forEach((element) => element.setAttribute("placeholder", 'DHCP IP'));
         break;
       case "static":
         ip.forEach((element) => element.removeAttribute("disabled"));
+        ip.forEach((element) => element.setAttribute("placeholder", `${currentValue}`));
         break;
       default:
         break;

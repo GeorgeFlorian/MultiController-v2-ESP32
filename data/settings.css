@@ -1,0 +1,5 @@
+@media (min-width: 768px) {
+  .wrapper-max-width {
+    max-width: 500px !important;
+  }
+}
