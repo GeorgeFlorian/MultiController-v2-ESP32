@@ -31,8 +31,6 @@
 
 ### To implement
 
-- Move all Save buttons to the right side of their respective card
-
-* On page load fill inputs with current settings (get_settings(){JSON})
-* Save all settings to a single JSON file
-* Move from SPIFFS to NVS
+- On page load fill inputs with current settings (get_settings(){JSON})
+- Save all settings to a single JSON file
+- Move from SPIFFS to NVS
