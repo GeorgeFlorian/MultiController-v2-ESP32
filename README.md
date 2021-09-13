@@ -27,11 +27,12 @@
 - Create Reset to factory settings button (Factory Reset)
 - Make navbar a fixed size
 
+* Add Dashboard page with state (Relay ON - Relay OFF)
+
 ### To implement
 
 - Move all Save buttons to the right side of their respective card
 
 * On page load fill inputs with current settings (get_settings(){JSON})
-* Add Dashboard page with state (Relay ON - Relay OFF)
 * Save all settings to a single JSON file
 * Move from SPIFFS to NVS
