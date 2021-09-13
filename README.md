@@ -25,11 +25,11 @@
 
 - Create Reset to factory settings without resetting network settings button (Reset)
 - Create Reset to factory settings button (Factory Reset)
+- Make navbar a fixed size
 
 ### To implement
 
 - Move all Save buttons to the right side of their respective card
-- Make navbar a fixed size
 
 * On page load fill inputs with current settings (get_settings(){JSON})
 * Add Dashboard page with state (Relay ON - Relay OFF)

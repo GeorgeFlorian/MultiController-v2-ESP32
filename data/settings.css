@@ -2,27 +2,35 @@
   min-width: 104px;
 }
 
-.fixed {
+#nav_wrapper {
   position: fixed;
+  height: 100vh;
   left: 0;
 }
 
-@media only screen and (max-width: 751px) {
-  .fixed {
+#content_wrapper {
+  max-width: 1200px;
+  margin-left: 154px !important;
+}
+
+@media only screen and (max-width: 768px) {
+  #nav_wrapper {
     position: fixed;
+    width: 100vw;
+    height: 50px;
     bottom: 0;
     z-index: 10;
   }
-}
 
-@media only screen and (min-width: 768px) {
-  .wrapper-max-width {
-    max-width: 500px !important;
+  #content_wrapper {
+    margin: auto !important;
+    margin-bottom: 50px !important;
   }
 }
 
-/* 751 to  950*/
-@media only screen and (max-width: 950px) and (min-width: 751px) {
+/* 768px to  950px*/
+/* File input size */
+@media only screen and (min-width: 768px) and (max-width: 950px) {
   .form-control-small {
     min-height: calc(1.5em + 0.5rem + 2px) !important;
     padding: 0.25rem 0.5rem !important;
