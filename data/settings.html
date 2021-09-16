@@ -90,7 +90,7 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="ssid" class="col-form-label col-4 text-nowrap">SSID:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="connection form-control" id="ssid" name="ssid"
+                                        <input type="text" class="connection form-control" name="ssid" id="ssid"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                 </div>
@@ -98,8 +98,8 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="password" class="col-form-label col-4 text-nowrap">Password:</label>
                                     <div class="col-auto">
-                                        <input type="password" class="connection form-control" id="password"
-                                            name="password" placeholder="Password">
+                                        <input type="password" class="connection form-control" name="password"
+                                            id="password" placeholder="Password">
                                     </div>
                                 </div>
                                 <!-- Input row -->
@@ -107,7 +107,7 @@
                                     <label for="ip_address" class="col-form-label col-4 text-nowrap">IP
                                         Address:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="ip form-control" id="ip_address" name="ip_address"
+                                        <input type="text" class="ip form-control" name="ip_address" id="ip_address"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                 </div>
@@ -115,7 +115,7 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="gateway" class="col-form-label col-4 text-nowrap">Gateway:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="ip form-control" id="gateway" name="gateway"
+                                        <input type="text" class="ip form-control" name="gateway" id="gateway"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                 </div>
@@ -124,7 +124,7 @@
                                     <label for="subnet" class="col-form-label col-4 text-nowrap">Subnet
                                         Mask:</label>
                                     <div class="col-auto">
-                                        <input class="ip form-control" list="subnet_options" id="subnet"
+                                        <input class="ip form-control" list="subnet_options" name="subnet" id="subnet"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                     <datalist id="subnet_options">
@@ -136,7 +136,7 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="dns" class="col-form-label col-4 text-nowrap">DNS:</label>
                                     <div class="col-auto">
-                                        <input class="ip form-control" list="dns_options" id="dns"
+                                        <input class="ip form-control" list="dns_options" name="dns" id="dns"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                     <datalist id="dns_options">
@@ -172,19 +172,19 @@
                                     <span>Input 1 Address:</span>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" placeholder="IP Address"
-                                            aria-label="ip_addr_1" name="ip_addr_1">
+                                            aria-label="ip_1" name="ip_1" id="ip_1">
                                         <span class="input-group-text">:</span>
                                         <input type="text" class="form-control" placeholder="Port" aria-label="port_1"
-                                            name="port_1">
+                                            name="port_1" id="port_1">
                                     </div>
                                     <!-- Input row -->
                                     <span>Input 2 Address:</span>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" placeholder="IP Address"
-                                            aria-label="ip_addr_2" name="ip_addr_2">
+                                            aria-label="ip_2" name="ip_2" id="ip_2">
                                         <span class="input-group-text">:</span>
                                         <input type="text" class="form-control" placeholder="Port" aria-label="port_2"
-                                            name="port_2">
+                                            name="port_2" id="port_2">
                                     </div>
                                 </div>
                                 <!-- Output Tab -->
@@ -194,7 +194,7 @@
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label for="timer_1" class="col-form-label col-4 text-nowrap">Timer 1:</label>
                                         <div class="col-auto">
-                                            <input type="text" class="form-control" id="timer_1"
+                                            <input type="text" class="form-control" name="timer_1" id="timer_1"
                                                 placeholder="Current Value Placeholder">
                                         </div>
                                     </div>
@@ -202,7 +202,7 @@
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label for="timer_2" class="col-form-label col-4 text-nowrap">Timer 2:</label>
                                         <div class="col-auto">
-                                            <input type="text" class="form-control" id="timer_2"
+                                            <input type="text" class="form-control" name="timer_2" id="timer_2"
                                                 placeholder="Current Value Placeholder">
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@
                                     <label for="database_url" class="col-form-label col-4 text-nowrap">Database
                                         URL:</label>
                                     <div class="col-auto">
-                                        <input type="url" class="form-control" id="database_url"
+                                        <input type="url" class="form-control" name="database_url" id="database_url"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                 </div>
@@ -238,7 +238,7 @@
                                     <label for="pulse_width" class="col-form-label col-4 text-nowrap">Pulse
                                         Width:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="form-control" id="pulse_width" name="pulse_width"
+                                        <input type="text" class="form-control" name="pulse_width" id="pulse_width"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                 </div>
@@ -247,7 +247,7 @@
                                     <label for="pulse_gap" class="col-form-label col-4 text-nowrap">Pulse
                                         Gap:</label>
                                     <div class="col-auto">
-                                        <input type="url" class="form-control" id="pulse_gap"
+                                        <input type="url" class="form-control" name="pulse_gap" id="pulse_gap"
                                             placeholder="Current Value Placeholder">
                                     </div>
                                 </div>
@@ -268,10 +268,10 @@
                                 <span>RFID Address:</span>
                                 <div class="input-group mb-3">
                                     <input type="text" class="form-control" placeholder="IP Address"
-                                        aria-label="rfid_ip" name="rfid_ip">
+                                        aria-label="ip_rfid" name="ip_rfid" id="ip_rfid">
                                     <span class="input-group-text">:</span>
-                                    <input type="text" class="form-control" placeholder="Port" aria-label="rfid_port"
-                                        name="rfid_port">
+                                    <input type="text" class="form-control" placeholder="Port" aria-label="port_rfid"
+                                        name="port_rfid" id="port_rfid">
                                 </div>
                                 <!-- Submit Button -->
                                 <button class="btn btn-primary" type="submit" name="save_rfid">Save</button>

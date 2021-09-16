@@ -1,0 +1,30 @@
+{
+    "settings": {
+        "connection": "wifi",
+        "type": "dhcp",
+        "ssid": "Jorj_2.4",
+        "ip_address": "",
+        "gateway": "",
+        "subnet": "",
+        "dns": ""
+    },
+    "io": {
+        "ip_1": "Not Set",
+        "port_1": "Not Set",
+        "ip_2": "Not Set",
+        "port_2": "Not Set",
+        "timer_1": "Not Set",
+        "timer_2": "Not Set",
+        "relay_1": "OFF",
+        "relay_2": "OFF"
+    },
+    "wiegand": {
+        "database_url": "Not Set",
+        "pulse_width": "90",
+        "pulse_gap": "90"
+    },
+    "rfid": {
+        "ip_rfid": "Not Set",
+        "port_rfid": "Not Set"
+    }
+}
