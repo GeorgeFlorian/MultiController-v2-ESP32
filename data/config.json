@@ -14,9 +14,7 @@
         "ip_2": "Not Set",
         "port_2": "Not Set",
         "timer_1": "Not Set",
-        "timer_2": "Not Set",
-        "relay_1": "OFF",
-        "relay_2": "OFF"
+        "timer_2": "Not Set"
     },
     "wiegand": {
         "database_url": "Not Set",

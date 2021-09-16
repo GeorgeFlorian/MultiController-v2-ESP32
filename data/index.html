@@ -25,12 +25,12 @@
                     <ul
                         class="nav nav-pills flex-row flex-md-column flex-nowrap align-items-center align-items-md-stretch mb-md-auto">
                         <li class="nav-item">
-                            <a href="/data/index.html" class="nav-link active fs-6 " aria-current="dashboard">
+                            <a href="/dashboard" class="nav-link active fs-6 " aria-current="dashboard">
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/data/settings.html" class="nav-link text-white">
+                            <a href="/settings" class="nav-link text-white">
                                 Settings
                             </a>
                         </li>
@@ -60,40 +60,40 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
                                     aria-label="Network Connection">
                                     <label class="col-form-label col-4 text-nowrap">Connection: </label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="connection"></label>
                                 </div>
                                 <!-- Radio Buttons IP Type -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
-                                    <label class="col-form-label col-4 text-nowrap" for="dhcp">IP: </label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-4 text-nowrap">IP: </label>
+                                    <label class="col-form-label col-auto text-nowrap" id="type"></label>
                                 </div>
 
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">SSID:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="ssid"></label>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">IP
                                         Address:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="ip_address"></label>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">Gateway:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="gateway"></label>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">Subnet
                                         Mask:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="subnet"></label>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">DNS:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="dns"></label>
                                 </div>
                             </div>
                         </div>
@@ -119,13 +119,17 @@
                                 <div class="tab-pane active" id="input">
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label class="col-form-label col-4 text-nowrap">Input 1 Address:</label>
-                                        <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                        <label class="col-form-label col-6 text-nowrap">Input 1 Address:</label>
+                                        <label class="col-form-label col-auto text-nowrap">
+                                            <span id="ip_1"></span>:<span id="port_1"></span>
+                                        </label>
                                     </div>
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label class="col-form-label col-4 text-nowrap">Input 2 Address:</label>
-                                        <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                        <label class="col-form-label col-6 text-nowrap">Input 2 Address:</label>
+                                        <label class="col-form-label col-auto text-nowrap">
+                                            <span id="ip_2"></span>:<span id="port_2"></span>
+                                        </label>
                                     </div>
                                 </div>
                                 <!-- Output Tab -->
@@ -134,24 +138,24 @@
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label class="col-form-label col-4 text-nowrap">Timer 1:</label>
-                                        <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                        <label class="col-form-label col-auto text-nowrap" id="timer_1"></label> (s)
                                     </div>
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label class="col-form-label col-4 text-nowrap">Timer 2:</label>
-                                        <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                        <label class="col-form-label col-auto text-nowrap" id="timer_2"></label> (s)
                                     </div>
                                     <!-- Radio Buttons Relay 1 -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 1">
                                         <label class="col-form-label col-4 text-nowrap" for="dhcp">Relay 1: </label>
                                         <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
-                                            id="relay1_on_off">
+                                            id="relay1">
                                             <input type="radio" class="btn-check" name="relay1" id="on_1"
-                                                autocomplete="off">
+                                                autocomplete="off" value="On">
                                             <label class="btn btn-outline-success shadow-none" for="on_1">On</label>
 
                                             <input type="radio" class="btn-check" name="relay1" id="off_1"
-                                                autocomplete="off" checked>
+                                                autocomplete="off" value="Off" checked>
                                             <label class="btn btn-outline-danger shadow-none" for="off_1">Off</label>
                                         </div>
                                     </div>
@@ -159,13 +163,13 @@
                                     <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 2">
                                         <label class="col-form-label col-4 text-nowrap" for="dhcp">Relay 2: </label>
                                         <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
-                                            id="relay2_on_off">
+                                            id="relay2">
                                             <input type="radio" class="btn-check" name="relay2" id="on_2"
-                                                autocomplete="off">
+                                                autocomplete="off" value="On">
                                             <label class="btn btn-outline-success shadow-none" for="on_2">On</label>
 
                                             <input type="radio" class="btn-check" name="relay2" id="off_2"
-                                                autocomplete="off" checked>
+                                                autocomplete="off" value="Off" checked>
                                             <label class="btn btn-outline-danger shadow-none" for="off_2">Off</label>
                                         </div>
                                     </div>
@@ -188,17 +192,17 @@
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">Database URL:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="database_url"></label>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">Pulse Width:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="pulse_width"></label>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label class="col-form-label col-4 text-nowrap">Pulse Gap:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-auto text-nowrap" id="pulse_gap"></label>
                                 </div>
                             </div>
                         </div>
@@ -213,8 +217,10 @@
                             <div class="card-body mb-0">
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
-                                    <label class="col-form-label col-4 text-nowrap">RFID Address:</label>
-                                    <label class="col-form-label col-auto text-nowrap">Placeholder</label>
+                                    <label class="col-form-label col-5 text-nowrap">RFID Address:</label>
+                                    <label class="col-form-label col-auto text-nowrap">
+                                        <span id="ip_rfid"></span>:<span id="port_rfid"></span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -242,9 +248,9 @@
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
     <script src="script.js"></script>
-    <!-- <script>
+    <script>
         get_settings();
-    </script> -->
+    </script>
 
 </body>
 

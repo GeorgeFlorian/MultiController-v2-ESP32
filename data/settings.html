@@ -25,12 +25,12 @@
                     <ul
                         class="nav nav-pills flex-row flex-md-column flex-nowrap align-items-center align-items-md-stretch mb-md-auto">
                         <li class="nav-item">
-                            <a href="/data/index.html" class="nav-link text-white">
+                            <a href="/dashboard" class="nav-link text-white">
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/data/settings.html" class="nav-link active fs-6 " aria-current="settings">
+                            <a href="/settings" class="nav-link active fs-6 " aria-current="settings">
                                 Settings
                             </a>
                         </li>
@@ -55,7 +55,7 @@
                             </div>
                             <!-- Form -->
                             <!-- Can't use Bootstrap Modal inside <form> -->
-                            <form class="card-body mb-0">
+                            <form class="card-body mb-0" id="network_form">
                                 <!-- Radio Buttons Connection -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
                                     aria-label="Network Connection">
@@ -165,7 +165,7 @@
                                 </ul>
                             </div>
                             <!-- Form -->
-                            <form class="card-body tab-content mb-0" style="min-height: 238px">
+                            <form class="card-body tab-content mb-0" style="min-height: 238px" id="io_form">
                                 <!-- Input tab -->
                                 <div class="tab-pane active" id="input">
                                     <!-- Input row -->
@@ -223,7 +223,7 @@
                                 <h5 class="card-title">Wiegand Settings</h5>
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0">
+                            <form class="card-body mb-0" id="wiegand_form">
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="database_url" class="col-form-label col-4 text-nowrap">Database
@@ -263,7 +263,7 @@
                                 <h5 class="card-title">RFID Settings</h5>
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0">
+                            <form class="card-body mb-0" id="rfid_form">
                                 <!-- Input row -->
                                 <span>RFID Address:</span>
                                 <div class="input-group mb-3">
@@ -303,7 +303,7 @@
                                 (3): In both cases the device will restart ! OR NOT ?!
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0">
+                            <form class="card-body mb-0" id="update_form">
                                 <!-- Input row -->
                                 <div class="row g-2 d-flex justify-content-between">
                                     <div class="col-12 col-sm-auto">
@@ -332,7 +332,7 @@
                                 </ul>
                             </div>
                             <!-- Form -->
-                            <form class="card-body tab-content mb-0" style="min-height: 232px">
+                            <form class="card-body tab-content mb-0" style="min-height: 232px" id="backup_form">
                                 <!-- Backup/Restore tab -->
                                 <div class="tab-pane active" id="backup">
                                     <!-- Input row -->
@@ -389,7 +389,6 @@
                             <div class="card-header">
                                 <h5 class="card-title">Logs</h5>
                             </div>
-                            <!-- Form -->
                             <div class="card-body mb-0" id="logs">
                             </div>
                         </div>
@@ -402,9 +401,10 @@
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
     <script src="script.js"></script>
-    <!-- <script>
-        get_settings();
-    </script> -->
+    <script>
+        check_connection();
+        check_type();
+    </script>
 
 </body>
 
