@@ -34,4 +34,5 @@
 - On page load fill inputs with current settings (get_settings(){JSON})
 - Save all settings to a single JSON file
 - Open and Read form JSON file to JSON Object
-- Move from SPIFFS to NVS
+- Move from SPIFFS to LittleFS
+- Don't forget to minify files befor compressing them into gzip
