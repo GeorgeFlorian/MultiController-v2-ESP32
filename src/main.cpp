@@ -256,10 +256,7 @@ void setup()
 
   // GET
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/index.html", "text/html"); });
-  server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/settings.html", "text/html"); });
+  // DefaultHeaders::Instance().addHeader("Content-Encoding", "gzip");
 
   server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
             {
@@ -306,12 +303,20 @@ void setup()
                                       });
   server.addHandler(handler);
 
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->redirect("/dashboard"); });
   // server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
   // server.serveStatic("/settings", SPIFFS, "/settings.html");
   // server.serveStatic("/dashboard", SPIFFS, "/dashboard.html");
+
+  server.serveStatic("/settings", SPIFFS, "/www/settings.html");
+  server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
+  // server.serveStatic("/", SPIFFS, "/img");
+  // server.serveStatic("/", SPIFFS, "/ap").setFilter(ON_AP_FILTER);
+  // server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html").setFilter(ON_STA_FILTER).setAuthentication("", "");
   server.serveStatic("/", SPIFFS, "/");
-  server.onNotFound([](AsyncWebServerRequest *request)
-                    { request->redirect("/"); });
+  // server.onNotFound([](AsyncWebServerRequest *request)
+  //                   { request->redirect("/dashboard"); });
 
   server.begin();
 }

@@ -1,4 +1,4 @@
-const ROOT_URL = window.location.href; // for production
+const ROOT_URL = window.location.hostname; // for production
 let conn_status = 0;
 
 // mission:
@@ -29,13 +29,14 @@ function toJSONstring(form) {
 
 // get json
 async function get_json(api_path, options = {}) {
-  const url = ROOT_URL + api_path;
-  // console.log(url);
+  // const url = api_path;
+  // console.log(ROOT_URL);
+  // console.log(api_path);
   const { timeout = 8000 } = options;
   const controller = new AbortController();
   const timeoutID = setTimeout(() => controller.abort(), timeout);
 
-  const response = await fetch(url, {
+  const response = await fetch(api_path, {
     ...options,
     signal: controller.signal,
     // headers: {
@@ -52,6 +53,7 @@ async function get_json(api_path, options = {}) {
 // send/post json
 async function post_data(api_path, json_data) {
   let post_url = ROOT_URL + api_path;
+  console.log(post_url);
   const response = await fetch(post_url, {
     method: "POST",
     headers: {
@@ -73,7 +75,7 @@ async function post_data(api_path, json_data) {
 
 async function get_settings() {
   try {
-    get_json("api/settings/get", {
+    get_json("/api/settings/get", {
       timeout: 5000,
     }).then((json_data) => {
       console.log("Received settings: " + json_data);
@@ -100,7 +102,7 @@ function save_settings(form_name) {
   let json_data = toJSONstring(form);
   // console.log("json_data POSTed");
   // console.log(json_data);
-  post_data("api/settings/post", json_data).then((response) => {
+  post_data("/api/settings/post", json_data).then((response) => {
     // console.log("api/settings/post RESPONSE: ");
     // console.log(response);
     conn_status = 1;
@@ -125,6 +127,7 @@ function save_settings(form_name) {
 //   });
 // });
 
+// function to enable or disable network inputs based on connection type
 function check_connection() {
   let check_network_connection = document.getElementById(
     "check_network_connection"
@@ -153,6 +156,7 @@ function check_connection() {
   });
 }
 
+// function to enable or disable network inputs based on IP type
 function check_type() {
   let check_ip_type = document.getElementById("check_ip_type");
   check_ip_type.addEventListener("change", function (e) {
