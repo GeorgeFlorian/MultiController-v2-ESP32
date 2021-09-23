@@ -112,6 +112,21 @@ function save_all_settings(form_name) {
   });
 }
 
+// send JSON data to server on /api/settings/post
+function save_all_settings(form_name) {
+  let form = document.getElementById(form_name);
+  let json_data = toJSONstring(form);
+  // console.log("json_data POSTed");
+  // console.log(json_data);
+  post_data("/api/settings/post", json_data).then((response) => {
+    // console.log("api/settings/post RESPONSE: ");
+    // console.log(response);
+    conn_status = 1;
+    // logs to page
+    get_settings(); // update interface with newer settings
+  });
+}
+
 // function get_settings(html_inputs, json) {}
 
 // window.addEventListener("load", function () {

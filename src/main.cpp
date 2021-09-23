@@ -340,7 +340,7 @@ void setup()
               // }
 
               String response;
-              serializeJson(settings_json, response);
+              serializeJsonPretty(settings_json, response);
               // Serial.print("/api/settings/get response: ");
               // Serial.println(response);
               // serializeJsonPretty(settings_json, Serial);
