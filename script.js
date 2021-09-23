@@ -98,8 +98,8 @@ async function get_settings() {
 }
 
 // send JSON data to server on /api/settings/post
-function save_all_settings(form_name) {
-  let form = document.getElementById(form_name);
+function save_network() {
+  let form = document.getElementById('network_form');
   let json_data = toJSONstring(form);
   // console.log("json_data POSTed");
   // console.log(json_data);
@@ -113,9 +113,9 @@ function save_all_settings(form_name) {
 }
 
 // send JSON data to server on /api/settings/post
-function save_all_settings(form_name) {
-  let form = document.getElementById(form_name);
-  let json_data = toJSONstring(form);
+function save_all_settings() {
+  // let form = document.getElementById(form_name);
+  // let json_data = toJSONstring(form);
   // console.log("json_data POSTed");
   // console.log(json_data);
   post_data("/api/settings/post", json_data).then((response) => {

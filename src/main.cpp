@@ -101,7 +101,7 @@ struct Settings
   String gateway = "";
   String subnet = "";
   String dns = "";
-} settings;
+} network_settings;
 
 struct IO
 {
@@ -146,13 +146,13 @@ StaticJsonDocument<768> readSettings(const char *filename)
   if (error)
     Serial.println(F("Failed to read file, using default configuration"));
 
-  settings.connection = doc["settings"]["connection"] | "Not working";
-  settings.type = doc["settings"]["type"] | "Not working";
-  settings.ssid = doc["settings"]["ssid"] | "Not working";
-  settings.ip_address = doc["settings"]["ip_address"] | "Not working";
-  settings.gateway = doc["settings"]["gateway"] | "Not working";
-  settings.subnet = doc["settings"]["subnet"] | "Not working";
-  settings.dns = doc["settings"]["dns"] | "Not working";
+  network_settings.connection = doc["network_settings"]["connection"] | "Not working";
+  network_settings.type = doc["network_settings"]["type"] | "Not working";
+  network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
+  network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
+  network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
+  network_settings.subnet = doc["network_settings"]["subnet"] | "Not working";
+  network_settings.dns = doc["network_settings"]["dns"] | "Not working";
 
   io.ip_1 = doc["io"]["ip_1"] | "Not working";
   io.port_1 = doc["io"]["port_1"] | "Not working";
@@ -182,13 +182,13 @@ bool saveSettings(StaticJsonDocument<768> doc, const char *filename)
   if (!file)
     Serial.println(F("Could not open file to write config !!!"));
 
-  doc["settings"]["connection"] = settings.connection;
-  doc["settings"]["type"] = settings.type;
-  doc["settings"]["ssid"] = settings.ssid;
-  doc["settings"]["ip_address"] = settings.ip_address;
-  doc["settings"]["gateway"] = settings.gateway;
-  doc["settings"]["subnet"] = settings.subnet;
-  doc["settings"]["dns"] = settings.dns;
+  doc["network_settings"]["connection"] = network_settings.connection;
+  doc["network_settings"]["type"] = network_settings.type;
+  doc["network_settings"]["ssid"] = network_settings.ssid;
+  doc["network_settings"]["ip_address"] = network_settings.ip_address;
+  doc["network_settings"]["gateway"] = network_settings.gateway;
+  doc["network_settings"]["subnet"] = network_settings.subnet;
+  doc["network_settings"]["dns"] = network_settings.dns;
 
   doc["io"]["ip_1"] = io.ip_1;
   doc["io"]["port_1"] = io.port_1;
@@ -380,11 +380,10 @@ void setup()
 
   server.serveStatic("/settings", SPIFFS, "/www/settings.html");
   server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
-  server.serveStatic("/user", SPIFFS, "/www/user.html");
-  // server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html").setFilter(ON_STA_FILTER).setAuthentication("", "");
-  server.serveStatic("/", SPIFFS, "/ap").setFilter(ON_AP_FILTER);
-  server.serveStatic("/", SPIFFS, "/www").setFilter(ON_STA_FILTER);
-  server.serveStatic("/", SPIFFS, "/");
+  server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
+  server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER);
+
+  server.serveStatic("/", SPIFFS, "/").setAuthentication("", "");
   // server.onNotFound([](AsyncWebServerRequest *request)
   //                   { request->redirect("/dashboard"); });
 

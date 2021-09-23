@@ -1,5 +1,5 @@
 {
-    "settings": {
+    "network_settings": {
         "connection": "wifi",
         "type": "dhcp",
         "ssid": "Jorj_2.4",
