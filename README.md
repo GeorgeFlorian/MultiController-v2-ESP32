@@ -38,3 +38,4 @@
 - Move from SPIFFS to LittleFS
 - Don't forget to minify files before compressing them into gzip
 - (3): In both cases the device will restart ! OR NOT ?!
+- Final touch

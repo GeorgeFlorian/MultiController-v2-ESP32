@@ -49,6 +49,20 @@
   }
 }
 
+
+@media only screen and (max-width: 400px) {
+  #nav_wrapper {
+    height: 80px;
+  }  
+/* Modify margin-bottom acording to the nav height */
+  #content_wrapper_user {
+    margin-bottom: 80px !important;
+  } 
+  #content_wrapper {
+    margin-bottom: 80px !important;
+  }
+}
+
 /* 768px to  950px*/
 /* File input size */
 @media only screen and (min-width: 767px) and (max-width: 950px) {
