@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <title>Settings</title>
@@ -31,6 +31,11 @@
                         <li class="nav-item">
                             <a href="/settings" class="nav-link active fs-6 " aria-current="settings">
                                 Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/user" class="nav-link text-white">
+                                Create/Change User
                             </a>
                         </li>
                     </ul>
@@ -302,7 +307,7 @@
                                 (3): In both cases the device will restart ! OR NOT ?!
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0" id="update_form">
+                            <form class="card-body mb-0" id="update_form" method="POST" enctype="multipart/form-data">
                                 <!-- Input row -->
                                 <div class="row g-2 d-flex justify-content-between">
                                     <div class="col-12 col-sm-auto">
@@ -310,7 +315,7 @@
                                             multiple>
                                     </div>
                                     <button class="btn btn-primary col-auto ms-1" type="submit" name="update_btn"
-                                        id="update_btn">Upload</button>
+                                        id="update_btn">Update</button>
                                 </div>
                             </form>
                         </div>
@@ -331,38 +336,39 @@
                                 </ul>
                             </div>
                             <!-- Form -->
-                            <form class="card-body tab-content mb-0" style="min-height: 232px" id="backup_form">
+                            <div class="card-body tab-content mb-0" style="min-height: 232px">
                                 <!-- Backup/Restore tab -->
                                 <div class="tab-pane active" id="backup">
                                     <!-- Input row -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <form class="row mb-2 g-0 d-flex justify-content-between" id="backup_form">
                                         <label for="backup" class="col-form-label col-12 text-nowrap">Backup current
                                             configuration to file:</label>
                                         <div class="col-auto">
                                             <button class="btn btn-primary" type="submit" name="backup" id="backup">Save
                                                 to file</button>
                                         </div>
-                                    </div>
+                                    </form>
                                     <!-- Input row -->
-                                    <label for="upload_file" class="form-label">Restore configuration from a
+                                    <label for="upload_file" class="form-label">Restore configuration from
                                         file:</label>
-                                    <div class="row g-2 d-flex justify-content-between">
+                                    <form class="row g-2 d-flex justify-content-between" method="POST"
+                                        enctype="multipart/form-data" id="restore_form">
                                         <div class="col-12 col-sm-auto">
                                             <input class="form-control form-control-small" type="file" id="upload_file">
                                         </div>
                                         <button class="btn btn-primary col-auto ms-1" type="submit" name="upload_btn"
                                             id="upload_btn">Upload</button>
-                                    </div>
+                                    </form>
                                 </div>
                                 <!-- Factory Reset Tab -->
-                                <div class="tab-pane" id="reset">
+                                <form class="tab-pane" id="reset" id="reset_form">
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label for="reset" class="col-form-label col-12 ">Reset settings but
+                                        <label for="reset_btn" class="col-form-label col-12 ">Reset settings but
                                             keep Network Configuration:</label>
                                         <div class="col-auto">
-                                            <button class="btn btn-primary" type="submit" name="reset" id="reset"
-                                                style="min-width: 120px;">Reset</button>
+                                            <button class="btn btn-primary" type="submit" name="reset_btn"
+                                                id="reset_btn" style="min-width: 120px;">Reset</button>
                                         </div>
                                     </div>
                                     <!-- Input row -->
@@ -374,8 +380,8 @@
                                                 id="reset_all" style="min-width: 120px;">Factory Reset</button>
                                         </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -399,7 +405,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
-    <script src="../script.js"></script>
+    <script src="script.js"></script>
+
     <script>
         check_connection();
         check_type();

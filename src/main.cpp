@@ -5,9 +5,76 @@
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include <SPIFFS.h>
+#include <Update.h>
 
 AsyncWebServer server(80);
 static bool eth_connected = false;
+
+void handleUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
+{
+  if (filename.indexOf(".bin") > 0)
+  {
+    if (!index)
+    {
+      // logOutput("The update process has started...");
+      // if filename includes spiffs, update the spiffs partition
+      int cmd = (filename.indexOf("spiffs") > -1) ? U_SPIFFS : U_FLASH;
+      if (!Update.begin(UPDATE_SIZE_UNKNOWN, cmd))
+      {
+        Update.printError(Serial);
+      }
+    }
+
+    if (Update.write(data, len) != len)
+    {
+      Update.printError(Serial);
+    }
+
+    if (final)
+    {
+      if (filename.indexOf("spiffs") > -1)
+      {
+        request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">The device entered AP Mode ! Please connect to it.</div>");
+      }
+      else
+      {
+        request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> You have successfully updated the device to the latest version. </br>Please wait 10 seconds until the device reboots, then press on the \"Go Home\" button to go back to the main page.</br></br> <form method=\"post\" action=\"http://" + WiFi.localIP().toString() + "\"><input type=\"submit\" name=\"goHome\" value=\"Go Home\"/></form></div>");
+      }
+
+      if (!Update.end(true))
+      {
+        Update.printError(Serial);
+      }
+      else
+      {
+        // logOutput("Update complete");
+        Serial.flush();
+        ESP.restart();
+      }
+    }
+  }
+  else if (filename.indexOf(".json") > 0)
+  {
+    if (!index)
+    {
+      // logOutput((String) "Started uploading: " + filename);
+      // open the file on first call and store the file handle in the request object
+      request->_tempFile = SPIFFS.open("/" + filename, "w");
+    }
+    if (len)
+    {
+      // stream the incoming chunk to the opened file
+      request->_tempFile.write(data, len);
+    }
+    if (final)
+    {
+      // logOutput((String)filename + " was successfully uploaded! File size: " + index + len);
+      // close the file handle as the upload is now done
+      request->_tempFile.close();
+      // request->redirect("/files");
+    }
+  }
+}
 
 //------------------------- listAllFiles()
 void listAllFiles()
@@ -295,9 +362,12 @@ void setup()
                                           data = json.as<JsonObject>();
                                         }
 
-                                        // send the data that we receive back
+                                        saveSettings(data, "/config.json");
+
                                         String response;
-                                        Serial.println("/api/settings/post response: ");
+                                        // Serial.println("/api/settings/post response: ");
+                                        Serial.println("Received Settings: ");
+
                                         serializeJson(data, response);
                                         serializeJson(data, Serial);
                                         request->send(200);
@@ -307,19 +377,16 @@ void setup()
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });
-  // server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
-  // server.serveStatic("/settings", SPIFFS, "/settings.html");
-  // server.serveStatic("/dashboard", SPIFFS, "/dashboard.html");
 
   server.serveStatic("/settings", SPIFFS, "/www/settings.html");
   server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
-  // server.serveStatic("/", SPIFFS, "/img");
-  // server.serveStatic("/", SPIFFS, "/ap").setFilter(ON_AP_FILTER);
   // server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html").setFilter(ON_STA_FILTER).setAuthentication("", "");
+  server.serveStatic("/", SPIFFS, "/ap").setFilter(ON_AP_FILTER);
   server.serveStatic("/", SPIFFS, "/");
   // server.onNotFound([](AsyncWebServerRequest *request)
   //                   { request->redirect("/dashboard"); });
 
+  server.onFileUpload(handleUpload);
   server.begin();
 }
 

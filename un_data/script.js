@@ -98,7 +98,7 @@ async function get_settings() {
 }
 
 // send JSON data to server on /api/settings/post
-function save_settings(form_name) {
+function save_all_settings(form_name) {
   let form = document.getElementById(form_name);
   let json_data = toJSONstring(form);
   // console.log("json_data POSTed");
@@ -124,7 +124,7 @@ function save_settings(form_name) {
 //   handle form submit
 //   settings_form.addEventListener("submit", function (e) {
 //     e.preventDefault(); // before the code
-//     save_settings();
+//     save_all_settings();
 //   });
 // });
 

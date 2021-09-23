@@ -9,9 +9,10 @@
   left: 0;
 }
 
+/* Modify margin-left acording to the nav width */
 #content_wrapper {
   max-width: 1200px;
-  margin-left: 154px !important;
+  margin-left: 190px !important;
 }
 
 @media only screen and (max-width: 767px) {
