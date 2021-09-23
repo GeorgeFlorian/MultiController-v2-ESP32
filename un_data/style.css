@@ -2,12 +2,17 @@
   min-width: 104px;
 }
 
+body {
+  font-size: 15px !important;
+}
+
 #nav_wrapper {
   position: fixed;
   height: 100vh;
   width: auto;
   left: 0;
 }
+
 
 /* Modify margin-left acording to the nav width */
 #content_wrapper, #content_wrapper_user {
@@ -33,6 +38,9 @@
     z-index: 10;
   }
 
+#nav_wrapper li {
+  font-size: 13px !important;
+}
 /* Modify margin-bottom acording to the nav height */
   #content_wrapper {
     margin: auto !important;
@@ -46,20 +54,6 @@
   #user_wrapper {
     max-width: none;
     margin: 0 auto !important;
-  }
-}
-
-
-@media only screen and (max-width: 400px) {
-  #nav_wrapper {
-    height: 80px;
-  }  
-/* Modify margin-bottom acording to the nav height */
-  #content_wrapper_user {
-    margin-bottom: 80px !important;
-  } 
-  #content_wrapper {
-    margin-bottom: 80px !important;
   }
 }
 
