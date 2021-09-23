@@ -32,6 +32,7 @@
 
 ### To implement
 
+- Save each settings form to file
 - Save all settings to a single JSON file
 - Open and Read from JSON file to JSON Object
 - Move from SPIFFS to LittleFS
