@@ -10,9 +10,18 @@
 }
 
 /* Modify margin-left acording to the nav width */
-#content_wrapper {
+#content_wrapper, #content_wrapper_user {
   max-width: 1200px;
   margin-left: 190px !important;
+}
+
+#user_wrapper {
+  max-width: 600px;
+  margin: 0 auto !important;
+}
+
+#logs {
+  height: 400px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -24,9 +33,19 @@
     z-index: 10;
   }
 
+/* Modify margin-bottom acording to the nav height */
   #content_wrapper {
     margin: auto !important;
     margin-bottom: 50px !important;
+  } 
+
+  #content_wrapper_user {
+    margin: auto !important;
+  }
+  
+  #user_wrapper {
+    max-width: none;
+    margin: 0 auto !important;
   }
 }
 
