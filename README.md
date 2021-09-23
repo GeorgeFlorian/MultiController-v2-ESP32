@@ -37,6 +37,7 @@
 - Handle form validation on front-end (ux) and back-end
 - Save all settings to a single JSON file
 - Move from SPIFFS to LittleFS
+- Create STA and AP files for each page
 - Don't forget to minify files before compressing them into gzip
 - (3): In both cases the device will restart ! OR NOT ?!
 - Loading icon when navigating pages
