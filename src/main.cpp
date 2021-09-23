@@ -380,8 +380,10 @@ void setup()
 
   server.serveStatic("/settings", SPIFFS, "/www/settings.html");
   server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
+  server.serveStatic("/user", SPIFFS, "/www/user.html");
   // server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html").setFilter(ON_STA_FILTER).setAuthentication("", "");
   server.serveStatic("/", SPIFFS, "/ap").setFilter(ON_AP_FILTER);
+  server.serveStatic("/", SPIFFS, "/www").setFilter(ON_STA_FILTER);
   server.serveStatic("/", SPIFFS, "/");
   // server.onNotFound([](AsyncWebServerRequest *request)
   //                   { request->redirect("/dashboard"); });
