@@ -64,12 +64,12 @@ StaticJsonDocument<768> readSettings(const char *filename)
   StaticJsonDocument<768> doc;
   File file = SPIFFS.open(filename);
   if (!file)
-    Serial.println("Could not open file to read config !!!");
+    Serial.println(F("Could not open file to read config !!!"));
 
   int file_size = file.size();
   if (file_size > 768)
   {
-    Serial.println("Json file bigger than Json document. Alocate more capacity !");
+    Serial.println(F("Json file bigger than Json document. Alocate more capacity !"));
     doc.clear();
     return doc;
   }
@@ -109,13 +109,11 @@ StaticJsonDocument<768> readSettings(const char *filename)
   return doc;
 }
 
-void saveSettings(const char *filename)
+bool saveSettings(StaticJsonDocument<768> doc, const char *filename)
 {
   File file = SPIFFS.open(filename, "w");
   if (!file)
-    Serial.println("Could not open file to write config !!!");
-
-  StaticJsonDocument<768> doc;
+    Serial.println(F("Could not open file to write config !!!"));
 
   doc["settings"]["connection"] = settings.connection;
   doc["settings"]["type"] = settings.type;
@@ -142,11 +140,15 @@ void saveSettings(const char *filename)
   // Serialize JSON document to file
   if (serializeJson(doc, file) == 0)
   {
+    doc.clear();
+    file.close();
     Serial.println(F("Failed to write to file"));
+    return 0;
   }
 
   doc.clear();
   file.close();
+  return 1;
 }
 
 // void WiFiEvent(WiFiEvent_t event)
@@ -154,36 +156,36 @@ void saveSettings(const char *filename)
 //   switch (event)
 //   {
 //   case SYSTEM_EVENT_ETH_START:
-//     Serial.println("ETH Started");
+//     Serial.println(F("ETH Started"));
 //     //set eth hostname here
 //     if (!ETH.setHostname("Metrici-MultiController-Eth"))
 //     {
-//       Serial.println("Ethernet hostname failed to configure");
+//       Serial.println(F("Ethernet hostname failed to configure"));
 //     }
 //     break;
 //   case SYSTEM_EVENT_ETH_CONNECTED:
-//     Serial.println("ETH Connected");
+//     Serial.println(F("ETH Connected"));
 //     break;
 //   case SYSTEM_EVENT_ETH_GOT_IP:
 //     eth_connected = true;
-//     Serial.print("ETH MAC: ");
+//     Serial.print(F("ETH MAC: "));
 //     Serial.print(ETH.macAddress());
-//     Serial.print(", IPv4: ");
+//     Serial.print(F(", IPv4: "));
 //     Serial.print(ETH.localIP());
 //     if (ETH.fullDuplex())
 //     {
-//       Serial.print(", FULL_DUPLEX");
+//       Serial.print(F(", FULL_DUPLEX"));
 //     }
-//     Serial.print(", ");
+//     Serial.print(F(", "));
 //     Serial.print(ETH.linkSpeed());
-//     Serial.println("Mbps");
+//     Serial.println(F("Mbps"));
 //     break;
 //   case SYSTEM_EVENT_ETH_DISCONNECTED:
-//     Serial.println("ETH Disconnected");
+//     Serial.println(F("ETH Disconnected"));
 //     eth_connected = false;
 //     break;
 //   case SYSTEM_EVENT_ETH_STOP:
-//     Serial.println("ETH Stopped");
+//     Serial.println(F("ETH Stopped"));
 //     eth_connected = false;
 //     break;
 //   default:
@@ -204,8 +206,8 @@ void network_conn()
 
   if (!eth_connected)
   {
-    Serial.println("(1) Could not connect to network ! Trying again...");
-    Serial.println("Controller will restart in 5 seconds !");
+    Serial.println(F("(1) Could not connect to network ! Trying again..."));
+    Serial.println(F("Controller will restart in 5 seconds !"));
     delay(5000);
     ESP.restart();
   }
@@ -217,7 +219,7 @@ void network_conn()
 
   if (!ETH.config(local_sta, gateway_sta, subnet_sta, primary_dns))
   {
-    Serial.println("Couldn't configure STATIC IP ! Obtaining DHCP IP !");
+    Serial.println(F("Couldn't configure STATIC IP ! Obtaining DHCP IP !"));
   }
 }
 
@@ -226,7 +228,7 @@ void setup()
   Serial.begin(115200);
   if (!SPIFFS.begin(true))
   {
-    Serial.println("An Error has occurred while mounting SPIFFS ! Formatting in progress");
+    Serial.println(F("An Error has occurred while mounting SPIFFS ! Formatting in progress"));
     return;
   }
   // WiFi.onEvent(WiFiEvent);
@@ -283,7 +285,7 @@ void setup()
   AsyncCallbackJsonWebHandler *handler =
       new AsyncCallbackJsonWebHandler("/api/settings/post", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
-                                        StaticJsonDocument<200> data;
+                                        StaticJsonDocument<768> data;
                                         if (json.is<JsonArray>())
                                         {
                                           data = json.as<JsonArray>();

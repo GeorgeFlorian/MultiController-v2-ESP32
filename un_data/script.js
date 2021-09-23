@@ -97,6 +97,7 @@ async function get_settings() {
   }
 }
 
+// send JSON data to server on /api/settings/post
 function save_settings(form_name) {
   let form = document.getElementById(form_name);
   let json_data = toJSONstring(form);

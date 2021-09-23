@@ -27,12 +27,13 @@
 - Create Reset to factory settings button (Factory Reset)
 - Make navbar a fixed size
 
-* Add Dashboard page with state (Relay ON - Relay OFF)
+- Add Dashboard page with state (Relay ON - Relay OFF)
+- On page load fill Dashboard with current settings (get_settings(){JSON})
 
 ### To implement
 
-- On page load fill inputs with current settings (get_settings(){JSON})
 - Save all settings to a single JSON file
-- Open and Read form JSON file to JSON Object
+- Open and Read from JSON file to JSON Object
 - Move from SPIFFS to LittleFS
-- Don't forget to minify files befor compressing them into gzip
+- Don't forget to minify files before compressing them into gzip
+- (3): In both cases the device will restart ! OR NOT ?!
