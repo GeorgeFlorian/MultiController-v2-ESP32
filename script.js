@@ -7,6 +7,7 @@ let conn_status = 0;
 
 // parse form data into json
 function toJSONstring(form) {
+  console.log(form.name)
   let object = {};
   // console.log(form);
   let formData = new FormData(form);
@@ -14,17 +15,29 @@ function toJSONstring(form) {
     // Reflect.has in favor of: object.hasOwnProperty(key)
     if (!Reflect.has(object, key)) {
       object[key] = value;
+      // console.log("Reflect [key]");
+      // console.log(key);
+      // console.log("Reflect value");
+      // console.log(value);
       return;
     }
     if (!Array.isArray(object[key])) {
       object[key] = [object[key]];
+      // console.log("Array object[key]");
+      // console.log(object[key]);
+      // console.log("Array [object[key]]");
+      // console.log([object[key]]);
     }
     object[key].push(value);
+    // console.log("object[key]");
+    // console.log(object[key]);
+    // console.log("value");
+    // console.log(value);
   });
   form.reset();
   // console.log("JSON.stringify(object):");
   // console.log(JSON.stringify(object));
-  return JSON.stringify(object);
+  return JSON.stringify({ [form.name]: object });
 }
 
 // get json
@@ -98,50 +111,26 @@ async function get_settings() {
 }
 
 // send JSON data to server on /api/settings/post
-function save_network() {
-  let form = document.getElementById('network_form');
+function save_settings(form, destination) {
   let json_data = toJSONstring(form);
-  // console.log("json_data POSTed");
-  // console.log(json_data);
-  post_data("/api/settings/post", json_data).then((response) => {
-    // console.log("api/settings/post RESPONSE: ");
-    // console.log(response);
-    conn_status = 1;
-    // logs to page
-    get_settings(); // update interface with newer settings
-  });
+  console.log("save_settings json_data");
+  console.log(json_data);
+  // post_data(`/api/settings/${destination}`, json_data).then((response) => {
+  //   // console.log("api/settings/post RESPONSE: ");
+  //   // console.log(response);
+  //   conn_status = 1;
+  //   // logs to page
+  // });
 }
 
-// send JSON data to server on /api/settings/post
-function save_all_settings() {
-  // let form = document.getElementById(form_name);
-  // let json_data = toJSONstring(form);
-  // console.log("json_data POSTed");
-  // console.log(json_data);
-  post_data("/api/settings/post", json_data).then((response) => {
-    // console.log("api/settings/post RESPONSE: ");
-    // console.log(response);
-    conn_status = 1;
-    // logs to page
-    get_settings(); // update interface with newer settings
-  });
-}
-
-// function get_settings(html_inputs, json) {}
-
-// window.addEventListener("load", function () {
-
-//   console.log(`ROOT_URL: ${ROOT_URL}`);
-//   let settings_form = document.getElementById("settings_form");
-
-//   get_settings();
-
-//   handle form submit
-//   settings_form.addEventListener("submit", function (e) {
-//     e.preventDefault(); // before the code
-//     save_all_settings();
-//   });
-// });
+window.addEventListener("load", function () {
+  // handle form submit
+  let network_settings = document.getElementById('network_settings');
+  network_settings.addEventListener('submit', function (e) {
+    e.preventDefault();
+    save_settings(network_settings, 'network');
+  })
+});
 
 // function to enable or disable network inputs based on connection type
 function check_connection() {
