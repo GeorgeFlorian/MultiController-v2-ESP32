@@ -353,7 +353,7 @@ void setup()
 
   server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              StaticJsonDocument<768> settings_json = readSettings("/config.json");
+              StaticJsonDocument<768> config_json = readSettings("/config.json");
               // if (request->hasParam("message"))
               // {
               //   settings["message"] = request->getParam("message")->value();
@@ -364,30 +364,35 @@ void setup()
               // }
 
               String response;
-              serializeJsonPretty(settings_json, response);
+              serializeJsonPretty(config_json, response);
               // Serial.print("/api/settings/get response: ");
               // Serial.println(response);
-              // serializeJsonPretty(settings_json, Serial);
-              settings_json.clear();
+              // serializeJsonPretty(config_json, Serial);
+              config_json.clear();
               request->send(200, "application/json", response);
             });
   server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              // StaticJsonDocument<768> settings_json = readSettings("/config.json");
+              // StaticJsonDocument<768> config_json = readSettings("/config.json");
               // String response;
-              // serializeJsonPretty(settings_json, response);
-              // settings_json.clear();
+              // serializeJsonPretty(config_json, response);
+              // config_json.clear();
 
               request->send(SPIFFS, "/config.json", String(), true);
             });
   server.on("/api/soft-reset", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              StaticJsonDocument<768> settings_json = readSettings("/config.json");
+              StaticJsonDocument<768> config_json = readSettings("/config.json");
+              JsonObject network = config_json["network_settings"].to<JsonObject>();
+              serializeJson(network, Serial);
               // String response;
-              // serializeJsonPretty(settings_json, response);
-              // settings_json.clear();
+              // serializeJsonPretty(config_json, response);
+              // config_json.clear();
 
-              request->send(SPIFFS, "/config.json", String(), true);
+              String response;
+              serializeJsonPretty(network, response);
+              config_json.clear();
+              request->send(200, "application/json", response);
             });
 
   // POST
@@ -412,6 +417,7 @@ void setup()
 
                                         serializeJson(data, response);
                                         serializeJson(data, Serial);
+                                        data.clear();
                                         request->send(200);
                                         // Serial.println(response);
                                       });

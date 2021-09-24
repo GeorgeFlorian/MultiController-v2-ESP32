@@ -29,8 +29,8 @@
 
 - Add Dashboard page with state (Relay ON - Relay OFF)
 - On page load fill Dashboard with current settings (get_settings(){JSON})
-- Open and Read from JSON file to JSON Object
-- Save all settings to a single JSON file
+- Save settings to config.json on server side
+- Back up all settings to download file
 - Create STA and AP files for each page
 
 ### To implement
