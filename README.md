@@ -19,14 +19,11 @@
 ### Implemented
 
 - Move File Browser and Update to Settings Page
-
 - Rename File Browser to Backup/Restore (Configuration) / Save Settings to File
 - Rename Update to Upgrade Firmware
-
-- Create Reset to factory settings without resetting network settings button (Reset)
+- Create Reset to factory settings without resetting network settings button (Soft Reset)
 - Create Reset to factory settings button (Factory Reset)
 - Make navbar a fixed size
-
 - Add Dashboard page with state (Relay ON - Relay OFF)
 - On page load fill Dashboard with current settings (get_settings(){JSON})
 - Save settings to config.json on server side
