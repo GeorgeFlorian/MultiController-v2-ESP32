@@ -18,9 +18,9 @@
         "timer_1": "0",
         "timer_2": "0"
     },
-    "relays": {
-        "status1": "On",
-        "status2": "Off"
+    "relay_state": {
+        "state1": "On",
+        "state2": "Off"
     },
     "wiegand": {
         "database_url": "Not Set",

@@ -103,15 +103,26 @@ struct Settings
   String dns = "";
 } network_settings;
 
-struct IO
+struct Input
 {
   String ip_1 = "";
   String port_1 = "";
   String ip_2 = "";
   String port_2 = "";
+} input;
+
+struct Output
+{
   String timer_1 = "";
   String timer_2 = "";
-} io;
+} output;
+
+struct RelayState
+{
+  String state1 = "";
+  String state2 = "";
+
+} relay_state;
 
 struct Wiegand
 {
@@ -146,6 +157,8 @@ StaticJsonDocument<768> readSettings(const char *filename)
   if (error)
     Serial.println(F("Failed to read file, using default configuration"));
 
+  file.close();
+
   network_settings.connection = doc["network_settings"]["connection"] | "Not working";
   network_settings.type = doc["network_settings"]["type"] | "Not working";
   network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
@@ -154,12 +167,16 @@ StaticJsonDocument<768> readSettings(const char *filename)
   network_settings.subnet = doc["network_settings"]["subnet"] | "Not working";
   network_settings.dns = doc["network_settings"]["dns"] | "Not working";
 
-  io.ip_1 = doc["io"]["ip_1"] | "Not working";
-  io.port_1 = doc["io"]["port_1"] | "Not working";
-  io.ip_2 = doc["io"]["ip_2"] | "Not working";
-  io.port_2 = doc["io"]["port_2"] | "Not working";
-  io.timer_1 = doc["io"]["timer_1"] | "Not working";
-  io.timer_2 = doc["io"]["timer_2"] | "Not working";
+  input.ip_1 = doc["input"]["ip_1"] | "Not working";
+  input.port_1 = doc["input"]["port_1"] | "Not working";
+  input.ip_2 = doc["input"]["ip_2"] | "Not working";
+  input.port_2 = doc["input"]["port_2"] | "Not working";
+
+  output.timer_1 = doc["output"]["timer_1"] | "Not working";
+  output.timer_2 = doc["output"]["timer_2"] | "Not working";
+
+  relay_state.state1 = doc["relay_state"]["state1"] | "Not working";
+  relay_state.state2 = doc["relay_state"]["state2"] | "Not working";
 
   wiegand.database_url = doc["wiegand"]["database_url"] | "Not working";
   wiegand.pulse_width = doc["wiegand"]["pulse_width"] | "Not working";
@@ -172,7 +189,6 @@ StaticJsonDocument<768> readSettings(const char *filename)
   // serializeJsonPretty(doc, Serial);
   // Serial.println();
 
-  file.close();
   return doc;
 }
 
@@ -190,12 +206,16 @@ bool saveSettings(StaticJsonDocument<768> doc, const char *filename)
   doc["network_settings"]["subnet"] = network_settings.subnet;
   doc["network_settings"]["dns"] = network_settings.dns;
 
-  doc["io"]["ip_1"] = io.ip_1;
-  doc["io"]["port_1"] = io.port_1;
-  doc["io"]["ip_2"] = io.ip_2;
-  doc["io"]["port_2"] = io.port_2;
-  doc["io"]["timer_1"] = io.timer_1;
-  doc["io"]["timer_2"] = io.timer_2;
+  doc["input"]["ip_1"] = input.ip_1;
+  doc["input"]["port_1"] = input.port_1;
+  doc["input"]["ip_2"] = input.ip_2;
+  doc["input"]["port_2"] = input.port_2;
+
+  doc["output"]["timer_1"] = output.timer_1;
+  doc["output"]["timer_2"] = output.timer_2;
+
+  doc["relay_state"]["timer_1"] = relay_state.state1;
+  doc["relay_state"]["timer_2"] = relay_state.state2;
 
   doc["wiegand"]["database_url"] = wiegand.database_url;
   doc["wiegand"]["pulse_width"] = wiegand.pulse_width;
@@ -354,6 +374,15 @@ void setup()
   server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               // StaticJsonDocument<768> settings_json = readSettings("/config.json");
+              // String response;
+              // serializeJsonPretty(settings_json, response);
+              // settings_json.clear();
+
+              request->send(SPIFFS, "/config.json", String(), true);
+            });
+  server.on("/api/soft-reset", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              StaticJsonDocument<768> settings_json = readSettings("/config.json");
               // String response;
               // serializeJsonPretty(settings_json, response);
               // settings_json.clear();

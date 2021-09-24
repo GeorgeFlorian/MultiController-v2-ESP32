@@ -67,11 +67,11 @@
                                     <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
                                         id="check_network_connection">
                                         <input type="radio" class="btn-check" name="connection" id="wifi"
-                                            autocomplete="off" checked>
+                                            autocomplete="off" value="WiFi" checked>
                                         <label class="btn btn-outline-primary shadow-none" for="wifi">WiFi</label>
 
                                         <input type="radio" class="btn-check" name="connection" id="ethernet"
-                                            autocomplete="off">
+                                            autocomplete="off" value="Ethernet">
                                         <label class="btn btn-outline-primary shadow-none"
                                             for="ethernet">Ethernet</label>
                                     </div>
@@ -82,11 +82,11 @@
                                     <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
                                         id="check_ip_type">
                                         <input type="radio" class="btn-check" name="ip_type" id="dhcp"
-                                            autocomplete="off">
+                                            autocomplete="off" value="DHCP">
                                         <label class="btn btn-outline-primary shadow-none" for="dhcp">DHCP</label>
 
                                         <input type="radio" class="btn-check" name="ip_type" id="static"
-                                            autocomplete="off" checked>
+                                            autocomplete="off" value="Static" checked>
                                         <label class="btn btn-outline-primary shadow-none" for="static">Static</label>
                                     </div>
                                 </div>
@@ -413,8 +413,8 @@
     <script src="/script.js"></script>
 
     <script>
-        // check_connection();
-        // check_type();
+        check_connection();
+        check_type();
     </script>
 
 </body>

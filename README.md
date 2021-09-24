@@ -30,14 +30,14 @@
 - Add Dashboard page with state (Relay ON - Relay OFF)
 - On page load fill Dashboard with current settings (get_settings(){JSON})
 - Open and Read from JSON file to JSON Object
+- Save all settings to a single JSON file
+- Create STA and AP files for each page
 
 ### To implement
 
 - Save each settings form to file
 - Handle form validation on front-end (ux) and back-end
-- Save all settings to a single JSON file
 - Move from SPIFFS to LittleFS
-- Create STA and AP files for each page
 - Don't forget to minify files before compressing them into gzip
 - (3): In both cases the device will restart ! OR NOT ?!
 - Implement Logs

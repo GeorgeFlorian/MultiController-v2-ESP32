@@ -12,24 +12,14 @@ function toJSONstring(form) {
   // console.log(form);
   let formData = new FormData(form);
   formData.forEach((value, key) => {
-    if (key === "connection" || key === "ip_type") {
+    if (key === "connection" || key === "ip_type" || key === 'state1' || key === 'state2') {
       // take the radio input that is checked and replace key with it's id
       let radio_btn = document.getElementsByName(key);
       if (radio_btn[0].checked) {
         // console.log(radio_btn[0].id);
-        value = radio_btn[0].id;
-      } else if (radio_btn[1].checked) {
-        // console.log(radio_btn[1].id);
-        value = radio_btn[1].id;
-      }
-    }
-    if (key === 'status1' || key === 'status2') {
-      let radio_btn = document.getElementsByName(key);
-      if (radio_btn[0].checked) {
-        // console.log(radio_btn[0].value);
         value = radio_btn[0].value;
       } else if (radio_btn[1].checked) {
-        // console.log(radio_btn[1].value);
+        // console.log(radio_btn[1].id);
         value = radio_btn[1].value;
       }
     }
@@ -86,7 +76,7 @@ async function get_settings() {
             // console.log(`json_data[i][key]: ${json_data[i][key]}`);
             let elem = document.getElementById(key);
             // console.log(elem);
-            if (key === 'status1' || key === 'status2') {
+            if (key === 'state1' || key === 'state2') {
               let radio_btn = document.getElementsByName(key);
               if (json_data[i][key] === "On") {
                 radio_btn[0].checked = true;
@@ -145,11 +135,11 @@ function save_settings(form, destination) {
 }
 
 // function that sends relays status to api/settings/relays
-function check_relay_status() {
-  let relay_form = document.getElementById("relays");
+function get_relay_state() {
+  let relay_form = document.getElementById("relay_state");
   relay_form.addEventListener('change', function (e) {
     e.preventDefault();
-    save_settings(relay_form, 'relays');
+    save_settings(relay_form, 'relay_state');
     // get_settings();
   });
 }
