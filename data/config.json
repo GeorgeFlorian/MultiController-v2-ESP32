@@ -1,8 +1,9 @@
 {
     "network_settings": {
-        "connection": "wifi",
-        "ip_type": "dhcp",
+        "connection": "WiFi",
+        "ip_type": "DHCP",
         "ssid": "Jorj_2.4",
+        "password": "cafea.amara",
         "ip_address": "",
         "gateway": "",
         "subnet": "",
@@ -19,7 +20,7 @@
         "timer_2": "0"
     },
     "relay_state": {
-        "state1": "On",
+        "state1": "Off",
         "state2": "Off"
     },
     "wiegand": {

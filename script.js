@@ -70,12 +70,13 @@ async function get_settings() {
     }).then((json_data) => {
       console.log("Received settings: " + json_data);
       for (let i in json_data) {
-        for (const key in json_data[i]) {
+        for (let key in json_data[i]) {
           // console.log(`key: ${key}`);
           if (json_data[i].hasOwnProperty(key)) {
             // console.log(`json_data[i][key]: ${json_data[i][key]}`);
             let elem = document.getElementById(key);
             // console.log(elem);
+            if (key === 'password') continue;
             if (key === 'state1' || key === 'state2') {
               let radio_btn = document.getElementsByName(key);
               if (json_data[i][key] === "On") {
@@ -152,7 +153,7 @@ if (document.getElementById("settings_body")) {
     let network_form = document.getElementById("network");
     network_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      save_settings(network_form, "network");
+      save_settings(network_form, "network");      
     });
     // handle input_form
     let input_form = document.getElementById("input");
@@ -203,9 +204,7 @@ if (document.getElementById("settings_body")) {
 
   // function to enable or disable network inputs based on connection type
   function check_connection() {
-    let check_network_connection = document.getElementById(
-      "check_network_connection"
-    );
+    let check_network_connection = document.getElementById("check_network_connection");
 
     check_network_connection.addEventListener("change", function (e) {
       let target = e.target;
@@ -213,16 +212,12 @@ if (document.getElementById("settings_body")) {
       let currentValue = "Current Value Placeholder";
       switch (target.id) {
         case "wifi":
-          wifi.forEach((element) => element.removeAttribute("disabled"));
-          wifi.forEach((element) =>
-            element.setAttribute("placeholder", `${currentValue}`)
-          );
+          wifi.forEach((element) => element.removeAttribute("readonly"));
+          wifi.forEach((element) => element.setAttribute("placeholder", `${currentValue}`));
           break;
         case "ethernet":
-          wifi.forEach((element) => element.setAttribute("disabled", ""));
-          wifi.forEach((element) =>
-            element.setAttribute("placeholder", "Ethernet Connection")
-          );
+          wifi.forEach((element) => element.setAttribute("readonly", ""));
+          wifi.forEach((element) => element.setAttribute("placeholder", "Ethernet Connection"));
           break;
         default:
           break;
@@ -239,11 +234,11 @@ if (document.getElementById("settings_body")) {
       let currentValue = "Current Value Placeholder";
       switch (target.id) {
         case "dhcp":
-          ip.forEach((element) => element.setAttribute("disabled", ""));
+          ip.forEach((element) => element.setAttribute("readonly", ""));
           ip.forEach((element) => element.setAttribute("placeholder", "DHCP IP"));
           break;
         case "static":
-          ip.forEach((element) => element.removeAttribute("disabled"));
+          ip.forEach((element) => element.removeAttribute("readonly"));
           ip.forEach((element) =>
             element.setAttribute("placeholder", `${currentValue}`)
           );

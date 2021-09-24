@@ -95,8 +95,9 @@ void listAllFiles()
 struct Settings
 {
   String connection = "";
-  String type = "";
+  String ip_type = "";
   String ssid = "";
+  String password = "";
   String ip_address = "";
   String gateway = "";
   String subnet = "";
@@ -127,8 +128,8 @@ struct RelayState
 struct Wiegand
 {
   String database_url = "";
-  String pulse_width = "90";
-  String pulse_gap = "90";
+  String pulse_width = "";
+  String pulse_gap = "";
 } wiegand;
 
 struct RFID
@@ -137,17 +138,18 @@ struct RFID
   String port_rfid = "";
 } rfid;
 
-StaticJsonDocument<768> readSettings(const char *filename)
+// Get settings from /config.json
+StaticJsonDocument<768> getSettings()
 {
   StaticJsonDocument<768> doc;
-  File file = SPIFFS.open(filename);
+  File file = SPIFFS.open("/config.json");
   if (!file)
     Serial.println(F("Could not open file to read config !!!"));
 
   int file_size = file.size();
   if (file_size > 768)
   {
-    Serial.println(F("Json file bigger than Json document. Alocate more capacity !"));
+    Serial.println(F("Config file bigger than JSON document. Alocate more capacity !"));
     doc.clear();
     return doc;
   }
@@ -160,12 +162,31 @@ StaticJsonDocument<768> readSettings(const char *filename)
   file.close();
 
   network_settings.connection = doc["network_settings"]["connection"] | "Not working";
-  network_settings.type = doc["network_settings"]["type"] | "Not working";
-  network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
-  network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
-  network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
-  network_settings.subnet = doc["network_settings"]["subnet"] | "Not working";
-  network_settings.dns = doc["network_settings"]["dns"] | "Not working";
+  network_settings.ip_type = doc["network_settings"]["ip_type"] | "Not working";
+  if (network_settings.connection == "WiFi")
+  {
+    network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
+    network_settings.password = doc["network_settings"]["password"] | "Not working";
+  }
+  else if (network_settings.connection == "Ethernet")
+  {
+    network_settings.ssid = "";
+    network_settings.password = "";
+  }
+  if (network_settings.ip_type == "DHCP")
+  {
+    network_settings.ip_address = WiFi.localIP().toString();
+    network_settings.gateway = WiFi.gatewayIP().toString();
+    network_settings.subnet = WiFi.subnetMask().toString();
+    network_settings.dns = WiFi.dnsIP().toString();
+  }
+  else if (network_settings.ip_type == "Static")
+  {
+    network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
+    network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
+    network_settings.subnet = doc["network_settings"]["subnet"] | "Not working";
+    network_settings.dns = doc["network_settings"]["dns"] | "Not working";
+  }
 
   input.ip_1 = doc["input"]["ip_1"] | "Not working";
   input.port_1 = doc["input"]["port_1"] | "Not working";
@@ -192,40 +213,60 @@ StaticJsonDocument<768> readSettings(const char *filename)
   return doc;
 }
 
-bool saveSettings(StaticJsonDocument<768> doc, const char *filename)
+// Save or change settings in /config.json
+bool saveSettings(StaticJsonDocument<768> doc)
 {
-  File file = SPIFFS.open(filename, "w");
+  File file = SPIFFS.open("/config.json", "w");
   if (!file)
     Serial.println(F("Could not open file to write config !!!"));
 
-  doc["network_settings"]["connection"] = network_settings.connection;
-  doc["network_settings"]["type"] = network_settings.type;
-  doc["network_settings"]["ssid"] = network_settings.ssid;
-  doc["network_settings"]["ip_address"] = network_settings.ip_address;
-  doc["network_settings"]["gateway"] = network_settings.gateway;
-  doc["network_settings"]["subnet"] = network_settings.subnet;
-  doc["network_settings"]["dns"] = network_settings.dns;
+  network_settings.connection = doc["network_settings"]["connection"] | "Not working";
+  network_settings.ip_type = doc["network_settings"]["ip_type"] | "Not working";
+  if (network_settings.connection == "WiFi")
+  {
+    network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
+    network_settings.password = doc["network_settings"]["password"] | "Not working";
+  }
+  else if (network_settings.connection == "Ethernet")
+  {
+    network_settings.ssid = "";
+    network_settings.password = "";
+  }
+  if (network_settings.ip_type == "DHCP")
+  {
+    network_settings.ip_address = WiFi.localIP().toString();
+    network_settings.gateway = WiFi.gatewayIP().toString();
+    network_settings.subnet = WiFi.subnetMask().toString();
+    network_settings.dns = WiFi.dnsIP().toString();
+  }
+  else if (network_settings.ip_type == "Static")
+  {
+    network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
+    network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
+    network_settings.subnet = doc["network_settings"]["subnet"] | "Not working";
+    network_settings.dns = doc["network_settings"]["dns"] | "Not working";
+  }
 
-  doc["input"]["ip_1"] = input.ip_1;
-  doc["input"]["port_1"] = input.port_1;
-  doc["input"]["ip_2"] = input.ip_2;
-  doc["input"]["port_2"] = input.port_2;
+  input.ip_1 = doc["input"]["ip_1"] | "Not working";
+  input.port_1 = doc["input"]["port_1"] | "Not working";
+  input.ip_2 = doc["input"]["ip_2"] | "Not working";
+  input.port_2 = doc["input"]["port_2"] | "Not working";
 
-  doc["output"]["timer_1"] = output.timer_1;
-  doc["output"]["timer_2"] = output.timer_2;
+  output.timer_1 = doc["output"]["timer_1"] | "Not working";
+  output.timer_2 = doc["output"]["timer_2"] | "Not working";
 
-  doc["relay_state"]["timer_1"] = relay_state.state1;
-  doc["relay_state"]["timer_2"] = relay_state.state2;
+  relay_state.state1 = doc["relay_state"]["state1"] | "Not working";
+  relay_state.state2 = doc["relay_state"]["state2"] | "Not working";
 
-  doc["wiegand"]["database_url"] = wiegand.database_url;
-  doc["wiegand"]["pulse_width"] = wiegand.pulse_width;
-  doc["wiegand"]["pulse_gap"] = wiegand.pulse_gap;
+  wiegand.database_url = doc["wiegand"]["database_url"] | "Not working";
+  wiegand.pulse_width = doc["wiegand"]["pulse_width"] | "Not working";
+  wiegand.pulse_gap = doc["wiegand"]["pulse_gap"] | "Not working";
 
-  doc["rfid"]["ip_rfid"] = rfid.ip_rfid;
-  doc["rfid"]["port_rfid"] = rfid.port_rfid;
+  rfid.ip_rfid = doc["rfid"]["ip_rfid"] | "Not working";
+  rfid.port_rfid = doc["rfid"]["port_rfid"] | "Not working";
 
   // Serialize JSON document to file
-  if (serializeJson(doc, file) == 0)
+  if (serializeJsonPretty(doc, file) == 0)
   {
     doc.clear();
     file.close();
@@ -236,6 +277,83 @@ bool saveSettings(StaticJsonDocument<768> doc, const char *filename)
   doc.clear();
   file.close();
   return 1;
+}
+
+StaticJsonDocument<768> softReset()
+{
+  StaticJsonDocument<768> doc;
+
+  doc["network_settings"]["connection"] = network_settings.connection;
+  doc["network_settings"]["ip_type"] = network_settings.ip_type;
+  if (network_settings.connection == "WiFi")
+  {
+    doc["network_settings"]["ssid"] = network_settings.ssid;
+    doc["network_settings"]["password"] = network_settings.password;
+  }
+  else if (network_settings.connection == "Ethernet")
+  {
+    network_settings.ssid = "Ethernet Connection";
+    network_settings.password = "Ethernet Connection";
+  }
+  if (network_settings.ip_type == "Static")
+  {
+    doc["network_settings"]["ip_address"] = network_settings.ip_address;
+    doc["network_settings"]["gateway"] = network_settings.gateway;
+    doc["network_settings"]["subnet"] = network_settings.subnet;
+    doc["network_settings"]["dns"] = network_settings.dns;
+  }
+
+  doc["input"]["ip_1"] = "Not Set";
+  doc["input"]["port_1"] = "Not Set";
+  doc["input"]["ip_2"] = "Not Set";
+  doc["input"]["port_2"] = "Not Set";
+
+  doc["output"]["timer_1"] = "0";
+  doc["output"]["timer_2"] = "0";
+
+  doc["relay_state"]["state1"] = "Off";
+  doc["relay_state"]["state2"] = "Off";
+
+  doc["wiegand"]["database_url"] = "Not Set";
+  doc["wiegand"]["pulse_width"] = "90";
+  doc["wiegand"]["pulse_gap"] = "90";
+
+  doc["rfid"]["ip_rfid"] = "Not Set";
+  doc["rfid"]["port_rfid"] = "Not Set";
+  return doc;
+}
+
+StaticJsonDocument<768> factoryReset()
+{
+  StaticJsonDocument<768> doc;
+
+  doc["network_settings"]["connection"] = "WiFi";
+  doc["network_settings"]["ip_type"] = "DHCP";
+  doc["network_settings"]["ssid"] = "Jorj_2.4";
+  doc["network_settings"]["password"] = "cafea.amara";
+  doc["network_settings"]["ip_address"] = "";
+  doc["network_settings"]["gateway"] = "";
+  doc["network_settings"]["subnet"] = "";
+  doc["network_settings"]["dns"] = "";
+
+  doc["input"]["ip_1"] = "Not Set";
+  doc["input"]["port_1"] = "Not Set";
+  doc["input"]["ip_2"] = "Not Set";
+  doc["input"]["port_2"] = "Not Set";
+
+  doc["output"]["timer_1"] = "0";
+  doc["output"]["timer_2"] = "0";
+
+  doc["relay_state"]["state1"] = "Off";
+  doc["relay_state"]["state2"] = "Off";
+
+  doc["wiegand"]["database_url"] = "Not Set";
+  doc["wiegand"]["pulse_width"] = "90";
+  doc["wiegand"]["pulse_gap"] = "90";
+
+  doc["rfid"]["ip_rfid"] = "Not Set";
+  doc["rfid"]["port_rfid"] = "Not Set";
+  return doc;
 }
 
 // void WiFiEvent(WiFiEvent_t event)
@@ -322,8 +440,9 @@ void setup()
   // network_conn();
 
   listAllFiles();
+  getSettings();
 
-  WiFi.begin("Jorj_2.4", "cafea.amara");
+  WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
 
   int k = 0;
   while (WiFi.status() != WL_CONNECTED && k < 20)
@@ -336,65 +455,46 @@ void setup()
     ESP.restart();
 
   Serial.println(WiFi.getMode());
-  Serial.println(network_settings.ip_address = WiFi.localIP().toString());
-  Serial.println(network_settings.gateway = WiFi.gatewayIP().toString());
-  Serial.println(network_settings.subnet = WiFi.subnetMask().toString());
-  Serial.println(network_settings.dns = WiFi.dnsIP().toString());
-
-  // server.on("/settings", HTTP_ANY, [](AsyncWebServerRequest *request)
-  //           { request->send(SPIFFS, "/index.html", "text/html"); });
-
-  // server.on("/settings", HTTP_POST, [](AsyncWebServerRequest *request)
-  //           { request->send(SPIFFS, "/index.html", "text/html"); });
-
-  // GET
-
-  // DefaultHeaders::Instance().addHeader("Content-Encoding", "gzip");
 
   server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              StaticJsonDocument<768> config_json = readSettings("/config.json");
-              // if (request->hasParam("message"))
-              // {
-              //   settings["message"] = request->getParam("message")->value();
-              // }
-              // else
-              // {
-              //   settings["message"] = "No message parameter";
-              // }
+              StaticJsonDocument<768> json = getSettings();
 
               String response;
-              serializeJsonPretty(config_json, response);
-              // Serial.print("/api/settings/get response: ");
-              // Serial.println(response);
-              // serializeJsonPretty(config_json, Serial);
-              config_json.clear();
+              serializeJsonPretty(json, response);
+              json.clear();
               request->send(200, "application/json", response);
             });
-  server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
-            {
-              // StaticJsonDocument<768> config_json = readSettings("/config.json");
-              // String response;
-              // serializeJsonPretty(config_json, response);
-              // config_json.clear();
 
-              request->send(SPIFFS, "/config.json", String(), true);
-            });
+  server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/config.json", String(), true); });
+
   server.on("/api/soft-reset", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              StaticJsonDocument<768> config_json = readSettings("/config.json");
-              JsonObject network = config_json["network_settings"].to<JsonObject>();
-              serializeJson(network, Serial);
-              // String response;
-              // serializeJsonPretty(config_json, response);
-              // config_json.clear();
+              StaticJsonDocument<768> json = softReset();
+
+              saveSettings(json);
 
               String response;
-              serializeJsonPretty(network, response);
-              config_json.clear();
+              serializeJsonPretty(json, response);
+              json.clear();
               request->send(200, "application/json", response);
             });
 
+  server.on("/api/factory-reset", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              StaticJsonDocument<768> json = factoryReset();
+
+              saveSettings(json);
+
+              String response;
+              serializeJsonPretty(json, response);
+              json.clear();
+              request->send(200, "application/json", response);
+            });
+
+  server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/config.json", String(), true); });
   // POST
   AsyncCallbackJsonWebHandler *handler =
       new AsyncCallbackJsonWebHandler("/api/settings/post", [](AsyncWebServerRequest *request, JsonVariant &json)
@@ -409,14 +509,14 @@ void setup()
                                           data = json.as<JsonObject>();
                                         }
 
-                                        saveSettings(data, "/config.json");
+                                        saveSettings(data);
 
-                                        String response;
+                                        // String response;
+                                        // serializeJson(data, response);
+
                                         // Serial.println("/api/settings/post response: ");
                                         Serial.println("Received Settings: ");
-
-                                        serializeJson(data, response);
-                                        serializeJson(data, Serial);
+                                        serializeJsonPretty(data, Serial);
                                         data.clear();
                                         request->send(200);
                                         // Serial.println(response);
