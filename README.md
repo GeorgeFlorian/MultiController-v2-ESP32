@@ -43,5 +43,6 @@
 - Implement Logs
 - Implement Toastify
 - Loading icon when navigating pages
+- Implement loading icon while waiting to reconect after a restart
 - Add Metrici's color theme
 - Final touch
