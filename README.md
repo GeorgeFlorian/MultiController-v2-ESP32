@@ -34,12 +34,14 @@
 
 - Save each settings form to file
 - Handle form validation on front-end (ux) and back-end
-- Move from SPIFFS to LittleFS
-- Don't forget to minify files before compressing them into gzip
-- (3): In both cases the device will restart ! OR NOT ?!
+- Unfocus Submit buttons on submit event
 - Implement Logs
 - Implement Toastify
 - Loading icon when navigating pages
 - Implement loading icon while waiting to reconect after a restart
+- (3): In both cases the device will restart ! OR NOT ?!
+
+- Move from SPIFFS to LittleFS
 - Add Metrici's color theme
+- Don't forget to minify files before compressing them into gzip
 - Final touch
