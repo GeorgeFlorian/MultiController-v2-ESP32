@@ -316,6 +316,10 @@ void setup()
     ESP.restart();
 
   Serial.println(WiFi.getMode());
+  Serial.println(network_settings.ip_address = WiFi.localIP().toString());
+  Serial.println(network_settings.gateway = WiFi.gatewayIP().toString());
+  Serial.println(network_settings.subnet = WiFi.subnetMask().toString());
+  Serial.println(network_settings.dns = WiFi.dnsIP().toString());
 
   // server.on("/settings", HTTP_ANY, [](AsyncWebServerRequest *request)
   //           { request->send(SPIFFS, "/index.html", "text/html"); });
@@ -346,6 +350,15 @@ void setup()
               // serializeJsonPretty(settings_json, Serial);
               settings_json.clear();
               request->send(200, "application/json", response);
+            });
+  server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              // StaticJsonDocument<768> settings_json = readSettings("/config.json");
+              // String response;
+              // serializeJsonPretty(settings_json, response);
+              // settings_json.clear();
+
+              request->send(SPIFFS, "/config.json", String(), true);
             });
 
   // POST

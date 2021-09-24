@@ -57,8 +57,6 @@
                             <div class="card-header">
                                 <h5 class="card-title">Network Settings</h5>
                             </div>
-                            <!-- Form -->
-                            <!-- Can't use Bootstrap Modal inside <form> -->
                             <div class="card-body mb-0">
                                 <!-- Radio Buttons Connection -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
@@ -69,7 +67,7 @@
                                 <!-- Radio Buttons IP Type -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
                                     <label class="col-form-label col-4 text-nowrap">IP: </label>
-                                    <label class="col-form-label col-auto text-nowrap" id="type"></label>
+                                    <label class="col-form-label col-auto text-nowrap" id="ip_type"></label>
                                 </div>
 
                                 <!-- Input row -->
@@ -113,12 +111,11 @@
                                             href="#input">Input</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#output">Output</a>
+                                        <a class="nav-link" data-bs-toggle="tab" href="#relays">Output</a>
                                     </li>
                                 </ul>
                             </div>
-                            <!-- Form -->
-                            <form class="card-body tab-content mb-0" style="min-height: 238px">
+                            <div class="card-body tab-content mb-0" style="min-height: 238px">
                                 <!-- Input tab -->
                                 <div class="tab-pane active" id="input">
                                     <!-- Input row -->
@@ -137,8 +134,7 @@
                                     </div>
                                 </div>
                                 <!-- Output Tab -->
-                                <div class="tab-pane" id="output">
-                                    <!-- <p class=" card-text">Change Output settings.</p> -->
+                                <form class="tab-pane" id="relays" name="relays">
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label class="col-form-label col-4 text-nowrap">Timer 1:</label>
@@ -153,12 +149,12 @@
                                     <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 1">
                                         <label class="col-form-label col-4 text-nowrap" for="dhcp">Relay 1: </label>
                                         <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
-                                            id="relay1">
-                                            <input type="radio" class="btn-check" name="relay1" id="on_1"
+                                            id="status1">
+                                            <input type="radio" class="btn-check" name="status1" id="on_1"
                                                 autocomplete="off" value="On">
                                             <label class="btn btn-outline-success shadow-none" for="on_1">On</label>
 
-                                            <input type="radio" class="btn-check" name="relay1" id="off_1"
+                                            <input type="radio" class="btn-check" name="status1" id="off_1"
                                                 autocomplete="off" value="Off" checked>
                                             <label class="btn btn-outline-danger shadow-none" for="off_1">Off</label>
                                         </div>
@@ -167,18 +163,18 @@
                                     <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 2">
                                         <label class="col-form-label col-4 text-nowrap" for="dhcp">Relay 2: </label>
                                         <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
-                                            id="relay2">
-                                            <input type="radio" class="btn-check" name="relay2" id="on_2"
+                                            id="status2">
+                                            <input type="radio" class="btn-check" name="status2" id="on_2"
                                                 autocomplete="off" value="On">
                                             <label class="btn btn-outline-success shadow-none" for="on_2">On</label>
 
-                                            <input type="radio" class="btn-check" name="relay2" id="off_2"
+                                            <input type="radio" class="btn-check" name="status2" id="off_2"
                                                 autocomplete="off" value="Off" checked>
                                             <label class="btn btn-outline-danger shadow-none" for="off_2">Off</label>
                                         </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -254,6 +250,7 @@
     <script src="/script.js"></script>
     <script>
         get_settings();
+        check_relay_status();
     </script>
 
 </body>

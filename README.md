@@ -40,6 +40,8 @@
 - Create STA and AP files for each page
 - Don't forget to minify files before compressing them into gzip
 - (3): In both cases the device will restart ! OR NOT ?!
+- Implement Logs
+- Implement Toastify
 - Loading icon when navigating pages
 - Add Metrici's color theme
 - Final touch

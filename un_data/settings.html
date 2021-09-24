@@ -10,7 +10,7 @@
     <title>Settings</title>
 </head>
 
-<body class="d-flex justify-content-center h-100 w-100">
+<body class="d-flex justify-content-center h-100 w-100" id="settings_body">
     <div class="container-fluid h-100 w-100 p-0">
         <div class="row min-vh-100 d-flex flex-column-reverse flex-md-row justify-content-center m-0">
             <!-- Nav -->
@@ -59,7 +59,7 @@
                             </div>
                             <!-- Form -->
                             <!-- Can't use Bootstrap Modal inside <form> -->
-                            <form class="card-body mb-0" id="network_settings" name="network_settings">
+                            <form class="card-body mb-0" id="network" name="network">
                                 <!-- Radio Buttons Connection -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
                                     aria-label="Network Connection">
@@ -78,14 +78,15 @@
                                 </div>
                                 <!-- Radio Buttons IP Type -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
-                                    <label class="col-form-label col-4 text-nowrap" for="dhcp">IP: </label>
+                                    <label class="col-form-label col-4 text-nowrap" for="dhcp">IP Type: </label>
                                     <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
                                         id="check_ip_type">
-                                        <input type="radio" class="btn-check" name="type" id="dhcp" autocomplete="off">
+                                        <input type="radio" class="btn-check" name="ip_type" id="dhcp"
+                                            autocomplete="off">
                                         <label class="btn btn-outline-primary shadow-none" for="dhcp">DHCP</label>
 
-                                        <input type="radio" class="btn-check" name="type" id="static" autocomplete="off"
-                                            checked>
+                                        <input type="radio" class="btn-check" name="ip_type" id="static"
+                                            autocomplete="off" checked>
                                         <label class="btn btn-outline-primary shadow-none" for="static">Static</label>
                                     </div>
                                 </div>
@@ -168,10 +169,9 @@
                                     </li>
                                 </ul>
                             </div>
-                            <!-- Form -->
-                            <form class="card-body tab-content mb-0" style="min-height: 238px" id="io_form">
-                                <!-- Input tab -->
-                                <div class="tab-pane active" id="input">
+                            <div class="card-body tab-content mb-0" style="min-height: 238px" id="io" name="io">
+                                <!-- Input form tab -->
+                                <form class="tab-pane active" id="input" name="input">
                                     <!-- Input row -->
                                     <span>Input 1 Address:</span>
                                     <div class="input-group mb-3">
@@ -190,9 +190,11 @@
                                         <input type="text" class="form-control" placeholder="Port" aria-label="port_2"
                                             name="port_2" id="port_2">
                                     </div>
-                                </div>
-                                <!-- Output Tab -->
-                                <div class="tab-pane" id="output">
+                                    <!-- Submit Button -->
+                                    <button class="btn btn-primary" type="submit" name="save_io">Save</button>
+                                </form>
+                                <!-- Output form tab -->
+                                <form class="tab-pane" id="output" name="output">
                                     <!-- <p class=" card-text">Change Output settings.</p> -->
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
@@ -210,10 +212,10 @@
                                                 placeholder="Current Value Placeholder">
                                         </div>
                                     </div>
-                                </div>
-                                <!-- Submit Button -->
-                                <button class="btn btn-primary" type="submit" name="save_io">Save</button>
-                            </form>
+                                    <!-- Submit Button -->
+                                    <button class="btn btn-primary" type="submit" name="save_io">Save</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -227,7 +229,7 @@
                                 <h5 class="card-title">Wiegand Settings</h5>
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0" id="wiegand_form">
+                            <form class="card-body mb-0" id="wiegand" name="wiegand">
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="database_url" class="col-form-label col-4 text-nowrap">Database
@@ -267,7 +269,7 @@
                                 <h5 class="card-title">RFID Settings</h5>
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0" id="rfid_form">
+                            <form class="card-body mb-0" id="rfid" name="rfid">
                                 <!-- Input row -->
                                 <span>RFID Address:</span>
                                 <div class="input-group mb-3">
@@ -307,7 +309,8 @@
                                 (3): In both cases the device will restart ! OR NOT ?!
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0" id="update_form" method="POST" enctype="multipart/form-data">
+                            <form class="card-body mb-0" id="update" name="update" method="POST"
+                                enctype="multipart/form-data">
                                 <!-- Input row -->
                                 <div class="row g-2 d-flex justify-content-between">
                                     <div class="col-12 col-sm-auto">
@@ -331,7 +334,7 @@
                                             href="#backup">Backup/Restore</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#reset">Factory Reset</a>
+                                        <a class="nav-link" data-bs-toggle="tab" href="#reset-tab">Factory Reset</a>
                                     </li>
                                 </ul>
                             </div>
@@ -340,12 +343,12 @@
                                 <!-- Backup/Restore tab -->
                                 <div class="tab-pane active" id="backup">
                                     <!-- Input row -->
-                                    <form class="row mb-2 g-0 d-flex justify-content-between" id="backup_form">
+                                    <form action="/api/backup" class="row mb-2 g-0 d-flex justify-content-between" id="backup" name="backup">
                                         <label for="backup" class="col-form-label col-12 text-nowrap">Backup current
                                             configuration to file:</label>
                                         <div class="col-auto">
-                                            <button class="btn btn-primary" type="submit" name="backup" id="backup">Save
-                                                to file</button>
+                                            <button class="btn btn-primary" type="submit" name="backup_btn"
+                                                id="backup_btn">Save to file</button>
                                         </div>
                                     </form>
                                     <!-- Input row -->
@@ -361,26 +364,28 @@
                                     </form>
                                 </div>
                                 <!-- Factory Reset Tab -->
-                                <form class="tab-pane" id="reset" id="reset_form">
+                                <div class="tab-pane" id="reset-tab" name="reset-tab">
                                     <!-- Input row -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label for="reset_btn" class="col-form-label col-12 ">Reset settings but
+                                    <form class="row mb-2 g-0 d-flex justify-content-between" id="soft_reset_form"
+                                        name="soft_reset_form">
+                                        <label for="soft_reset_btn" class="col-form-label col-12 ">Reset settings but
                                             keep Network Configuration:</label>
                                         <div class="col-auto">
-                                            <button class="btn btn-primary" type="submit" name="reset_btn"
-                                                id="reset_btn" style="min-width: 120px;">Reset</button>
+                                            <button class="btn btn-primary" type="submit" name="soft_reset_btn"
+                                                id="soft_reset_btn" style="min-width: 120px;">Soft Reset</button>
                                         </div>
-                                    </div>
+                                    </form>
                                     <!-- Input row -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between">
-                                        <label for="reset_all" class="col-form-label col-12 text-nowrap">Reset all
-                                            settings:</label>
+                                    <form class="row mb-2 g-0 d-flex justify-content-between" id="factory_reset_form"
+                                        name="factory_reset_form">
+                                        <label for="factory_reset_btn" class="col-form-label col-12 text-nowrap">Reset
+                                            all settings:</label>
                                         <div class="col-auto">
-                                            <button class="btn btn-primary" type="submit" name="reset_all"
-                                                id="reset_all" style="min-width: 120px;">Factory Reset</button>
+                                            <button class="btn btn-primary" type="submit" name="factory_reset_btn"
+                                                id="factory_reset_btn" style="min-width: 120px;">Factory Reset</button>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -408,9 +413,8 @@
     <script src="/script.js"></script>
 
     <script>
-        check_connection();
-        check_type();
-        // save_settings();
+        // check_connection();
+        // check_type();
     </script>
 
 </body>

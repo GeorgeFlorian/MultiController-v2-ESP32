@@ -1,20 +1,26 @@
 {
     "network_settings": {
         "connection": "wifi",
-        "type": "dhcp",
+        "ip_type": "dhcp",
         "ssid": "Jorj_2.4",
         "ip_address": "",
         "gateway": "",
         "subnet": "",
         "dns": ""
     },
-    "io": {
+    "input": {
         "ip_1": "Not Set",
         "port_1": "Not Set",
         "ip_2": "Not Set",
-        "port_2": "Not Set",
-        "timer_1": "Not Set",
-        "timer_2": "Not Set"
+        "port_2": "Not Set"
+    },
+    "output": {
+        "timer_1": "0",
+        "timer_2": "0"
+    },
+    "relays": {
+        "status1": "On",
+        "status2": "Off"
     },
     "wiegand": {
         "database_url": "Not Set",
