@@ -34,9 +34,10 @@
 
 - Save each settings form to file
 - Handle form validation on front-end (ux) and back-end
-- Unfocus Submit buttons on submit event
 - Implement Logs
 - Implement Toastify
+- Unfocus Submit buttons on submit event
+- Clear form after submit
 - Loading icon when navigating pages
 - Implement loading icon while waiting to reconect after a restart
 - (3): In both cases the device will restart ! OR NOT ?!

@@ -595,12 +595,42 @@ void setup()
 
                                         // Serial.println("/api/settings/post response: ");
                                         Serial.println("Received Settings: ");
-                                        serializeJsonPretty(network, Serial);
+                                        // serializeJsonPretty(network, Serial);
                                         network.clear();
                                         request->send(200);
                                         // Serial.println(response);
                                       });
+
+  AsyncCallbackJsonWebHandler *input_handler =
+      new AsyncCallbackJsonWebHandler("/api/settings/input", [](AsyncWebServerRequest *request, JsonVariant &json)
+                                      {
+                                        StaticJsonDocument<384> input;
+                                        if (json.is<JsonArray>())
+                                        {
+                                          input = json.as<JsonArray>();
+                                        }
+                                        else if (json.is<JsonObject>())
+                                        {
+                                          input = json.as<JsonObject>();
+                                        }
+
+                                        update_settings(input, "input");
+
+                                        // String response;
+                                        // serializeJson(network, response);
+
+                                        // Serial.println("/api/settings/post response: ");
+                                        Serial.println("Received Settings: ");
+                                        serializeJsonPretty(input, Serial);
+                                        input.clear();
+                                        request->send(200);
+                                        // Serial.println(response);
+                                      });
+
+
+
   server.addHandler(network_handler);
+  server.addHandler(input_handler);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });
