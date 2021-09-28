@@ -219,7 +219,7 @@ if (document.getElementById("settings_body")) {
   window.addEventListener("load", function () {
     // handle form submit
     // handle network_form
-    let network_form = document.getElementById("network");
+    let network_form = document.getElementById("network_settings");
     network_form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (ValidateIPaddress(network_form))

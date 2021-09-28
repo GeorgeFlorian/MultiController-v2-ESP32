@@ -368,7 +368,7 @@ StaticJsonDocument<768> factoryReset()
 void update_settings(StaticJsonDocument<384> json, String key)
 {
   StaticJsonDocument<768> doc;
-  File file = SPIFFS.open("/config.json");
+  File file = SPIFFS.open("/config.json", "r");
   if (!file)
   {
     Serial.println("Could not open file to read config !!!");
@@ -390,20 +390,43 @@ void update_settings(StaticJsonDocument<384> json, String key)
 
   file.close();
 
-  JsonObject current_config = doc[key].as<JsonObject>();
-  JsonObject new_config = json[key].as<JsonObject>();
+  for (JsonPair i : json[key].as<JsonObject>())
+  {
+    String nested_key = i.key().c_str();
+    if (json[key][nested_key].isNull())
+      doc[key][nested_key] = " ";
+    else
+      doc[key][nested_key] = json[key][nested_key];
+  }
+  for (JsonPair i : doc[key].as<JsonObject>())
+  {
+    String nested_key = i.key().c_str();
+    Serial.print(nested_key);
+    Serial.print(" : ");
+    Serial.println(i.value().as<String>());
+  }
 
-  for (JsonPair i : new_config)
-    
+  file = SPIFFS.open("/config.json", "w");
+  if (!file)
+  {
+    Serial.println("Could not open file to read config !!!");
+    return;
+  }
+  // Serialize JSON document to file
+  Serial.println("Inside update settings: ");
+  serializeJsonPretty(doc, Serial);
 
-  // for (JsonPair i : data) // network_settings, input, etc
-  // {
-  //   for (JsonPair k : i.value().as<JsonObject>()) // connection, ip_type, ssid
-  //   {
-  //     k.value().set("");
-  //   }
-  // }
+  if (serializeJsonPretty(doc, file) == 0)
+  {
+    doc.clear();
+    file.close();
+    Serial.println("Failed to write to file");
+    return;
+  }
+  doc.clear();
+  file.close();
 
+  getSettings();
 }
 
 // void WiFiEvent(WiFiEvent_t event)
@@ -516,6 +539,7 @@ void setup()
 
               String response;
               serializeJsonPretty(json, response);
+              // serializeJsonPretty(json, Serial);
               json.clear();
               request->send(200, "application/json", response);
             });
@@ -564,7 +588,7 @@ void setup()
                                           network = json.as<JsonObject>();
                                         }
 
-                                        // saveSettings(network);
+                                        update_settings(network, "network_settings");
 
                                         // String response;
                                         // serializeJson(network, response);
