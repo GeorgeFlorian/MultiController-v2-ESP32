@@ -281,7 +281,8 @@ if (document.getElementById("settings_body")) {
       let wifi = document.querySelectorAll(".connection");
       let current_placeholder = {};
       wifi.forEach((element) => {
-        current_placeholder[element.id] = element.name;
+        let classList = element.className.split(' ');
+        current_placeholder[element.id] = classList[0];
       });
       switch (target.id) {
         case "wifi":
@@ -311,7 +312,8 @@ if (document.getElementById("settings_body")) {
       let ip = document.querySelectorAll(".ip");
       let current_placeholder = {};
       ip.forEach((element) => {
-          current_placeholder[element.id] = element.name;
+        let classList = element.className.split(' ');
+        current_placeholder[element.id] = classList[0];
       });
       switch (target.id) {
         case "dhcp":
