@@ -224,30 +224,35 @@ if (document.getElementById("settings_body")) {
       e.preventDefault();
       if (ValidateIPaddress(network_form))
         save_settings(network_form, "network");
+      network_form.reset();
     });
     // handle input_form
     let input_form = document.getElementById("input");
     input_form.addEventListener("submit", function (e) {
       e.preventDefault();
       save_settings(input_form, "input");
+      input_form.reset();
     });
     // handle output_form
     let output_form = document.getElementById("output");
     output_form.addEventListener("submit", function (e) {
       e.preventDefault();
       save_settings(output_form, "output");
+      output_form.reset();
     });
     // handle wiegand_form
     let wiegand_form = document.getElementById("wiegand");
     wiegand_form.addEventListener("submit", function (e) {
       e.preventDefault();
       save_settings(wiegand_form, "wiegand");
+      wiegand_form.reset();
     });
     // handle rfid_form
     let rfid_form = document.getElementById("rfid");
     rfid_form.addEventListener("submit", function (e) {
       e.preventDefault();
       save_settings(rfid_form, "rfid");
+      rfid_form.reset();
     });
     // handle update_form
     let update_form = document.getElementById("update");
@@ -260,13 +265,17 @@ if (document.getElementById("settings_body")) {
     let soft_reset_form = document.getElementById("soft_reset_form");
     soft_reset_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      // fetch(api/soft-reset)
+      fetch('/api/soft-reset')
+        .then(response => response.json())
+        .then(data => console.log(data));
     });
     // handle factory_reset_form
     let factory_reset_form = document.getElementById("factory_reset_form");
     factory_reset_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      // fetch(api/factory-reset)
+      fetch('/api/factory-reset')
+        .then(response => response.json())
+        .then(data => console.log(data));
     });
 
 

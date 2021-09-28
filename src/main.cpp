@@ -336,10 +336,16 @@ StaticJsonDocument<768> factoryReset()
 {
   StaticJsonDocument<768> doc;
 
+  // doc["network_settings"]["connection"] = "Ethernet";
+  // doc["network_settings"]["ip_type"] = "Static";
+  // doc["network_settings"]["ssid"] = "";
+  // doc["network_settings"]["password"] = "";
+  
   doc["network_settings"]["connection"] = "WiFi";
   doc["network_settings"]["ip_type"] = "DHCP";
-  doc["network_settings"]["ssid"] = "Jorj_2.4";
+  doc["network_settings"]["ssid"] = "Jorj-2.4";
   doc["network_settings"]["password"] = "cafea.amara";
+
   doc["network_settings"]["ip_address"] = "";
   doc["network_settings"]["gateway"] = "";
   doc["network_settings"]["subnet"] = "";
@@ -398,13 +404,13 @@ void update_settings(StaticJsonDocument<384> json, String key)
     else
       doc[key][nested_key] = json[key][nested_key];
   }
-  for (JsonPair i : doc[key].as<JsonObject>())
-  {
-    String nested_key = i.key().c_str();
-    Serial.print(nested_key);
-    Serial.print(" : ");
-    Serial.println(i.value().as<String>());
-  }
+  // for (JsonPair i : doc[key].as<JsonObject>())
+  // {
+  //   String nested_key = i.key().c_str();
+  //   Serial.print(nested_key);
+  //   Serial.print(" : ");
+  //   Serial.println(i.value().as<String>());
+  // }
 
   file = SPIFFS.open("/config.json", "w");
   if (!file)
@@ -412,10 +418,10 @@ void update_settings(StaticJsonDocument<384> json, String key)
     Serial.println("Could not open file to read config !!!");
     return;
   }
-  // Serialize JSON document to file
-  Serial.println("Inside update settings: ");
-  serializeJsonPretty(doc, Serial);
+  // Serial.println("Inside update settings: ");
+  // serializeJsonPretty(doc, Serial);
 
+  // Serialize JSON document to file
   if (serializeJsonPretty(doc, file) == 0)
   {
     doc.clear();
@@ -539,6 +545,7 @@ void setup()
 
               String response;
               serializeJsonPretty(json, response);
+              Serial.print('\n');
               // serializeJsonPretty(json, Serial);
               json.clear();
               request->send(200, "application/json", response);
@@ -555,6 +562,7 @@ void setup()
 
               String response;
               serializeJsonPretty(json, response);
+              Serial.print('\n');
               json.clear();
               request->send(200, "application/json", response);
             });
@@ -567,6 +575,7 @@ void setup()
 
               String response;
               serializeJsonPretty(json, response);
+              Serial.print('\n');
               json.clear();
               request->send(200, "application/json", response);
             });
@@ -589,13 +598,9 @@ void setup()
                                         }
 
                                         update_settings(network, "network_settings");
-
-                                        // String response;
-                                        // serializeJson(network, response);
-
-                                        // Serial.println("/api/settings/post response: ");
                                         Serial.println("Received Settings: ");
-                                        // serializeJsonPretty(network, Serial);
+                                        serializeJsonPretty(network, Serial);
+                                        Serial.print('\n');
                                         network.clear();
                                         request->send(200);
                                         // Serial.println(response);
@@ -604,33 +609,93 @@ void setup()
   AsyncCallbackJsonWebHandler *input_handler =
       new AsyncCallbackJsonWebHandler("/api/settings/input", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
-                                        StaticJsonDocument<384> input;
+                                        StaticJsonDocument<384> input_data;
                                         if (json.is<JsonArray>())
                                         {
-                                          input = json.as<JsonArray>();
+                                          input_data = json.as<JsonArray>();
                                         }
                                         else if (json.is<JsonObject>())
                                         {
-                                          input = json.as<JsonObject>();
+                                          input_data = json.as<JsonObject>();
                                         }
 
-                                        update_settings(input, "input");
-
-                                        // String response;
-                                        // serializeJson(network, response);
-
-                                        // Serial.println("/api/settings/post response: ");
+                                        update_settings(input_data, "input");
                                         Serial.println("Received Settings: ");
-                                        serializeJsonPretty(input, Serial);
-                                        input.clear();
+                                        serializeJsonPretty(input_data, Serial);
+                                        Serial.print('\n');
+                                        input_data.clear();
+                                        request->send(200);
+                                        // Serial.println(response);
+                                      });
+  AsyncCallbackJsonWebHandler *output_handler =
+      new AsyncCallbackJsonWebHandler("/api/settings/output", [](AsyncWebServerRequest *request, JsonVariant &json)
+                                      {
+                                        StaticJsonDocument<384> output_data;
+                                        if (json.is<JsonArray>())
+                                        {
+                                          output_data = json.as<JsonArray>();
+                                        }
+                                        else if (json.is<JsonObject>())
+                                        {
+                                          output_data = json.as<JsonObject>();
+                                        }
+
+                                        update_settings(output_data, "output");
+                                        Serial.println("Received Settings: ");
+                                        serializeJsonPretty(output_data, Serial);
+                                        Serial.print('\n');
+                                        output_data.clear();
+                                        request->send(200);
+                                        // Serial.println(response);
+                                      });
+  AsyncCallbackJsonWebHandler *wiegand_handler =
+      new AsyncCallbackJsonWebHandler("/api/settings/wiegand", [](AsyncWebServerRequest *request, JsonVariant &json)
+                                      {
+                                        StaticJsonDocument<384> wiegand_data;
+                                        if (json.is<JsonArray>())
+                                        {
+                                          wiegand_data = json.as<JsonArray>();
+                                        }
+                                        else if (json.is<JsonObject>())
+                                        {
+                                          wiegand_data = json.as<JsonObject>();
+                                        }
+
+                                        update_settings(wiegand_data, "wiegand");
+                                        Serial.println("Received Settings: ");
+                                        serializeJsonPretty(wiegand_data, Serial);
+                                        Serial.print('\n');
+                                        wiegand_data.clear();
+                                        request->send(200);
+                                        // Serial.println(response);
+                                      });
+  AsyncCallbackJsonWebHandler *rfid_handler =
+      new AsyncCallbackJsonWebHandler("/api/settings/rfid", [](AsyncWebServerRequest *request, JsonVariant &json)
+                                      {
+                                        StaticJsonDocument<384> rfid_data;
+                                        if (json.is<JsonArray>())
+                                        {
+                                          rfid_data = json.as<JsonArray>();
+                                        }
+                                        else if (json.is<JsonObject>())
+                                        {
+                                          rfid_data = json.as<JsonObject>();
+                                        }
+
+                                        update_settings(rfid_data, "rfid");
+                                        Serial.println("Received Settings: ");
+                                        serializeJsonPretty(rfid_data, Serial);
+                                        Serial.print('\n');
+                                        rfid_data.clear();
                                         request->send(200);
                                         // Serial.println(response);
                                       });
 
-
-
   server.addHandler(network_handler);
   server.addHandler(input_handler);
+  server.addHandler(output_handler);
+  server.addHandler(wiegand_handler);
+  server.addHandler(rfid_handler);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });

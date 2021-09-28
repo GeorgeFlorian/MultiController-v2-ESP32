@@ -29,15 +29,15 @@
 - Save settings to config.json on server side
 - Back up all settings to download file
 - Create STA and AP files for each page
+- Save each settings form to file
+- Clear form after submit
 
 ### To implement
 
-- Save each settings form to file
 - Handle form validation on front-end (ux) and back-end
 - Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event
-- Clear form after submit
 - Loading icon when navigating pages
 - Implement loading icon while waiting to reconect after a restart
 - (3): In both cases the device will restart ! OR NOT ?!
