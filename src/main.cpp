@@ -2,8 +2,9 @@
 #include <WiFi.h>
 #include <ETH.h>
 #include <ESPAsyncWebServer.h>
-#include "AsyncJson.h"
-#include "ArduinoJson.h"
+#include <AsyncJson.h>
+#include <ArduinoJson.h>
+// #include <server.h>
 #include <SPIFFS.h>
 #include <Update.h>
 
@@ -176,9 +177,16 @@ StaticJsonDocument<768> getSettings()
   if (network_settings.ip_type == "DHCP")
   {
     network_settings.ip_address = WiFi.localIP().toString();
+    doc["network_settings"]["ip_address"] = WiFi.localIP().toString();
+
     network_settings.gateway = WiFi.gatewayIP().toString();
+    doc["network_settings"]["gateway"] = WiFi.gatewayIP().toString();
+
     network_settings.subnet = WiFi.subnetMask().toString();
+    doc["network_settings"]["subnet"] = WiFi.subnetMask().toString();
+
     network_settings.dns = WiFi.dnsIP().toString();
+    doc["network_settings"]["dns"] = WiFi.dnsIP().toString();
   }
   else if (network_settings.ip_type == "Static")
   {
@@ -196,6 +204,7 @@ StaticJsonDocument<768> getSettings()
   output.timer_1 = doc["output"]["timer_1"] | "Not working";
   output.timer_2 = doc["output"]["timer_2"] | "Not working";
 
+  // get live relay state ???
   relay_state.state1 = doc["relay_state"]["state1"] | "Not working";
   relay_state.state2 = doc["relay_state"]["state2"] | "Not working";
 
@@ -356,6 +365,47 @@ StaticJsonDocument<768> factoryReset()
   return doc;
 }
 
+void update_settings(StaticJsonDocument<384> json, String key)
+{
+  StaticJsonDocument<768> doc;
+  File file = SPIFFS.open("/config.json");
+  if (!file)
+  {
+    Serial.println("Could not open file to read config !!!");
+    return;
+  }
+
+  int file_size = file.size();
+  if (file_size > 768)
+  {
+    Serial.println("Config file bigger than JSON document. Alocate more capacity !");
+    doc.clear();
+    return;
+  }
+
+  // Deserialize file to JSON document
+  DeserializationError error = deserializeJson(doc, file);
+  if (error)
+    Serial.println("Failed to read file, using default configuration");
+
+  file.close();
+
+  JsonObject current_config = doc[key].as<JsonObject>();
+  JsonObject new_config = json[key].as<JsonObject>();
+
+  for (JsonPair i : new_config)
+    
+
+  // for (JsonPair i : data) // network_settings, input, etc
+  // {
+  //   for (JsonPair k : i.value().as<JsonObject>()) // connection, ip_type, ssid
+  //   {
+  //     k.value().set("");
+  //   }
+  // }
+
+}
+
 // void WiFiEvent(WiFiEvent_t event)
 // {
 //   switch (event)
@@ -441,6 +491,10 @@ void setup()
 
   listAllFiles();
   getSettings();
+  Serial.print("SSID: ");
+  Serial.println(network_settings.ssid);
+  Serial.print("Password: ");
+  Serial.println(network_settings.password);
 
   WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
 
@@ -495,33 +549,34 @@ void setup()
 
   server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/config.json", String(), true); });
+
   // POST
-  AsyncCallbackJsonWebHandler *handler =
-      new AsyncCallbackJsonWebHandler("/api/settings/post", [](AsyncWebServerRequest *request, JsonVariant &json)
+  AsyncCallbackJsonWebHandler *network_handler =
+      new AsyncCallbackJsonWebHandler("/api/settings/network", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
-                                        StaticJsonDocument<768> data;
+                                        StaticJsonDocument<384> network;
                                         if (json.is<JsonArray>())
                                         {
-                                          data = json.as<JsonArray>();
+                                          network = json.as<JsonArray>();
                                         }
                                         else if (json.is<JsonObject>())
                                         {
-                                          data = json.as<JsonObject>();
+                                          network = json.as<JsonObject>();
                                         }
 
-                                        saveSettings(data);
+                                        // saveSettings(network);
 
                                         // String response;
-                                        // serializeJson(data, response);
+                                        // serializeJson(network, response);
 
                                         // Serial.println("/api/settings/post response: ");
                                         Serial.println("Received Settings: ");
-                                        serializeJsonPretty(data, Serial);
-                                        data.clear();
+                                        serializeJsonPretty(network, Serial);
+                                        network.clear();
                                         request->send(200);
                                         // Serial.println(response);
                                       });
-  server.addHandler(handler);
+  server.addHandler(network_handler);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });

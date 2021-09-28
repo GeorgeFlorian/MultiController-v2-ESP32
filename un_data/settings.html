@@ -95,15 +95,15 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="ssid" class="col-form-label col-4 text-nowrap">SSID:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="connection form-control" name="ssid" id="ssid"
-                                            placeholder="Current Value Placeholder">
+                                        <input type="text" class="connection form-control" name="SSID" id="ssid"
+                                            placeholder="SSID">
                                     </div>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="password" class="col-form-label col-4 text-nowrap">Password:</label>
                                     <div class="col-auto">
-                                        <input type="password" class="connection form-control" name="password"
+                                        <input type="password" class="connection form-control" name="Password"
                                             id="password" placeholder="Password">
                                     </div>
                                 </div>
@@ -112,16 +112,16 @@
                                     <label for="ip_address" class="col-form-label col-4 text-nowrap">IP
                                         Address:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="ip form-control" name="ip_address" id="ip_address"
-                                            placeholder="Current Value Placeholder">
+                                        <input type="text" class="ip form-control" name="IP Address" id="ip_address"
+                                            placeholder="IP Address" onchange="ValidateIPaddressOnChange(this)">
                                     </div>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="gateway" class="col-form-label col-4 text-nowrap">Gateway:</label>
                                     <div class="col-auto">
-                                        <input type="text" class="ip form-control" name="gateway" id="gateway"
-                                            placeholder="Current Value Placeholder">
+                                        <input type="text" class="ip form-control" name="Gateway" id="gateway"
+                                            placeholder="Gateway" onchange="ValidateIPaddressOnChange(this)">
                                     </div>
                                 </div>
                                 <!-- Input row -->
@@ -129,8 +129,9 @@
                                     <label for="subnet" class="col-form-label col-4 text-nowrap">Subnet
                                         Mask:</label>
                                     <div class="col-auto">
-                                        <input class="ip form-control" list="subnet_options" name="subnet" id="subnet"
-                                            placeholder="Current Value Placeholder">
+                                        <input class="ip form-control" list="subnet_options" name="Subnet Mask"
+                                            id="subnet" placeholder="Subnet Mask"
+                                            onchange="ValidateIPaddressOnChange(this)">
                                     </div>
                                     <datalist id="subnet_options">
                                         <option value="255.255.255.0">
@@ -141,8 +142,8 @@
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
                                     <label for="dns" class="col-form-label col-4 text-nowrap">DNS:</label>
                                     <div class="col-auto">
-                                        <input class="ip form-control" list="dns_options" name="dns" id="dns"
-                                            placeholder="Current Value Placeholder">
+                                        <input class="ip form-control" list="dns_options" name="DNS" id="dns"
+                                            placeholder="DNS" onchange="ValidateIPaddressOnChange(this)">
                                     </div>
                                     <datalist id="dns_options">
                                         <option value="8.8.8.8">
@@ -343,7 +344,8 @@
                                 <!-- Backup/Restore tab -->
                                 <div class="tab-pane active" id="backup">
                                     <!-- Input row -->
-                                    <form action="/api/backup" class="row mb-2 g-0 d-flex justify-content-between" id="backup" name="backup">
+                                    <form action="/api/backup" class="row mb-2 g-0 d-flex justify-content-between"
+                                        id="backup" name="backup">
                                         <label for="backup" class="col-form-label col-12 text-nowrap">Backup current
                                             configuration to file:</label>
                                         <div class="col-auto">

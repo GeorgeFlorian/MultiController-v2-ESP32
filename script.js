@@ -1,6 +1,75 @@
 const ROOT_URL = window.location.hostname; // for production
 let conn_status = 0;
 
+function ValidateIPaddressOnChange(input) {
+  var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  var strtype = "";
+  switch (input.id) {
+    case "ip_address":
+      strtype = "IP Address";
+      break;
+    case "gateway":
+      strtype = "Gateway";
+      break;
+    case "subnet":
+      strtype = "Subnet Mask";
+      break;
+    case "dns":
+      strtype = "DNS";
+      break;
+  }
+
+  if (!input.value.match(ipformat) && !input.placeholder != 'DHCP IP') {
+    document.getElementById(input.id).className =
+      document.getElementById(input.id).className.replace(/(?:^|\s)correct(?!\S)/g, '');
+    document.getElementById(input.id).className += " wrong";
+    input.focus();
+    alert(strtype + " is invalid!");
+  } else if (input.value != null) {
+    document.getElementById(input.id).className =
+      document.getElementById(input.id).className.replace(/(?:^|\s)wrong(?!\S)/g, '');
+    document.getElementById(input.id).className += " correct";
+  }
+}
+
+function ValidateIPaddress(form) {
+  var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  var ip_address = document.getElementById('ip_address');
+  var gateway = document.getElementById('gateway');
+  var subnet = document.getElementById('subnet');
+  var dns = document.getElementById('dns');
+
+  if (ip_address.value.match(ipformat)) {
+    ip_address.focus();
+  } else if (ip_address.placeholder != 'DHCP IP') {
+    alert("You have entered an invalid IP Address!");
+    ip_address.focus();
+    return false;
+  }
+  if (gateway.value.match(ipformat)) {
+    gateway.focus();
+  } else if (gateway.placeholder != 'DHCP IP') {
+    window.alert("You have entered an invalid GATEWAY Address!");
+    gateway.focus();
+    return false;
+  }
+  if (subnet.value.match(ipformat)) {
+    subnet.focus();
+  } else if (subnet.placeholder != 'DHCP IP') {
+    window.alert("You have entered an invalid SUBNET Address!");
+    subnet.focus();
+    return false;
+  }
+  if (dns.value.match(ipformat)) {
+    dns.focus();
+  } else if (dns.placeholder != 'DHCP IP') {
+    window.alert("You have entered an invalid DNS Address!");
+    dns.focus();
+    return false;
+  }
+  return true;
+}
+
 // mission:
 // create api handler in main.cc
 // create api handler in script.js
@@ -100,10 +169,10 @@ async function get_settings() {
   }
 }
 // send/post json
-async function post_data(api_path, json_data) {
-  let post_url = ROOT_URL + api_path;
-  console.log(post_url);
-  const response = await fetch(post_url, {
+async function post_data(json_data, api_path) {
+  // let post_url = ROOT_URL + api_path;
+  // console.log(post_url);
+  const response = await fetch(api_path, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -127,12 +196,12 @@ function save_settings(form, destination) {
   let json_data = toJSONstring(form);
   // console.log("json_data:");
   console.log(json_data);
-  // post_data(`/api/settings/${destination}`, json_data).then((response) => {
-  //   // console.log("api/settings/post RESPONSE: ");
-  //   // console.log(response);
-  //   conn_status = 1;
-  //   // logs to page
-  // });
+  post_data(json_data, `/api/settings/${destination}`).then((response) => {
+    console.log(`/api/settings/${destination} Response: `);
+    console.log(response);
+    conn_status = 1;
+    // logs to page
+  });
 }
 
 // function that sends relays status to api/settings/relays
@@ -153,7 +222,8 @@ if (document.getElementById("settings_body")) {
     let network_form = document.getElementById("network");
     network_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      save_settings(network_form, "network");      
+      if (ValidateIPaddress(network_form))
+        save_settings(network_form, "network");
     });
     // handle input_form
     let input_form = document.getElementById("input");
@@ -209,15 +279,23 @@ if (document.getElementById("settings_body")) {
     check_network_connection.addEventListener("change", function (e) {
       let target = e.target;
       let wifi = document.querySelectorAll(".connection");
-      let currentValue = "Current Value Placeholder";
+      let current_placeholder = {};
+      wifi.forEach((element) => {
+        current_placeholder[element.id] = element.name;
+      });
       switch (target.id) {
         case "wifi":
-          wifi.forEach((element) => element.removeAttribute("readonly"));
-          wifi.forEach((element) => element.setAttribute("placeholder", `${currentValue}`));
+          wifi.forEach((element) => {
+            element.removeAttribute("readonly");
+            element.setAttribute("placeholder", `${current_placeholder[element.id]}`);
+          });
           break;
         case "ethernet":
-          wifi.forEach((element) => element.setAttribute("readonly", ""));
-          wifi.forEach((element) => element.setAttribute("placeholder", "Ethernet Connection"));
+          wifi.forEach((element) => {
+            element.setAttribute("readonly", "");
+            element.value = "";
+            element.setAttribute("placeholder", "Ethernet Connection")
+          });
           break;
         default:
           break;
@@ -231,17 +309,25 @@ if (document.getElementById("settings_body")) {
     check_ip_type.addEventListener("change", function (e) {
       let target = e.target;
       let ip = document.querySelectorAll(".ip");
-      let currentValue = "Current Value Placeholder";
+      let current_placeholder = {};
+      ip.forEach((element) => {
+          current_placeholder[element.id] = element.name;
+      });
       switch (target.id) {
         case "dhcp":
-          ip.forEach((element) => element.setAttribute("readonly", ""));
-          ip.forEach((element) => element.setAttribute("placeholder", "DHCP IP"));
+          ip.forEach((element) => {
+            element.setAttribute("readonly", "");
+            element.value = "";
+            element.classList.remove('wrong');
+            element.classList.remove('correct');
+            element.setAttribute("placeholder", "DHCP IP");
+          });
           break;
         case "static":
-          ip.forEach((element) => element.removeAttribute("readonly"));
-          ip.forEach((element) =>
-            element.setAttribute("placeholder", `${currentValue}`)
-          );
+          ip.forEach((element) => {
+            element.removeAttribute("readonly");
+            element.setAttribute("placeholder", `${current_placeholder[element.id]}`);
+          });
           break;
         default:
           break;

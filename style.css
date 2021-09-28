@@ -13,6 +13,13 @@ body {
   left: 0;
 }
 
+.wrong, .wrong:focus {
+  color: #dc3545;
+}
+.correct, .corect:focus {
+  color: #198754;
+}
+
 
 /* Modify margin-left acording to the nav width */
 #content_wrapper, #content_wrapper_user {
