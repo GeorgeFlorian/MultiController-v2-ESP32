@@ -19,6 +19,7 @@
 ### User View
 
 - Create Username and Password used for basic HTTP Authentication
+- STA and AP pages for User Page
 
 ### Implemented
 
@@ -32,7 +33,6 @@
 - On page load fill Dashboard with current settings (get_settings(){JSON})
 - Save settings to config.json on server side
 - Back up all settings to download file
-- Create STA and AP files for each page
 - Save each settings form to file
 - Clear form after submit
 - Handle form validation on front-end (ux) and back-end
