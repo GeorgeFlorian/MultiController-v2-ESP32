@@ -35,6 +35,7 @@
 
 ### To implement
 
+- Handle Relay state
 - Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event
