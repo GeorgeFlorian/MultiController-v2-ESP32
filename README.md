@@ -16,6 +16,10 @@
 - Update
 - Reset
 
+### User View
+
+- Create Username and Password used for basic HTTP Authentication
+
 ### Implemented
 
 - Move File Browser and Update to Settings Page
