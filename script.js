@@ -17,6 +17,17 @@ function ValidateIPaddressOnChange(input) {
     case "dns":
       strtype = "DNS";
       break;
+    case "ip_1":
+      strtype = "Input 1 Address";
+      break;
+    case "ip_2":
+      strtype = "Input 2 Address";
+      break;
+    case "ip_rfid":
+      strtype = "RFID Address";
+      break;
+    default:
+      break;
   }
 
   if (!input.value.match(ipformat) && !input.placeholder != 'DHCP IP') {
@@ -34,39 +45,20 @@ function ValidateIPaddressOnChange(input) {
 
 function ValidateIPaddress(form) {
   var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  var ip_address = document.getElementById('ip_address');
-  var gateway = document.getElementById('gateway');
-  var subnet = document.getElementById('subnet');
-  var dns = document.getElementById('dns');
 
-  if (ip_address.value.match(ipformat)) {
-    ip_address.focus();
-  } else if (ip_address.placeholder != 'DHCP IP') {
-    alert("You have entered an invalid IP Address!");
-    ip_address.focus();
-    return false;
+  for (let i = 0; i < form.elements.length - 1; i++) {
+    if (form.elements[i].ariaLabel.includes("Address")) {
+      if (form.elements[i].value.match(ipformat)) {
+        form.elements[i].focus();
+        // check to see if Static IP  type is selected
+      } else if (form.elements[i].placeholder != 'DHCP IP' && form.elements[i].value.length > 0) {
+        alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
+        form.elements[i].focus();
+        return false;
+      }
+    }
   }
-  if (gateway.value.match(ipformat)) {
-    gateway.focus();
-  } else if (gateway.placeholder != 'DHCP IP') {
-    window.alert("You have entered an invalid GATEWAY Address!");
-    gateway.focus();
-    return false;
-  }
-  if (subnet.value.match(ipformat)) {
-    subnet.focus();
-  } else if (subnet.placeholder != 'DHCP IP') {
-    window.alert("You have entered an invalid SUBNET Address!");
-    subnet.focus();
-    return false;
-  }
-  if (dns.value.match(ipformat)) {
-    dns.focus();
-  } else if (dns.placeholder != 'DHCP IP') {
-    window.alert("You have entered an invalid DNS Address!");
-    dns.focus();
-    return false;
-  }
+
   return true;
 }
 
@@ -222,16 +214,19 @@ if (document.getElementById("settings_body")) {
     let network_form = document.getElementById("network_settings");
     network_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (ValidateIPaddress(network_form))
+      if (ValidateIPaddress(network_form)) {
         save_settings(network_form, "network");
-      network_form.reset();
+        network_form.reset();
+      }
     });
     // handle input_form
     let input_form = document.getElementById("input");
     input_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      save_settings(input_form, "input");
-      input_form.reset();
+      if (ValidateIPaddress(input_form)) {
+        save_settings(input_form, "input");
+        input_form.reset();
+      }
     });
     // handle output_form
     let output_form = document.getElementById("output");
@@ -251,8 +246,10 @@ if (document.getElementById("settings_body")) {
     let rfid_form = document.getElementById("rfid");
     rfid_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      save_settings(rfid_form, "rfid");
-      rfid_form.reset();
+      if (ValidateIPaddress(rfid_form)) {
+        save_settings(rfid_form, "rfid");
+        rfid_form.reset();
+      }
     });
     // handle update_form
     let update_form = document.getElementById("update");

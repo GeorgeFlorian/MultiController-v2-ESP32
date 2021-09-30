@@ -340,7 +340,7 @@ StaticJsonDocument<768> factoryReset()
   // doc["network_settings"]["ip_type"] = "Static";
   // doc["network_settings"]["ssid"] = "";
   // doc["network_settings"]["password"] = "";
-  
+
   doc["network_settings"]["connection"] = "WiFi";
   doc["network_settings"]["ip_type"] = "DHCP";
   doc["network_settings"]["ssid"] = "Jorj-2.4";
@@ -399,18 +399,15 @@ void update_settings(StaticJsonDocument<384> json, String key)
   for (JsonPair i : json[key].as<JsonObject>())
   {
     String nested_key = i.key().c_str();
-    if (json[key][nested_key].isNull())
-      doc[key][nested_key] = " ";
+    Serial.print("json[key][nested_key].as<String>() : '");
+    Serial.print(json[key][nested_key].as<String>());
+    Serial.println(" '");
+    if (json[key][nested_key].as<String>().length() == 0)
+      // doc[key][nested_key].set("Not Set");
+      Serial.println();
     else
       doc[key][nested_key] = json[key][nested_key];
   }
-  // for (JsonPair i : doc[key].as<JsonObject>())
-  // {
-  //   String nested_key = i.key().c_str();
-  //   Serial.print(nested_key);
-  //   Serial.print(" : ");
-  //   Serial.println(i.value().as<String>());
-  // }
 
   file = SPIFFS.open("/config.json", "w");
   if (!file)

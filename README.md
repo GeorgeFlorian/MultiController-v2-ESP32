@@ -31,10 +31,10 @@
 - Create STA and AP files for each page
 - Save each settings form to file
 - Clear form after submit
+- Handle form validation on front-end (ux) and back-end
 
 ### To implement
 
-- Handle form validation on front-end (ux) and back-end
 - Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event
