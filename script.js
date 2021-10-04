@@ -202,7 +202,7 @@ function getRelayState() {
   let relay_form = document.getElementById("relay");
   relay_form.addEventListener('change', function (e) {
     e.preventDefault();
-    saveSettings(relay_form, 'relay/state');
+    saveSettings(relay_form, 'relay/post');
     // getSettings();
   });
 }

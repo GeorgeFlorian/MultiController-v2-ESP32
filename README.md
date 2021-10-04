@@ -36,10 +36,10 @@
 - Save each settings form to file
 - Clear form after submit
 - Handle form validation on front-end (ux) and back-end
+- Handle Relay state
 
 ### To implement
 
-- Handle Relay state
 - Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event
