@@ -40,6 +40,7 @@
 
 ### To implement
 
+- Implement HTTP Authentication
 - Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event
