@@ -124,7 +124,7 @@ async function get_json(api_path, options = {}) {
   return response.json();
 }
 
-async function get_settings() {
+async function getSettings() {
   try {
     get_json("/api/settings/get", {
       timeout: 5000,
@@ -161,7 +161,7 @@ async function get_settings() {
   }
 }
 // send/post json
-async function post_data(json_data, api_path) {
+async function postData(json_data, api_path) {
   // let post_url = ROOT_URL + api_path;
   // console.log(post_url);
   const response = await fetch(api_path, {
@@ -178,18 +178,18 @@ async function post_data(json_data, api_path) {
     const message = `An error has occured: ${response.status}`;
     throw new Error(message);
   }
-  // console.log("post_data RESPOSNE: ");
+  // console.log("postData RESPOSNE: ");
   // console.log(response);
   return response.status;
 }
 
-// send JSON data to server on /api/settings/post
-function save_settings(form, destination) {
+// send JSON data to server on /api/${destination}
+function saveSettings(form, destination) {
   let json_data = toJSONstring(form);
   // console.log("json_data:");
   console.log(json_data);
-  post_data(json_data, `/api/settings/${destination}`).then((response) => {
-    console.log(`/api/settings/${destination} Response: `);
+  postData(json_data, `/api/${destination}`).then((response) => {
+    console.log(`/api/${destination} Response: `);
     console.log(response);
     conn_status = 1;
     // logs to page
@@ -197,12 +197,12 @@ function save_settings(form, destination) {
 }
 
 // function that sends relays status to api/settings/relays
-function get_relay_state() {
-  let relay_form = document.getElementById("relay_state");
+function getRelayState() {
+  let relay_form = document.getElementById("relay");
   relay_form.addEventListener('change', function (e) {
     e.preventDefault();
-    save_settings(relay_form, 'relay_state');
-    // get_settings();
+    saveSettings(relay_form, 'relay/state');
+    // getSettings();
   });
 }
 
@@ -215,7 +215,7 @@ if (document.getElementById("settings_body")) {
     network_form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (ValidateIPaddress(network_form)) {
-        save_settings(network_form, "network");
+        saveSettings(network_form, "network/post");
         network_form.reset();
       }
     });
@@ -224,7 +224,7 @@ if (document.getElementById("settings_body")) {
     input_form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (ValidateIPaddress(input_form)) {
-        save_settings(input_form, "input");
+        saveSettings(input_form, "input/post");
         input_form.reset();
       }
     });
@@ -232,14 +232,14 @@ if (document.getElementById("settings_body")) {
     let output_form = document.getElementById("output");
     output_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      save_settings(output_form, "output");
+      saveSettings(output_form, "output/post");
       output_form.reset();
     });
     // handle wiegand_form
     let wiegand_form = document.getElementById("wiegand");
     wiegand_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      save_settings(wiegand_form, "wiegand");
+      saveSettings(wiegand_form, "wiegand/post");
       wiegand_form.reset();
     });
     // handle rfid_form
@@ -247,7 +247,7 @@ if (document.getElementById("settings_body")) {
     rfid_form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (ValidateIPaddress(rfid_form)) {
-        save_settings(rfid_form, "rfid");
+        saveSettings(rfid_form, "rfid/post");
         rfid_form.reset();
       }
     });
@@ -255,7 +255,7 @@ if (document.getElementById("settings_body")) {
     let update_form = document.getElementById("update");
     update_form.addEventListener("submit", function (e) {
       e.preventDefault();
-      // save_settings(update_form, "update");
+      // saveSettings(update_form, "update");
       // fetch(api/restart)
     });
     // handle soft_reset_form
@@ -279,7 +279,7 @@ if (document.getElementById("settings_body")) {
   });
 
   // function to enable or disable network inputs based on connection type
-  function check_connection() {
+  function checkConnection() {
     let check_network_connection = document.getElementById("check_network_connection");
 
     check_network_connection.addEventListener("change", function (e) {
@@ -311,7 +311,7 @@ if (document.getElementById("settings_body")) {
   }
 
   // function to enable or disable network inputs based on IP type
-  function check_type() {
+  function checkType() {
     let check_ip_type = document.getElementById("check_ip_type");
     check_ip_type.addEventListener("change", function (e) {
       let target = e.target;

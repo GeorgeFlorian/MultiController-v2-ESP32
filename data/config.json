@@ -16,10 +16,10 @@
         "port_2": "Not Set"
     },
     "output": {
-        "timer_1": "0",
-        "timer_2": "0"
+        "timer1": "0",
+        "timer2": "0"
     },
-    "relay_state": {
+    "relay": {
         "state1": "Off",
         "state2": "Off"
     },

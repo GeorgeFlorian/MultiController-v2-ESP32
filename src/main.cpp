@@ -8,6 +8,17 @@
 #include <SPIFFS.h>
 #include <Update.h>
 
+#define RELAY1 32
+#define RELAY2 33
+
+#define W0 14
+#define W1 13
+#define INPUT_1 15
+#define INPUT_2 17
+
+#define BUTTON 34
+#define BUZZER 16
+
 AsyncWebServer server(80);
 static bool eth_connected = false;
 
@@ -93,6 +104,7 @@ void listAllFiles()
   root.close();
 }
 
+// Live state of the controller
 struct Settings
 {
   String connection = "";
@@ -115,16 +127,16 @@ struct Input
 
 struct Output
 {
-  String timer_1 = "";
-  String timer_2 = "";
+  String timer1 = "";
+  String timer2 = "";
 } output;
 
-struct RelayState
+struct Relay
 {
   String state1 = "";
   String state2 = "";
 
-} relay_state;
+} relay;
 
 struct Wiegand
 {
@@ -139,8 +151,16 @@ struct RFID
   String port_rfid = "";
 } rfid;
 
+struct User
+{
+  String user_name = "";
+  String user_pass = "";
+
+  bool user_flag = false;
+} user;
+
 // Get settings from /config.json
-StaticJsonDocument<768> getSettings()
+StaticJsonDocument<768> settingsToJSON()
 {
   StaticJsonDocument<768> doc;
   File file = SPIFFS.open("/config.json");
@@ -201,12 +221,12 @@ StaticJsonDocument<768> getSettings()
   input.ip_2 = doc["input"]["ip_2"] | "Not working";
   input.port_2 = doc["input"]["port_2"] | "Not working";
 
-  output.timer_1 = doc["output"]["timer_1"] | "Not working";
-  output.timer_2 = doc["output"]["timer_2"] | "Not working";
+  output.timer1 = doc["output"]["timer1"] | "Not working";
+  output.timer2 = doc["output"]["timer2"] | "Not working";
 
   // get live relay state ???
-  relay_state.state1 = doc["relay_state"]["state1"] | "Not working";
-  relay_state.state2 = doc["relay_state"]["state2"] | "Not working";
+  relay.state1 = doc["relay"]["state1"] | "Not working";
+  relay.state2 = doc["relay"]["state2"] | "Not working";
 
   wiegand.database_url = doc["wiegand"]["database_url"] | "Not working";
   wiegand.pulse_width = doc["wiegand"]["pulse_width"] | "Not working";
@@ -261,11 +281,11 @@ bool saveSettings(StaticJsonDocument<768> doc)
   input.ip_2 = doc["input"]["ip_2"] | "Not working";
   input.port_2 = doc["input"]["port_2"] | "Not working";
 
-  output.timer_1 = doc["output"]["timer_1"] | "Not working";
-  output.timer_2 = doc["output"]["timer_2"] | "Not working";
+  output.timer1 = doc["output"]["timer1"] | "Not working";
+  output.timer2 = doc["output"]["timer2"] | "Not working";
 
-  relay_state.state1 = doc["relay_state"]["state1"] | "Not working";
-  relay_state.state2 = doc["relay_state"]["state2"] | "Not working";
+  relay.state1 = doc["relay"]["state1"] | "Not working";
+  relay.state2 = doc["relay"]["state2"] | "Not working";
 
   wiegand.database_url = doc["wiegand"]["database_url"] | "Not working";
   wiegand.pulse_width = doc["wiegand"]["pulse_width"] | "Not working";
@@ -317,11 +337,11 @@ StaticJsonDocument<768> softReset()
   doc["input"]["ip_2"] = "Not Set";
   doc["input"]["port_2"] = "Not Set";
 
-  doc["output"]["timer_1"] = "0";
-  doc["output"]["timer_2"] = "0";
+  doc["output"]["timer1"] = "0";
+  doc["output"]["timer2"] = "0";
 
-  doc["relay_state"]["state1"] = "Off";
-  doc["relay_state"]["state2"] = "Off";
+  doc["relay"]["state1"] = "Off";
+  doc["relay"]["state2"] = "Off";
 
   doc["wiegand"]["database_url"] = "Not Set";
   doc["wiegand"]["pulse_width"] = "90";
@@ -356,11 +376,11 @@ StaticJsonDocument<768> factoryReset()
   doc["input"]["ip_2"] = "Not Set";
   doc["input"]["port_2"] = "Not Set";
 
-  doc["output"]["timer_1"] = "0";
-  doc["output"]["timer_2"] = "0";
+  doc["output"]["timer1"] = "0";
+  doc["output"]["timer2"] = "0";
 
-  doc["relay_state"]["state1"] = "Off";
-  doc["relay_state"]["state2"] = "Off";
+  doc["relay"]["state1"] = "Off";
+  doc["relay"]["state2"] = "Off";
 
   doc["wiegand"]["database_url"] = "Not Set";
   doc["wiegand"]["pulse_width"] = "90";
@@ -395,10 +415,11 @@ void update_settings(StaticJsonDocument<384> json, String key)
     Serial.println("Failed to read file, using default configuration");
 
   file.close();
+  String nested_key = "";
 
   for (JsonPair i : json[key].as<JsonObject>())
   {
-    String nested_key = i.key().c_str();
+    nested_key = i.key().c_str();
     Serial.print("json[key][nested_key].as<String>() : '");
     Serial.print(json[key][nested_key].as<String>());
     Serial.println(" '");
@@ -429,7 +450,43 @@ void update_settings(StaticJsonDocument<384> json, String key)
   doc.clear();
   file.close();
 
-  getSettings();
+  settingsToJSON();
+}
+StaticJsonDocument<384> getState()
+{
+  StaticJsonDocument<768> doc;
+  StaticJsonDocument<384> state_json;
+
+  File file = SPIFFS.open("/config.json", "r");
+  if (!file)
+  {
+    Serial.println("Could not open file to read config !!!");
+    return doc;
+  }
+
+  int file_size = file.size();
+  if (file_size > 768)
+  {
+    Serial.println("Config file bigger than JSON document. Alocate more capacity !");
+    doc.clear();
+    return doc;
+  }
+  // Deserialize file to JSON document
+  DeserializationError error = deserializeJson(doc, file);
+  if (error)
+    Serial.println("Failed to read file, using default configuration");
+
+  file.close();
+  String key = "relay";
+  String nested_key = "";
+
+  for (JsonPair i : doc[key].as<JsonObject>())
+  {
+    nested_key = i.key().c_str();
+    state_json[key][nested_key] = doc[key][nested_key];
+  }
+  doc.clear();
+  return state_json;
 }
 
 // void WiFiEvent(WiFiEvent_t event)
@@ -515,8 +572,14 @@ void setup()
   // WiFi.onEvent(WiFiEvent);
   // network_conn();
 
+  //setting the pins for Outputs
+  pinMode(RELAY1, OUTPUT);
+  pinMode(RELAY2, OUTPUT);
+  digitalWrite(RELAY1, LOW);
+  digitalWrite(RELAY2, LOW);
+
   listAllFiles();
-  getSettings();
+  settingsToJSON();
   Serial.print("SSID: ");
   Serial.println(network_settings.ssid);
   Serial.print("Password: ");
@@ -538,7 +601,19 @@ void setup()
 
   server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              StaticJsonDocument<768> json = getSettings();
+              StaticJsonDocument<768> json = settingsToJSON();
+
+              String response;
+              serializeJsonPretty(json, response);
+              Serial.print('\n');
+              // serializeJsonPretty(json, Serial);
+              json.clear();
+              request->send(200, "application/json", response);
+            });
+
+  server.on("/api/relay/state", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              StaticJsonDocument<384> json = getState();
 
               String response;
               serializeJsonPretty(json, response);
@@ -580,9 +655,61 @@ void setup()
   server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/config.json", String(), true); });
 
+  server.on("/relay1/on", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.user_name.c_str(), user.user_pass.c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
+              digitalWrite(RELAY1, HIGH);
+              relay.state1 = "On";
+              // logOutput("Relay1 is ON");
+              // if (output.timer1.toInt() == 0)
+              // {
+              //   needManualCloseRelayOne = true;
+              //   logOutput(" Relay 1 will remain open until it is manually closed !");
+              // }
+              // else
+              // {
+              //   needManualCloseRelayOne = false;
+              //   logOutput(" Relay 1 will automatically close in " + output.timer1 + " seconds !");
+              // }
+              // startTimeRelayOne = millis();
+              // Serial.println("Do I get here ? /relay1/on");
+              // request->send(200, "text/plain", "Relay 1 is ON");
+              request->send(200);
+            });
+
+  server.on("/relay1/off", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.user_name.c_str(), user.user_pass.c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
+              digitalWrite(RELAY1, LOW);
+              relay.state1 = "Off";
+              // logOutput("Relay1 is ON");
+              // if (output.timer1.toInt() == 0)
+              // {
+              //   needManualCloseRelayOne = true;
+              //   logOutput(" Relay 1 will remain open until it is manually closed !");
+              // }
+              // else
+              // {
+              //   needManualCloseRelayOne = false;
+              //   logOutput(" Relay 1 will automatically close in " + output.timer1 + " seconds !");
+              // }
+              // startTimeRelayOne = millis();
+              // Serial.println("Do I get here ? /relay1/on");
+              // request->send(200, "text/plain", "Relay 1 is ON");
+              request->send(200);
+            });
+
   // POST
   AsyncCallbackJsonWebHandler *network_handler =
-      new AsyncCallbackJsonWebHandler("/api/settings/network", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/api/network/post", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<384> network;
                                         if (json.is<JsonArray>())
@@ -604,7 +731,7 @@ void setup()
                                       });
 
   AsyncCallbackJsonWebHandler *input_handler =
-      new AsyncCallbackJsonWebHandler("/api/settings/input", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/api/input/post", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<384> input_data;
                                         if (json.is<JsonArray>())
@@ -625,7 +752,7 @@ void setup()
                                         // Serial.println(response);
                                       });
   AsyncCallbackJsonWebHandler *output_handler =
-      new AsyncCallbackJsonWebHandler("/api/settings/output", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/api/output/post", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<384> output_data;
                                         if (json.is<JsonArray>())
@@ -646,7 +773,7 @@ void setup()
                                         // Serial.println(response);
                                       });
   AsyncCallbackJsonWebHandler *wiegand_handler =
-      new AsyncCallbackJsonWebHandler("/api/settings/wiegand", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/api/wiegand/post", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<384> wiegand_data;
                                         if (json.is<JsonArray>())
@@ -667,7 +794,7 @@ void setup()
                                         // Serial.println(response);
                                       });
   AsyncCallbackJsonWebHandler *rfid_handler =
-      new AsyncCallbackJsonWebHandler("/api/settings/rfid", [](AsyncWebServerRequest *request, JsonVariant &json)
+      new AsyncCallbackJsonWebHandler("/api/rfid/post", [](AsyncWebServerRequest *request, JsonVariant &json)
                                       {
                                         StaticJsonDocument<384> rfid_data;
                                         if (json.is<JsonArray>())

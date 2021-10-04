@@ -112,7 +112,7 @@
                                             href="#input">Input</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#relay_state">Output</a>
+                                        <a class="nav-link" data-bs-toggle="tab" href="#relay">Output</a>
                                     </li>
                                 </ul>
                             </div>
@@ -135,7 +135,7 @@
                                     </div>
                                 </div>
                                 <!-- Output Tab -->
-                                <form class="tab-pane" id="relay_state" name="relay_state">
+                                <form class="tab-pane" id="relay" name="relay">
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label class="col-form-label col-4 text-nowrap">Timer 1:</label>
@@ -250,8 +250,8 @@
         crossorigin="anonymous"></script>
     <script src="/script.js"></script>
     <script>
-        get_settings();
-        get_relay_state();
+        getSettings();
+        getRelayState();
     </script>
 
 </body>
