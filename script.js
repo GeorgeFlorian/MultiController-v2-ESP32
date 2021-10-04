@@ -129,8 +129,9 @@ async function getSettings() {
     get_json("/api/settings/get", {
       timeout: 5000,
     }).then((json_data) => {
-      console.log("Received settings: " + json_data);
+      // console.log("Received settings: " + json_data);
       for (let i in json_data) {
+        console.log("Received settings: " + json_data[i]);
         for (let key in json_data[i]) {
           // console.log(`key: ${key}`);
           if (json_data[i].hasOwnProperty(key)) {
