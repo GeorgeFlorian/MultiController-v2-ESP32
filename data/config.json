@@ -31,5 +31,9 @@
     "rfid": {
         "ip_rfid": "Not Set",
         "port_rfid": "Not Set"
+    },
+    "user": {
+        "username": "",
+        "password": ""
     }
 }

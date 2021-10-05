@@ -37,10 +37,10 @@
 - Clear form after submit
 - Handle form validation on front-end (ux) and back-end
 - Handle Relay state
+- Implement HTTP Authentication
 
 ### To implement
 
-- Implement HTTP Authentication
 - Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event

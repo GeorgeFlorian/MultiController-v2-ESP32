@@ -6,7 +6,9 @@ function connectedStatus() {
   let conn = document.getElementById("connected");
   conn.innerHTML = connected ? "Yes" : "No";
 }
-setInterval(connectedStatus, 500);
+
+if (document.getElementById("user_body") === null)
+  setInterval(connectedStatus, 500);
 
 function ValidateIPaddressOnChange(input) {
   var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -56,7 +58,6 @@ function ValidateIPaddress(form) {
   for (let i = 0; i < form.elements.length - 1; i++) {
     // Select only the ip Address inputs
     if (form.elements[i].ariaLabel.includes("Address")) {
-      // console.log(form.elements[i].value.length);
       if (form.elements[i].ariaLabel.includes("Network") && form.elements[i].placeholder != 'DHCP IP'
         && !form.elements[i].value.match(ipformat)) {
         alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
@@ -218,8 +219,8 @@ async function getSettings() {
             if (whichPage === null) { // if I am not on the Settings page
               let elem = document.getElementById(key);
               // console.log(elem);
-              if (key === 'password') continue;
-              if (key === 'state1' || key === 'state2') {
+              if (key === 'username' || key === 'password') continue;
+              else if (key === 'state1' || key === 'state2') {
                 let radio_btn = document.getElementsByName(key);
                 if (json_data[i][key] === "On") {
                   radio_btn[0].checked = true;
@@ -231,6 +232,7 @@ async function getSettings() {
                 }
               }
               else { // if (key === 'state1' || key === 'state2')
+                // console.log(key);
                 elem.innerHTML = json_data[i][key] + "";
               }
             } else { // if (whichPage === null) // if I am on the Settings page
@@ -301,7 +303,7 @@ function saveSettings(form, destination) {
   console.log(json_data);
   postData(json_data, `/api/${destination}`).then((response) => {
     console.log(`/api/${destination} Response: `);
-    if (response.status == 200)
+    if (response.status == 200 || response.ok)
       connected = true;
     else
       connected = false;
@@ -323,6 +325,7 @@ function getUser() {
   user_form.addEventListener('submit', function (e) {
     e.preventDefault();
     saveSettings(user_form, 'user/post');
+    user_form.reset();
   });
 }
 

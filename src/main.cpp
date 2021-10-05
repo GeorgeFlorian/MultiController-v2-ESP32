@@ -22,6 +22,18 @@
 AsyncWebServer server(80);
 static bool eth_connected = false;
 
+//------------------------- restart_sequence()
+void restart_sequence(unsigned int countdown)
+{
+  for (int i = countdown; i >= 0; i--)
+  {
+    delay(999);
+  }
+  server.reset();
+  delay(100);
+  ESP.restart();
+}
+
 void handleUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
 {
   if (filename.indexOf(".bin") > 0)
@@ -216,40 +228,40 @@ struct RFID
 class User
 {
 private:
-  String user_name = "";
-  String user_pass = "";
+  String username = "";
+  String password = "";
 
 public:
   void setUsername(String x)
   {
     x.trim();
     if (x.length() <= 0)
-      user_name = "";
+      username = "";
     else
-      user_name = x;
+      username = x;
   }
   String getUsername()
   {
-    return user_name;
+    return username;
   }
 
   void setUserPassword(String x)
   {
     x.trim();
     if (x.length() <= 0)
-      user_pass = "";
+      password = "";
     else
-      user_pass = x;
+      password = x;
   }
   String getUserPassword()
   {
-    return user_pass;
+    return password;
   }
 
   bool user_flag = false;
 } user;
 
-void updateLiveState(StaticJsonDocument<768> &doc)
+void updateLiveState(StaticJsonDocument<1024> &doc)
 {
   network_settings.connection = doc["network_settings"]["connection"] | "Not working";
   network_settings.ip_type = doc["network_settings"]["ip_type"] | "Not working";
@@ -302,19 +314,22 @@ void updateLiveState(StaticJsonDocument<768> &doc)
 
   rfid.ip_rfid = doc["rfid"]["ip_rfid"] | "Not working";
   rfid.port_rfid = doc["rfid"]["port_rfid"] | "Not working";
+
+  user.setUsername(doc["user"]["username"] | "Not working");
+  user.setUserPassword(doc["user"]["password"] | "Not working");
 }
 
 // Get settings from /config.json
-StaticJsonDocument<768> settingsToJSON()
+StaticJsonDocument<1024> settingsToJSON()
 {
-  StaticJsonDocument<768> doc;
+  StaticJsonDocument<1024> doc;
   // Open file to read
   File file = SPIFFS.open("/config.json");
   if (!file)
     Serial.println(F("Could not open file to read config !!!"));
 
   int file_size = file.size();
-  if (file_size > 768)
+  if (file_size > 1024)
   {
     Serial.println(F("Config file bigger than JSON document. Alocate more capacity !"));
     doc.clear();
@@ -329,12 +344,13 @@ StaticJsonDocument<768> settingsToJSON()
   file.close();
 
   updateLiveState(doc);
+  // serializeJsonPretty(doc, Serial);
 
   return doc;
 }
 
 // Update settings
-bool JSONtoSettings(StaticJsonDocument<768> doc)
+bool JSONtoSettings(StaticJsonDocument<1024> doc)
 {
   // Open file to write
   File file = SPIFFS.open("/config.json", "w");
@@ -362,7 +378,7 @@ bool JSONtoSettings(StaticJsonDocument<768> doc)
 // Save settings in /config.json
 void saveSettings(StaticJsonDocument<384> json, String key)
 {
-  StaticJsonDocument<768> doc;
+  StaticJsonDocument<1024> doc;
   File file = SPIFFS.open("/config.json", "r");
   if (!file)
   {
@@ -371,7 +387,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   }
 
   int file_size = file.size();
-  if (file_size > 768)
+  if (file_size > 1024)
   {
     Serial.println("Config file bigger than JSON document. Alocate more capacity !");
     doc.clear();
@@ -402,6 +418,8 @@ void saveSettings(StaticJsonDocument<384> json, String key)
         doc[key][nested_key] = "90";
       else if (nested_key == "database_url")
         doc[key][nested_key] = "Not Set";
+      else if (nested_key == "username" || nested_key == "password")
+        doc[key][nested_key] = "";
     }
     else
       doc[key][nested_key] = json[key][nested_key];
@@ -429,9 +447,9 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   file.close();
 }
 
-StaticJsonDocument<768> softReset()
+StaticJsonDocument<1024> softReset()
 {
-  StaticJsonDocument<768> doc;
+  StaticJsonDocument<1024> doc;
 
   doc["network_settings"]["connection"] = network_settings.connection;
   doc["network_settings"]["ip_type"] = network_settings.ip_type;
@@ -477,13 +495,16 @@ StaticJsonDocument<768> softReset()
 
   doc["rfid"]["ip_rfid"] = "Not Set";
   doc["rfid"]["port_rfid"] = "Not Set";
+
+  doc["user"]["username"] = "";
+  doc["user"]["password"] = "";
   updateLiveState(doc);
   return doc;
 }
 
-StaticJsonDocument<768> factoryReset()
+StaticJsonDocument<1024> factoryReset()
 {
-  StaticJsonDocument<768> doc;
+  StaticJsonDocument<1024> doc;
 
   // doc["network_settings"]["connection"] = "Ethernet";
   // doc["network_settings"]["ip_type"] = "Static";
@@ -517,6 +538,9 @@ StaticJsonDocument<768> factoryReset()
 
   doc["rfid"]["ip_rfid"] = "Not Set";
   doc["rfid"]["port_rfid"] = "Not Set";
+
+  doc["user"]["username"] = "";
+  doc["user"]["password"] = "";
   updateLiveState(doc);
   return doc;
 }
@@ -659,11 +683,12 @@ void wifi_connection()
 {
 }
 
-void check_user()
+void checkUser()
 {
   if (user.getUsername().length() > 0 && user.getUserPassword().length() > 0)
     user.user_flag = true;
-  user.user_flag = false;
+  else
+    user.user_flag = false;
 }
 
 void setup()
@@ -674,11 +699,12 @@ void setup()
     Serial.println(F("An Error has occurred while mounting SPIFFS ! Formatting in progress"));
     return;
   }
+  // get settings from /config.json and update Live state
   settingsToJSON();
 
   WiFi.onEvent(WiFiEvent);
   // network_conn();
-  check_user();
+  checkUser();
 
   //setting the pins for Outputs
   pinMode(RELAY1, OUTPUT);
@@ -705,6 +731,7 @@ void setup()
   if (WiFi.status() != WL_CONNECTED)
     ESP.restart();
 
+  Serial.print("WiFi.getMode() ");
   Serial.println(WiFi.getMode());
 
   server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -714,7 +741,7 @@ void setup()
                 if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
-              StaticJsonDocument<768> json = settingsToJSON();
+              StaticJsonDocument<1024> json = settingsToJSON();
 
               String response;
               serializeJsonPretty(json, response);
@@ -734,7 +761,7 @@ void setup()
                 if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
-              StaticJsonDocument<768> json = softReset();
+              StaticJsonDocument<1024> json = softReset();
 
               JSONtoSettings(json);
 
@@ -752,7 +779,7 @@ void setup()
                 if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
-              StaticJsonDocument<768> json = factoryReset();
+              StaticJsonDocument<1024> json = factoryReset();
 
               JSONtoSettings(json);
 
@@ -987,9 +1014,9 @@ void setup()
                                         user_data.clear();
                                         request->send(200);
                                         // Serial.println(response);
-                                        ESP.restart();
+                                        restart_sequence(1);
                                       });
-                                      
+
   server.addHandler(network_handler);
   server.addHandler(input_handler);
   server.addHandler(output_handler);
@@ -998,28 +1025,37 @@ void setup()
   server.addHandler(relay_handler);
   server.addHandler(user_handler);
 
+
+  if (user.user_flag)
+  {
+    server.serveStatic("/settings", SPIFFS, "/www/settings.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+    server.serveStatic("/dashboard", SPIFFS, "/www/index.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+    server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER).setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+    server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER).setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+  }
+  else
+  {
+    server.serveStatic("/settings", SPIFFS, "/www/settings.html");
+    server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
+    server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
+    server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER);
+  }
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });
-
-  server.serveStatic("/settings", SPIFFS, "/www/settings.html");
-  server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
-  server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
-  server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER);
-
-if(user.user_flag)
-  server.serveStatic("/", SPIFFS, "/").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
-else
   server.serveStatic("/", SPIFFS, "/");
-      // server.onNotFound([](AsyncWebServerRequest *request)
-      //                   { request->redirect("/dashboard"); });
+  
+  server.onNotFound([](AsyncWebServerRequest *request)
+                    { request->send(404); });
 
-      server.onFileUpload(handleUpload);
+  server.onFileUpload(handleUpload);
   server.begin();
 }
 
 void loop()
 {
-  check_user();
+  delay(1000);
+  checkUser();
   // Outputs Routine
   relay.deltaTimer1 = millis();
   relay.deltaTimer2 = millis();
