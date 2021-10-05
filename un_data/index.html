@@ -59,15 +59,20 @@
                                 <h5 class="card-title">Network Settings</h5>
                             </div>
                             <div class="card-body mb-0">
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label class="col-form-label col-4 text-nowrap">Connected: </label>
+                                    <label class="col-form-label col-auto text-nowrap" id="connected"></label>
+                                </div>
                                 <!-- Radio Buttons Connection -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
                                     aria-label="Network Connection">
-                                    <label class="col-form-label col-4 text-nowrap">Connection: </label>
+                                    <label class="col-form-label col-4 text-nowrap">Connection Type: </label>
                                     <label class="col-form-label col-auto text-nowrap" id="connection"></label>
                                 </div>
                                 <!-- Radio Buttons IP Type -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
-                                    <label class="col-form-label col-4 text-nowrap">IP: </label>
+                                    <label class="col-form-label col-4 text-nowrap">IP Type: </label>
                                     <label class="col-form-label col-auto text-nowrap" id="ip_type"></label>
                                 </div>
 
@@ -252,6 +257,8 @@
     <script>
         getSettings();
         getRelayState();
+        connectedStatus();
+        setInterval(connectedStatus, 500);
         setInterval(getSettings, 1000);
     </script>
 

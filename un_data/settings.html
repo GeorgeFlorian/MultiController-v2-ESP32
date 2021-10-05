@@ -61,18 +61,23 @@
                             <!-- Form -->
                             <!-- Can't use Bootstrap Modal inside <form> -->
                             <form class="card-body mb-0" id="network_settings" name="network_settings">
+                                <!-- Input row -->
+                                <div class="row mb-2 g-0 d-flex justify-content-between">
+                                    <label class="col-form-label col-4 text-nowrap">Connected: </label>
+                                    <label class="col-form-label col-auto text-nowrap" id="connected"></label>
+                                </div>
                                 <!-- Radio Buttons Connection -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between"
                                     aria-label="Network Connection">
-                                    <label class="col-form-label col-4 text-nowrap">Connection: </label>
-                                    <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
+                                    <label class="col-form-label col-4 text-nowrap">Connection Type: </label>
+                                    <div class="btn-group col" style="min-width: 207px; max-width: 207px;"
                                         id="check_network_connection">
                                         <input type="radio" class="btn-check" name="connection" id="wifi"
-                                            autocomplete="off" value="WiFi" aria-label="WiFi" checked>
+                                            autocomplete="off" value="WiFi" aria-label="WiFi">
                                         <label class="btn btn-outline-primary shadow-none" for="wifi">WiFi</label>
 
                                         <input type="radio" class="btn-check" name="connection" id="ethernet"
-                                            autocomplete="off" value="Ethernet" aria-label="Ethernet">
+                                            autocomplete="off" value="Ethernet" aria-label="Ethernet" checked>
                                         <label class="btn btn-outline-primary shadow-none"
                                             for="ethernet">Ethernet</label>
                                     </div>
@@ -80,14 +85,14 @@
                                 <!-- Radio Buttons IP Type -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="IP Type">
                                     <label class="col-form-label col-4 text-nowrap" for="dhcp">IP Type: </label>
-                                    <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
+                                    <div class="btn-group col" style="min-width: 207px; max-width: 207px;"
                                         id="check_ip_type">
                                         <input type="radio" class="btn-check" name="ip_type" id="dhcp"
-                                            autocomplete="off" value="DHCP" aria-label="DHCP">
+                                            autocomplete="off" value="DHCP" aria-label="DHCP" checked>
                                         <label class="btn btn-outline-primary shadow-none" for="dhcp">DHCP</label>
 
                                         <input type="radio" class="btn-check" name="ip_type" id="static"
-                                            autocomplete="off" value="Static" aria-label="Static" checked>
+                                            autocomplete="off" value="Static" aria-label="Static" >
                                         <label class="btn btn-outline-primary shadow-none" for="static">Static</label>
                                     </div>
                                 </div>
@@ -424,12 +429,6 @@
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
     <script src="/script.js"></script>
-
-    <script>
-        checkConnection();
-        checkType();
-    </script>
-
 </body>
 
 </html>

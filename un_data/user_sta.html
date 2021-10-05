@@ -66,22 +66,21 @@
                                 (2): Saving User Name or Password will replace, if existing, the current one.
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0" id="user_form">
+                            <form class="card-body mb-0" id="user_form" name="user">
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
-                                    <label for="ssid" class="col-form-label col-4 text-nowrap">User Name:</label>
-                                    <div class="col-6">
-                                        <input type="text" class="connection form-control" name="ssid" id="ssid"
-                                            placeholder="Current Value Placeholder">
+                                    <label for="username" class="col-form-label col-4 text-nowrap">Username:</label>
+                                    <div class="col-auto">
+                                        <input type="text" class="connection form-control" name="username" id="username"
+                                            placeholder="Username" aria-label="Username">
                                     </div>
                                 </div>
                                 <!-- Input row -->
                                 <div class="row mb-2 g-0 d-flex justify-content-between">
-                                    <label for="password" class="col-form-label col-4 text-nowrap">User
-                                        Password:</label>
-                                    <div class="col-6">
+                                    <label for="password" class="col-form-label col-4 text-nowrap">Password:</label>
+                                    <div class="col-auto">
                                         <input type="password" class="connection form-control" name="password"
-                                            id="password" placeholder="Password">
+                                            id="password" placeholder="Password" minlength="8" aria-label="Password">
                                     </div>
                                 </div>
                                 <!-- Submit Button -->
@@ -112,7 +111,7 @@
         crossorigin="anonymous"></script>
     <script src="/script.js"></script>
     <script>
-        // get_settings();
+        getUser();
     </script>
 
 </body>

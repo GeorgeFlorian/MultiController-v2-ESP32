@@ -393,9 +393,11 @@ if (document.getElementById("settings_body")) {
         .then(data => console.log(data));
     });
 
+    // checkConnection();
     let check_network_connection = document.getElementById("check_network_connection");
     check_network_connection.addEventListener('change', checkConnection, false);
     
+    // checkType();
     let check_ip_type = document.getElementById("check_ip_type");
     check_ip_type.addEventListener('change', checkType, false);
 

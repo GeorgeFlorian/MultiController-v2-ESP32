@@ -213,15 +213,43 @@ struct RFID
   String port_rfid = "";
 } rfid;
 
-struct User
+class User
 {
+private:
   String user_name = "";
   String user_pass = "";
+
+public:
+  void setUsername(String x)
+  {
+    x.trim();
+    if (x.length() <= 0)
+      user_name = "";
+    else
+      user_name = x;
+  }
+  String getUsername()
+  {
+    return user_name;
+  }
+
+  void setUserPassword(String x)
+  {
+    x.trim();
+    if (x.length() <= 0)
+      user_pass = "";
+    else
+      user_pass = x;
+  }
+  String getUserPassword()
+  {
+    return user_pass;
+  }
 
   bool user_flag = false;
 } user;
 
-void updateLiveState(StaticJsonDocument<768>& doc)
+void updateLiveState(StaticJsonDocument<768> &doc)
 {
   network_settings.connection = doc["network_settings"]["connection"] | "Not working";
   network_settings.ip_type = doc["network_settings"]["ip_type"] | "Not working";
@@ -554,51 +582,62 @@ void updateRelay(StaticJsonDocument<384> json)
   }
 }
 
-// void WiFiEvent(WiFiEvent_t event)
-// {
-//   switch (event)
-//   {
-//   case SYSTEM_EVENT_ETH_START:
-//     Serial.println(F("ETH Started"));
-//     //set eth hostname here
-//     if (!ETH.setHostname("Metrici-MultiController-Eth"))
-//     {
-//       Serial.println(F("Ethernet hostname failed to configure"));
-//     }
-//     break;
-//   case SYSTEM_EVENT_ETH_CONNECTED:
-//     Serial.println(F("ETH Connected"));
-//     break;
-//   case SYSTEM_EVENT_ETH_GOT_IP:
-//     eth_connected = true;
-//     Serial.print(F("ETH MAC: "));
-//     Serial.print(ETH.macAddress());
-//     Serial.print(F(", IPv4: "));
-//     Serial.print(ETH.localIP());
-//     if (ETH.fullDuplex())
-//     {
-//       Serial.print(F(", FULL_DUPLEX"));
-//     }
-//     Serial.print(F(", "));
-//     Serial.print(ETH.linkSpeed());
-//     Serial.println(F("Mbps"));
-//     break;
-//   case SYSTEM_EVENT_ETH_DISCONNECTED:
-//     Serial.println(F("ETH Disconnected"));
-//     eth_connected = false;
-//     break;
-//   case SYSTEM_EVENT_ETH_STOP:
-//     Serial.println(F("ETH Stopped"));
-//     eth_connected = false;
-//     break;
-//   default:
-//     break;
-//   }
-// }
+void WiFiEvent(WiFiEvent_t event)
+{
+  switch (event)
+  {
+  case SYSTEM_EVENT_ETH_START:
+    Serial.println(F("ETH Started"));
+    //set eth hostname here
+    if (!ETH.setHostname("Metrici-MultiController-Eth"))
+    {
+      Serial.println(F("Ethernet hostname failed to configure"));
+    }
+    break;
+  case SYSTEM_EVENT_ETH_CONNECTED:
+    Serial.println(F("ETH Connected"));
+    break;
+  case SYSTEM_EVENT_ETH_GOT_IP:
+    eth_connected = true;
+    Serial.print(F("ETH MAC: "));
+    Serial.print(ETH.macAddress());
+    Serial.print(F(", IPv4: "));
+    Serial.print(ETH.localIP());
+    if (ETH.fullDuplex())
+    {
+      Serial.print(F(", FULL_DUPLEX"));
+    }
+    Serial.print(F(", "));
+    Serial.print(ETH.linkSpeed());
+    Serial.println(F("Mbps"));
+    break;
+  case SYSTEM_EVENT_ETH_DISCONNECTED:
+    Serial.println(F("ETH Disconnected"));
+    eth_connected = false;
+    break;
+  case SYSTEM_EVENT_ETH_STOP:
+    Serial.println(F("ETH Stopped"));
+    eth_connected = false;
+    break;
+  default:
+    break;
+  }
+}
 
-void network_conn()
+void eth_connectionc()
 {
   ETH.begin();
+
+  IPAddress local_sta(192, 168, 100, 10);
+  IPAddress gateway_sta(192, 168, 100, 1);
+  IPAddress subnet_sta(255, 255, 255, 0);
+  IPAddress primary_dns(8, 8, 8, 8);
+
+  if (!ETH.config(local_sta, gateway_sta, subnet_sta, primary_dns))
+  {
+    Serial.println(F("Couldn't configure STATIC IP ! Obtaining DHCP IP !"));
+  }
+
   int k = 0;
   while (!eth_connected && k < 20)
   {
@@ -614,16 +653,10 @@ void network_conn()
     delay(5000);
     ESP.restart();
   }
+}
 
-  IPAddress local_sta(192, 168, 100, 10);
-  IPAddress gateway_sta(192, 168, 100, 1);
-  IPAddress subnet_sta(255, 255, 255, 0);
-  IPAddress primary_dns(8, 8, 8, 8);
-
-  if (!ETH.config(local_sta, gateway_sta, subnet_sta, primary_dns))
-  {
-    Serial.println(F("Couldn't configure STATIC IP ! Obtaining DHCP IP !"));
-  }
+void wifi_connection()
+{
 }
 
 void setup()
@@ -634,7 +667,9 @@ void setup()
     Serial.println(F("An Error has occurred while mounting SPIFFS ! Formatting in progress"));
     return;
   }
-  // WiFi.onEvent(WiFiEvent);
+  settingsToJSON();
+
+  WiFi.onEvent(WiFiEvent);
   // network_conn();
 
   //setting the pins for Outputs
@@ -643,8 +678,8 @@ void setup()
   digitalWrite(RELAY1, LOW);
   digitalWrite(RELAY2, LOW);
 
-  listAllFiles();
-  settingsToJSON();
+  // listAllFiles();
+
   Serial.print("SSID: ");
   Serial.println(network_settings.ssid);
   Serial.print("Password: ");
@@ -666,6 +701,11 @@ void setup()
 
   server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
             {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
               StaticJsonDocument<768> json = settingsToJSON();
 
               String response;
@@ -681,6 +721,11 @@ void setup()
 
   server.on("/api/soft-reset", HTTP_GET, [](AsyncWebServerRequest *request)
             {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
               StaticJsonDocument<768> json = softReset();
 
               JSONtoSettings(json);
@@ -694,6 +739,11 @@ void setup()
 
   server.on("/api/factory-reset", HTTP_GET, [](AsyncWebServerRequest *request)
             {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
               StaticJsonDocument<768> json = factoryReset();
 
               JSONtoSettings(json);
@@ -706,13 +756,20 @@ void setup()
             });
 
   server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/config.json", String(), true); });
+            {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
+              request->send(SPIFFS, "/config.json", String(), true);
+            });
 
   server.on("/relay1/on", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               if (user.user_flag)
               {
-                if (!request->authenticate(user.user_name.c_str(), user.user_pass.c_str()))
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
@@ -728,7 +785,7 @@ void setup()
             {
               if (user.user_flag)
               {
-                if (!request->authenticate(user.user_name.c_str(), user.user_pass.c_str()))
+                if (!request->authenticate(user.getUserPassword().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
@@ -745,7 +802,7 @@ void setup()
             {
               if (user.user_flag)
               {
-                if (!request->authenticate(user.user_name.c_str(), user.user_pass.c_str()))
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
@@ -760,7 +817,7 @@ void setup()
             {
               if (user.user_flag)
               {
-                if (!request->authenticate(user.user_name.c_str(), user.user_pass.c_str()))
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
@@ -902,13 +959,34 @@ void setup()
                                         request->send(200);
                                         // Serial.println(response);
                                       });
+  AsyncCallbackJsonWebHandler *user_handler =
+      new AsyncCallbackJsonWebHandler("/api/user/post", [](AsyncWebServerRequest *request, JsonVariant &json)
+                                      {
+                                        StaticJsonDocument<384> user_data;
+                                        if (json.is<JsonArray>())
+                                        {
+                                          user_data = json.as<JsonArray>();
+                                        }
+                                        else if (json.is<JsonObject>())
+                                        {
+                                          user_data = json.as<JsonObject>();
+                                        }
 
+                                        saveSettings(user_data, "user");
+                                        Serial.println("Received Settings /api/user/post: ");
+                                        serializeJsonPretty(user_data, Serial);
+                                        Serial.print('\n');
+                                        user_data.clear();
+                                        request->send(200);
+                                        // Serial.println(response);
+                                      });
   server.addHandler(network_handler);
   server.addHandler(input_handler);
   server.addHandler(output_handler);
   server.addHandler(wiegand_handler);
   server.addHandler(rfid_handler);
   server.addHandler(relay_handler);
+  server.addHandler(user_handler);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });
