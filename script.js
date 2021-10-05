@@ -54,18 +54,21 @@ function ValidateIPaddress(form) {
   var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
   for (let i = 0; i < form.elements.length - 1; i++) {
+    // Select only the ip Address inputs
     if (form.elements[i].ariaLabel.includes("Address")) {
-      if (form.elements[i].value.match(ipformat)) {
+      // console.log(form.elements[i].value.length);
+      if (form.elements[i].ariaLabel.includes("Network") && form.elements[i].placeholder != 'DHCP IP'
+        && !form.elements[i].value.match(ipformat)) {
+        alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
         form.elements[i].focus();
-        // check to see if Static IP  type is selected
-      } else if (form.elements[i].placeholder != 'DHCP IP' && form.elements[i].value.length > 0) {
+        return false;
+      } else if (form.elements[i].value.length > 0 && !form.elements[i].value.match(ipformat)) {
         alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
         form.elements[i].focus();
         return false;
       }
     }
   }
-
   return true;
 }
 
@@ -395,7 +398,7 @@ if (document.getElementById("settings_body")) {
 
     let check_network_connection = document.getElementById("check_network_connection");
     check_network_connection.addEventListener('change', checkConnection, false);
-    
+
     let check_ip_type = document.getElementById("check_ip_type");
     check_ip_type.addEventListener('change', checkType, false);
 

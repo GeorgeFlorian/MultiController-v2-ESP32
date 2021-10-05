@@ -659,6 +659,13 @@ void wifi_connection()
 {
 }
 
+void check_user()
+{
+  if (user.getUsername().length() > 0 && user.getUserPassword().length() > 0)
+    user.user_flag = true;
+  user.user_flag = false;
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -671,6 +678,7 @@ void setup()
 
   WiFi.onEvent(WiFiEvent);
   // network_conn();
+  check_user();
 
   //setting the pins for Outputs
   pinMode(RELAY1, OUTPUT);
@@ -979,7 +987,9 @@ void setup()
                                         user_data.clear();
                                         request->send(200);
                                         // Serial.println(response);
+                                        ESP.restart();
                                       });
+                                      
   server.addHandler(network_handler);
   server.addHandler(input_handler);
   server.addHandler(output_handler);
@@ -996,16 +1006,20 @@ void setup()
   server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
   server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER);
 
-  server.serveStatic("/", SPIFFS, "/").setAuthentication("user", "password");
-  // server.onNotFound([](AsyncWebServerRequest *request)
-  //                   { request->redirect("/dashboard"); });
+if(user.user_flag)
+  server.serveStatic("/", SPIFFS, "/").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+else
+  server.serveStatic("/", SPIFFS, "/");
+      // server.onNotFound([](AsyncWebServerRequest *request)
+      //                   { request->redirect("/dashboard"); });
 
-  server.onFileUpload(handleUpload);
+      server.onFileUpload(handleUpload);
   server.begin();
 }
 
 void loop()
 {
+  check_user();
   // Outputs Routine
   relay.deltaTimer1 = millis();
   relay.deltaTimer2 = millis();
