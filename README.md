@@ -38,10 +38,10 @@
 - Handle form validation on front-end (ux) and back-end
 - Handle Relay state
 - Implement HTTP Authentication
+- Implement Logs
 
 ### To implement
 
-- Implement Logs
 - Implement Toastify
 - Unfocus Submit buttons on submit event
 - Loading icon when navigating pages

@@ -11,7 +11,7 @@
     <title>Dashboard</title>
 </head>
 
-<body class="d-flex justify-content-center h-100 w-100">
+<body class="d-flex justify-content-center h-100 w-100" id="index">
     <div class="container-fluid h-100 w-100 p-0">
         <div class="row min-vh-100 d-flex flex-column-reverse flex-md-row justify-content-center m-0">
             <!-- Nav -->
@@ -254,13 +254,6 @@
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
         crossorigin="anonymous"></script>
     <script src="/script.js"></script>
-    <script>
-        getSettings();
-        getRelayState();
-        connectedStatus();
-        setInterval(connectedStatus, 500);
-        setInterval(getSettings, 1000);
-    </script>
 
 </body>
 

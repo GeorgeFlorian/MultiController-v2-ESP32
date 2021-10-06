@@ -7,9 +7,6 @@ function connectedStatus() {
   conn.innerHTML = connected ? "Yes" : "No";
 }
 
-if (document.getElementById("user_body") === null)
-  setInterval(connectedStatus, 500);
-
 function ValidateIPaddressOnChange(input) {
   var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
   var strtype = "";
@@ -147,7 +144,7 @@ function checkType() {
 
 // parse form data into json
 function toJSONstring(form) {
-  console.log(`form: ${form.name}`);
+  // console.log(`form: ${form.name}`);
   let object = {};
   // console.log(form);
   let formData = new FormData(form);
@@ -209,9 +206,9 @@ async function getSettings() {
       timeout: 5000,
     }).then((json_data) => {
       // console.log("Received settings: " + json_data);
-      let whichPage = document.getElementById('settings_body');
+      let whichPage = document.getElementById('settings');
       for (let i in json_data) {
-        console.log("Received settings: " + json_data[i]);
+        // console.log("Received settings: " + json_data[i]);
         for (let key in json_data[i]) {
           // console.log(`key: ${key}`);
           if (json_data[i].hasOwnProperty(key)) {
@@ -329,10 +326,53 @@ function getUser() {
   });
 }
 
-// attach addEventListener() only to the page that has <body id="settings_body"></body>
-if (document.getElementById("settings_body")) {
+async function getLogs() {
+  options = {};
+  const { timeout = 8000 } = options;
+  const controller = new AbortController();
+  const timeoutID = setTimeout(() => controller.abort(), timeout);
+  await fetch('/api/logs', {
+    ...options,
+    signal: controller.signal,
+    // headers: {
+    //   'Content-Type': 'application/json',
+    //   'Accept': 'application/json'
+    // }
+  }).then(response => {
+    // console.log('getlogs(): ');
+    response.text().then(text => {
+      document.getElementById('logs').innerHTML = text;
+      // console.log(text);
+    });
+  });
+  clearTimeout(timeoutID);
+}
+
+if (document.getElementById("user_body")) {
+  window.addEventListener("load", function () {
+    getUser();
+    setInterval(getLogs, 1000);
+  });
+}
+
+if (document.getElementById("index")) {
   window.addEventListener("load", function () {
     getSettings();
+    getRelayState();
+    connectedStatus();
+    setInterval(connectedStatus, 500);
+    setInterval(getSettings, 1000);
+    setInterval(getLogs, 1000);
+  });
+}
+
+// attach addEventListener() only to the page that has <body id="settings"></body>
+if (document.getElementById("settings")) {
+  window.addEventListener("load", function () {
+    getSettings();
+    connectedStatus();
+    setInterval(connectedStatus, 500);
+    setInterval(getLogs, 1000);
     // handle network_form submit
     let network_form = document.getElementById("network_settings");
     network_form.addEventListener("submit", function (e) {

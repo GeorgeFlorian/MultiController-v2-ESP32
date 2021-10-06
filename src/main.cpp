@@ -22,6 +22,64 @@
 AsyncWebServer server(80);
 static bool eth_connected = false;
 
+//------------------------- struct circular_buffer
+String strlog;
+
+struct ring_buffer
+{
+  ring_buffer(size_t cap) : buffer(cap) {}
+
+  bool empty() const { return sz == 0; }
+  bool full() const { return sz == buffer.size(); }
+
+  void push(String str)
+  {
+    if (last >= buffer.size())
+      last = 0;
+    buffer[last] = str;
+    ++last;
+    if (full())
+      first = (first + 1) % buffer.size();
+    else
+      ++sz;
+  }
+  void print() const
+  {
+    strlog = "";
+    if (first < last)
+      for (size_t i = first; i < last; ++i)
+      {
+        strlog += (buffer[i] + "<br>");
+      }
+    else
+    {
+      for (size_t i = first; i < buffer.size(); ++i)
+      {
+        strlog += (buffer[i] + "<br>");
+      }
+      for (size_t i = 0; i < last; ++i)
+      {
+        strlog += (buffer[i] + "<br>");
+      }
+    }
+  }
+
+private:
+  std::vector<String> buffer;
+  size_t first = 0;
+  size_t last = 0;
+  size_t sz = 0;
+};
+//------------------------- struct circular_buffer
+ring_buffer circle(10);
+
+//------------------------- logOutput(String)
+void logOutput(String string1)
+{
+  circle.push(string1);
+  Serial.println(string1);
+}
+
 //------------------------- restart_sequence()
 void restart_sequence(unsigned int countdown)
 {
@@ -40,7 +98,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   {
     if (!index)
     {
-      // logOutput("The update process has started...");
+      logOutput("The update process has started...");
       // if filename includes spiffs, update the spiffs partition
       int cmd = (filename.indexOf("spiffs") > -1) ? U_SPIFFS : U_FLASH;
       if (!Update.begin(UPDATE_SIZE_UNKNOWN, cmd))
@@ -71,7 +129,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
       }
       else
       {
-        // logOutput("Update complete");
+        logOutput("Update complete");
         Serial.flush();
         ESP.restart();
       }
@@ -81,7 +139,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   {
     if (!index)
     {
-      // logOutput((String) "Started uploading: " + filename);
+      logOutput((String) "Started uploading: " + filename);
       // open the file on first call and store the file handle in the request object
       request->_tempFile = SPIFFS.open("/" + filename, "w");
     }
@@ -92,7 +150,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
     }
     if (final)
     {
-      // logOutput((String)filename + " was successfully uploaded! File size: " + index + len);
+      logOutput((String)filename + " was successfully uploaded! File size: " + index + len);
       // close the file handle as the upload is now done
       request->_tempFile.close();
       // request->redirect("/files");
@@ -326,20 +384,34 @@ StaticJsonDocument<1024> settingsToJSON()
   // Open file to read
   File file = SPIFFS.open("/config.json");
   if (!file)
-    Serial.println(F("Could not open file to read config !!!"));
+  {
+    logOutput("ERROR: Failed to get configuration.");
+    Serial.println("Could not open file to read config !!!");
+    doc.clear();
+    return doc;
+  }
 
   int file_size = file.size();
   if (file_size > 1024)
   {
+    logOutput("ERROR: Failed to get configuration.");
     Serial.println(F("Config file bigger than JSON document. Alocate more capacity !"));
     doc.clear();
+    file.close();
     return doc;
   }
 
   // Deserialize file to JSON document
   DeserializationError error = deserializeJson(doc, file);
   if (error)
-    Serial.println(F("Failed to read file, using default configuration"));
+  {
+    logOutput("ERROR: Failed to get configuration.");
+    Serial.println("Failed to deserialize file to JSON document.");
+    Serial.println(error.c_str());
+    doc.clear();
+    file.close();
+    return doc;
+  }
 
   file.close();
 
@@ -356,6 +428,7 @@ bool JSONtoSettings(StaticJsonDocument<1024> doc)
   File file = SPIFFS.open("/config.json", "w");
   if (!file)
   {
+    logOutput("ERROR: Failed to reset. Try again.");
     Serial.println(F("Could not open file to write config !!!"));
     return 0;
   }
@@ -365,6 +438,7 @@ bool JSONtoSettings(StaticJsonDocument<1024> doc)
   {
     doc.clear();
     file.close();
+    logOutput("ERROR: Failed to reset. Try again.");
     Serial.println(F("Failed to write to file"));
     return 0;
   }
@@ -382,6 +456,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   File file = SPIFFS.open("/config.json", "r");
   if (!file)
   {
+    logOutput("ERROR: Failed to save settings. Try again.");
     Serial.println("Could not open file to read config !!!");
     return;
   }
@@ -389,6 +464,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   int file_size = file.size();
   if (file_size > 1024)
   {
+    logOutput("ERROR: Failed to save settings. Try again.");
     Serial.println("Config file bigger than JSON document. Alocate more capacity !");
     doc.clear();
     return;
@@ -397,7 +473,11 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   // Deserialize file to JSON document
   DeserializationError error = deserializeJson(doc, file);
   if (error)
+  {
+    logOutput("ERROR: Failed to save settings. Try again.");
     Serial.println("Failed to read file, using default configuration");
+    return;
+  }
 
   file.close();
   String nested_key = "";
@@ -428,6 +508,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   file = SPIFFS.open("/config.json", "w");
   if (!file)
   {
+    logOutput("ERROR: Failed to save settings. Try again.");
     Serial.println("Could not open file to read config !!!");
     return;
   }
@@ -437,6 +518,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
   {
     doc.clear();
     file.close();
+    logOutput("ERROR: Failed to save settings. Try again.");
     Serial.println("Failed to write to file");
     return;
   }
@@ -700,7 +782,11 @@ void setup()
     return;
   }
   // get settings from /config.json and update Live state
-  settingsToJSON();
+  if(settingsToJSON().isNull())
+  {
+    logOutput("ERROR: Could not get start-up configuration. Restarting...");
+    restart_sequence(2);
+  }
 
   WiFi.onEvent(WiFiEvent);
   // network_conn();
@@ -718,6 +804,7 @@ void setup()
   Serial.println(network_settings.ssid);
   Serial.print("Password: ");
   Serial.println(network_settings.password);
+  logOutput("Test Log");
 
   WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
 
@@ -865,6 +952,16 @@ void setup()
               request->send(200, "text/plain", "Relay 1 is OFF");
             });
 
+  server.on("/api/logs", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              if (user.user_flag)
+              {
+                if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
+                  return request->requestAuthentication(NULL, false);
+              }
+              circle.print();
+              request->send(200, "text/plain", strlog);
+            });
   // POST
   AsyncCallbackJsonWebHandler *network_handler =
       new AsyncCallbackJsonWebHandler("/api/network/post", [](AsyncWebServerRequest *request, JsonVariant &json)
@@ -1025,7 +1122,6 @@ void setup()
   server.addHandler(relay_handler);
   server.addHandler(user_handler);
 
-
   if (user.user_flag)
   {
     server.serveStatic("/settings", SPIFFS, "/www/settings.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
@@ -1044,7 +1140,7 @@ void setup()
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->redirect("/dashboard"); });
   server.serveStatic("/", SPIFFS, "/");
-  
+
   server.onNotFound([](AsyncWebServerRequest *request)
                     { request->send(404); });
 
