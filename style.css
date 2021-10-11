@@ -13,16 +13,20 @@ body {
   left: 0;
 }
 
-.wrong, .wrong:focus {
+.wrong,
+.wrong:focus {
   color: #dc3545;
 }
-.correct, .corect:focus {
+
+.correct,
+.corect:focus {
   color: #198754;
 }
 
-
 /* Modify margin-left acording to the nav width */
-#content_wrapper, #content_wrapper_user {
+
+#content_wrapper,
+#content_wrapper_user {
   max-width: 1200px;
   margin-left: 190px !important;
 }
@@ -36,6 +40,20 @@ body {
   height: 400px;
 }
 
+.info {
+  background: rgb(10, 0, 160);
+  background: linear-gradient(
+    90deg,
+    rgba(10, 0, 160, 1) 0%,
+    rgba(10, 0, 190, 1) 30%,
+    rgba(0, 150, 170, 1) 100%
+  );
+}
+
+.error {
+  background: #e11422;
+}
+
 @media only screen and (max-width: 767px) {
   #nav_wrapper {
     position: fixed;
@@ -44,20 +62,17 @@ body {
     bottom: 0;
     z-index: 10;
   }
-
-#nav_wrapper li {
-  font-size: 13px !important;
-}
-/* Modify margin-bottom acording to the nav height */
+  #nav_wrapper li {
+    font-size: 13px !important;
+  }
+  /* Modify margin-bottom acording to the nav height */
   #content_wrapper {
     margin: auto !important;
     margin-bottom: 50px !important;
-  } 
-
+  }
   #content_wrapper_user {
     margin: auto !important;
   }
-  
   #user_wrapper {
     max-width: none;
     margin: 0 auto !important;
@@ -65,7 +80,9 @@ body {
 }
 
 /* 768px to  950px*/
+
 /* File input size */
+
 @media only screen and (min-width: 767px) and (max-width: 950px) {
   .form-control-small {
     min-height: calc(1.5em + 0.5rem + 2px) !important;
@@ -74,6 +91,7 @@ body {
     border-radius: 0.2rem !important;
   }
 }
+
 @media only screen and (max-width: 300px) {
   .form-control-small {
     min-height: calc(1.5em + 0.5rem + 2px) !important;

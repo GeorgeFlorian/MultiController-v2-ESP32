@@ -782,7 +782,7 @@ void setup()
     return;
   }
   // get settings from /config.json and update Live state
-  if(settingsToJSON().isNull())
+  if (settingsToJSON().isNull())
   {
     logOutput("ERROR: Could not get start-up configuration. Restarting...");
     restart_sequence(2);
