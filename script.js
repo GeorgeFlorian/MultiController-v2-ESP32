@@ -6,7 +6,7 @@ let connected = false;
 function toast(message, type) {
     Toastify({
         text: message,
-        duration: 30000,
+        duration: 3000,
         close: true,
         gravity: "bottom", // `top` or `bottom`
         position: "right", // `left`, `center` or `right`
@@ -170,9 +170,11 @@ function toJSONstring(form) {
             if (radio_btn[0].checked) {
                 // console.log(radio_btn[0].id);
                 value = radio_btn[0].value;
+                toast(`${key === 'state1' ? 'Relay1 is On.' : 'Relay2 is On.'}`, true);
             } else if (radio_btn[1].checked) {
                 // console.log(radio_btn[1].id);
                 value = radio_btn[1].value;
+                toast(`${key === 'state1' ? 'Relay1 is Off.' : 'Relay2 is Off.'}`, true);
             }
         }
 
@@ -308,22 +310,25 @@ async function postData(json_data, api_path) {
     return response;
 }
 
-function getFormName(form) {
+function getFormMessage(form) {
     switch (form.name) {
         case 'network_settings':
-            return 'Network';
+            return 'Saved Network settings.';
             break;
         case 'input':
-            return 'Input';
+            return 'Saved Input settings.';
             break;
         case 'output':
-            return 'Output';
+            return 'Saved Output settings.';
             break;
         case 'wiegand':
-            return 'Wiegand';
+            return 'Saved Wiegand settings.';
             break;
         case 'rfid':
-            return 'RFID';
+            return 'Saved RFID settings.';
+            break;
+        case 'user':
+            return 'Saved User settings.';
             break;
         default:
             return '';
@@ -340,25 +345,30 @@ function saveSettings(form, destination) {
         console.log(`/api/${destination} Response: `);
         if (response.status == 200 || response.ok) {
             connected = true;
-            toast(`Saved ${getFormName(form)} settings`, true);
+            if (form.name != 'relay1' && form.name != 'relay2') toast(`${getFormMessage(form)}`, true);
         }
         else {
             connected = false;
-            toast(`Settings not saved !`, false);
+            if (form.name != 'relay1' && form.name != 'relay2') toast(`Settings not saved !`, false);
         }
     });
 }
 
 // function that sends relays status to api/settings/relays
-function getRelayState() {
-    let relay_form = document.getElementById("relay");
-    relay_form.addEventListener('change', function (e) {
+function saveRelayState() {
+    let relay1 = document.getElementById("relay1");
+    relay1.addEventListener('change', function (e) {
         e.preventDefault();
-        saveSettings(relay_form, 'relay/post');
+        saveSettings(relay1, 'relay/post');
+    });
+    let relay2 = document.getElementById("relay2");
+    relay2.addEventListener('change', function (e) {
+        e.preventDefault();
+        saveSettings(relay2, 'relay/post');
     });
 }
 // handle user form submit
-function getUser() {
+function saveUser() {
     let user_form = document.getElementById("user_form");
     user_form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -391,7 +401,7 @@ async function getLogs() {
 
 if (document.getElementById("user_body")) {
     window.addEventListener("load", function () {
-        getUser();
+        saveUser();
         setInterval(getLogs, 1000);
     });
 }
@@ -399,7 +409,7 @@ if (document.getElementById("user_body")) {
 if (document.getElementById("index")) {
     window.addEventListener("load", function () {
         getSettings();
-        getRelayState();
+        saveRelayState();
         connectedStatus();
         setInterval(connectedStatus, 500);
         setInterval(getSettings, 1000);

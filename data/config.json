@@ -19,8 +19,10 @@
         "timer1": "0",
         "timer2": "0"
     },
-    "relay": {
-        "state1": "Off",
+    "relay1": {
+        "state1": "Off"
+    },
+    "relay2": {
         "state2": "Off"
     },
     "wiegand": {

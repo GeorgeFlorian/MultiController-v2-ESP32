@@ -118,7 +118,7 @@
                                             href="#input">Input</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#relay">Output</a>
+                                        <a class="nav-link" data-bs-toggle="tab" href="#relays">Output</a>
                                     </li>
                                 </ul>
                             </div>
@@ -141,7 +141,7 @@
                                     </div>
                                 </div>
                                 <!-- Output Tab -->
-                                <form class="tab-pane" id="relay" name="relay">
+                                <div class="tab-pane" id="relays" name="relays">
                                     <!-- Input row -->
                                     <div class="row mb-2 g-0 d-flex justify-content-between">
                                         <label class="col-form-label col-4 text-nowrap">Timer 1:</label>
@@ -153,7 +153,8 @@
                                         <label class="col-form-label col-auto text-nowrap" id="timer2"></label>
                                     </div>
                                     <!-- Radio Buttons Relay 1 -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 1">
+                                    <form class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 1"
+                                        id="relay1" name="relay1">
                                         <label class="col-form-label col-4 text-nowrap" for="dhcp">Relay 1: </label>
                                         <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
                                             id="state1">
@@ -165,9 +166,10 @@
                                                 autocomplete="off" value="Off" checked>
                                             <label class="btn btn-outline-danger shadow-none" for="off1">Off</label>
                                         </div>
-                                    </div>
+                                    </form>
                                     <!-- Radio Buttons Relay 2 -->
-                                    <div class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 2">
+                                    <form class="row mb-2 g-0 d-flex justify-content-between" aria-label="Relay 2"
+                                        id="relay2" name="relay2">
                                         <label class="col-form-label col-4 text-nowrap" for="dhcp">Relay 2: </label>
                                         <div class="btn-group col" style="min-width: 200px; max-width: 200px;"
                                             id="state2">
@@ -179,8 +181,8 @@
                                                 autocomplete="off" value="Off" checked>
                                             <label class="btn btn-outline-danger shadow-none" for="off2">Off</label>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

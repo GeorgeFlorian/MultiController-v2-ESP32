@@ -24,7 +24,6 @@ body {
 }
 
 /* Modify margin-left acording to the nav width */
-
 #content_wrapper,
 #content_wrapper_user {
   max-width: 1200px;
@@ -37,7 +36,7 @@ body {
 }
 
 #logs {
-  height: 400px;
+  height: 300px;
 }
 
 .info {

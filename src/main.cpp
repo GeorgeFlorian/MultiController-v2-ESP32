@@ -240,7 +240,7 @@ struct Relay
   long deltaTimer1 = 0;
   long deltaTimer2 = 0;
 
-} relay;
+} relays;
 
 class Wiegand
 {
@@ -363,8 +363,9 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
   output.setTimer1(doc["output"]["timer1"] | "Not working");
   output.setTimer2(doc["output"]["timer2"] | "Not working");
 
-  relay.state1 = doc["relay"]["state1"] | "Not working";
-  relay.state2 = doc["relay"]["state2"] | "Not working";
+  relays.state1 = doc["relay1"]["state1"] | "Not working";
+
+  relays.state2 = doc["relay2"]["state2"] | "Not working";
 
   wiegand.database_url = doc["wiegand"]["database_url"] | "Not working";
   wiegand.setPulseWidth(doc["wiegand"]["pulse_width"] | "Not working");
@@ -568,8 +569,9 @@ StaticJsonDocument<1024> softReset()
   doc["output"]["timer1"] = "0";
   doc["output"]["timer2"] = "0";
 
-  doc["relay"]["state1"] = "Off";
-  doc["relay"]["state2"] = "Off";
+  doc["relay1"]["state1"] = "Off";
+
+  doc["relay2"]["state2"] = "Off";
 
   doc["wiegand"]["database_url"] = "Not Set";
   doc["wiegand"]["pulse_width"] = "90";
@@ -611,8 +613,9 @@ StaticJsonDocument<1024> factoryReset()
   doc["output"]["timer1"] = "0";
   doc["output"]["timer2"] = "0";
 
-  doc["relay"]["state1"] = "Off";
-  doc["relay"]["state2"] = "Off";
+  doc["relay1"]["state1"] = "Off";
+
+  doc["relay2"]["state2"] = "Off";
 
   doc["wiegand"]["database_url"] = "Not Set";
   doc["wiegand"]["pulse_width"] = "90";
@@ -629,61 +632,61 @@ StaticJsonDocument<1024> factoryReset()
 
 void updateRelay(StaticJsonDocument<384> json)
 {
-  String oldState1 = relay.state1;
-  String oldState2 = relay.state2;
-  relay.state1 = json["relay"]["state1"].as<String>();
-  relay.state2 = json["relay"]["state2"].as<String>();
+  String oldState1 = relays.state1;
+  String oldState2 = relays.state2;
+  relays.state1 = json["relay1"]["state1"].as<String>();
+  relays.state2 = json["relay2"]["state2"].as<String>();
 
-  if (oldState1 != relay.state1)
+  if (oldState1 != relays.state1)
   {
-    if (relay.state1 == "On")
+    if (relays.state1 == "On")
     {
       digitalWrite(RELAY1, HIGH);
-      // logOutput("Relay1 is ON");
+      logOutput("Relay1 is ON");
       if (output.getTimer1().toInt() == 0)
       {
-        relay.manualClose1 = true;
+        relays.manualClose1 = true;
         // logOutput(" Relay 1 will remain open until it is manually closed !");
         Serial.println(" Relay 1 will remain open until it is manually closed !");
       }
       else
       {
-        relay.manualClose1 = false;
-        relay.startTimer1 = millis();
-        Serial.println(" Relay 1 will automatically close in " + output.getTimer1() + " seconds !");
+        relays.manualClose1 = false;
+        relays.startTimer1 = millis();
+        logOutput(" Relay 1 will automatically close in " + output.getTimer1() + " seconds !");
       }
     }
-    else if (relay.state1 == "Off")
+    else if (relays.state1 == "Off")
     {
       digitalWrite(RELAY1, LOW);
-      relay.manualClose1 = true;
-      Serial.println(" Relay 1 is Off");
+      relays.manualClose1 = true;
+      logOutput(" Relay 1 is Off");
     }
   }
 
-  if (oldState2 != relay.state2)
+  if (oldState2 != relays.state2)
   {
-    if (relay.state2 == "On")
+    if (relays.state2 == "On")
     {
       digitalWrite(RELAY2, HIGH);
-      Serial.println("Relay 2 is ON");
+      logOutput("Relay 2 is ON");
       if (output.getTimer2().toInt() == 0)
       {
-        relay.manualClose2 = true;
+        relays.manualClose2 = true;
         Serial.println("Relay 2 will remain open until it is manually closed !");
       }
       else
       {
-        relay.manualClose2 = false;
-        Serial.println("Relay 2 will automatically close in " + output.getTimer2() + " seconds !");
+        relays.manualClose2 = false;
+        logOutput("Relay 2 will automatically close in " + output.getTimer2() + " seconds !");
       }
-      relay.startTimer2 = millis();
+      relays.startTimer2 = millis();
     }
-    else if (relay.state2 == "Off")
+    else if (relays.state2 == "Off")
     {
       digitalWrite(RELAY2, LOW);
-      Serial.println(" Relay 2 is OFF");
-      relay.manualClose2 = true;
+      logOutput(" Relay 2 is OFF");
+      relays.manualClose2 = true;
     }
   }
 }
@@ -804,7 +807,6 @@ void setup()
   Serial.println(network_settings.ssid);
   Serial.print("Password: ");
   Serial.println(network_settings.password);
-  logOutput("Test Log");
 
   WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
 
@@ -895,10 +897,9 @@ void setup()
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
-              relay_json["relay"]["state1"] = "On";
-              relay_json["relay"]["state2"] = relay.state2;
+              relay_json["relay1"]["state1"] = "On";
               updateRelay(relay_json);
-              saveSettings(relay_json, "relay");
+              saveSettings(relay_json, "relay1");
               relay_json.clear();
               request->send(200, "text/plain", "Relay 1 is ON");
             });
@@ -911,10 +912,9 @@ void setup()
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
-              relay_json["relay"]["state1"] = "Off";
-              relay_json["relay"]["state2"] = relay.state2;
+              relay_json["relay1"]["state1"] = "Off";
               updateRelay(relay_json);
-              saveSettings(relay_json, "relay");
+              saveSettings(relay_json, "relay1");
               relay_json.clear();
 
               request->send(200, "text/plain", "Relay 1 is OFF");
@@ -928,10 +928,9 @@ void setup()
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
-              relay_json["relay"]["state2"] = "On";
-              relay_json["relay"]["state1"] = relay.state1;
+              relay_json["relay2"]["state2"] = "On";
               updateRelay(relay_json);
-              saveSettings(relay_json, "relay");
+              saveSettings(relay_json, "relay2");
               relay_json.clear();
               request->send(200, "text/plain", "Relay 1 is ON");
             });
@@ -943,10 +942,9 @@ void setup()
                   return request->requestAuthentication(NULL, false);
               }
               StaticJsonDocument<384> relay_json;
-              relay_json["relay"]["state2"] = "Off";
-              relay_json["relay"]["state1"] = relay.state1;
+              relay_json["relay2"]["state2"] = "Off";
               updateRelay(relay_json);
-              saveSettings(relay_json, "relay");
+              saveSettings(relay_json, "relay2");
               relay_json.clear();
 
               request->send(200, "text/plain", "Relay 1 is OFF");
@@ -1083,7 +1081,16 @@ void setup()
                                         }
 
                                         updateRelay(relay_data);
-                                        saveSettings(relay_data, "relay");
+
+                                        if (!relay_data["relay1"]["state1"].isNull())
+                                        {
+                                          saveSettings(relay_data, "relay1");
+                                        }
+                                        if (!relay_data["relay2"]["state2"].isNull())
+                                        {
+                                          saveSettings(relay_data, "relay2");
+                                        }
+
                                         Serial.println("Received Settings /api/relay/post: ");
                                         serializeJsonPretty(relay_data, Serial);
                                         Serial.print('\n');
@@ -1153,38 +1160,38 @@ void loop()
   delay(1000);
   checkUser();
   // Outputs Routine
-  relay.deltaTimer1 = millis();
-  relay.deltaTimer2 = millis();
+  relays.deltaTimer1 = millis();
+  relays.deltaTimer2 = millis();
 
-  if (relay.startTimer1 != 0 && !relay.manualClose1)
+  if (relays.startTimer1 != 0 && !relays.manualClose1)
   {
-    if (abs(relay.deltaTimer1 - relay.startTimer1) >= (output.getTimer1().toInt() * 1000))
+    if (abs(relays.deltaTimer1 - relays.startTimer1) >= (output.getTimer1().toInt() * 1000))
     {
       digitalWrite(RELAY1, LOW);
-      relay.state1 = "Off";
+      relays.state1 = "Off";
       StaticJsonDocument<384> relay_json;
-      relay_json["relay"]["state1"] = "Off";
-      relay_json["relay"]["state2"] = relay.state2;
+      relay_json["relay1"]["state1"] = "Off";
+      // relay_json["relay2"]["state2"] = relays.state2;
       saveSettings(relay_json, "relay");
       relay_json.clear();
-      Serial.println(" Relay 1 closed");
-      relay.startTimer1 = 0;
+      logOutput(" Relay 1 closed");
+      relays.startTimer1 = 0;
     }
   }
 
-  if (relay.startTimer2 != 0 && !relay.manualClose2)
+  if (relays.startTimer2 != 0 && !relays.manualClose2)
   {
-    if ((relay.deltaTimer2 - relay.startTimer2) > (output.getTimer2().toInt() * 1000))
+    if ((relays.deltaTimer2 - relays.startTimer2) > (output.getTimer2().toInt() * 1000))
     {
       digitalWrite(RELAY2, LOW);
-      relay.state2 = "Off";
+      relays.state2 = "Off";
       StaticJsonDocument<384> relay_json;
-      relay_json["relay"]["state2"] = "Off";
-      relay_json["relay"]["state1"] = relay.state1;
+      relay_json["relay2"]["state2"] = "Off";
+      // relay_json["relay1"]["state1"] = relays.state1;
       saveSettings(relay_json, "relay");
       relay_json.clear();
-      Serial.println("Relay 2 closed");
-      relay.startTimer2 = 0;
+      logOutput("Relay 2 closed");
+      relays.startTimer2 = 0;
     }
   }
 }
