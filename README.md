@@ -39,10 +39,10 @@
 - Handle Relay state
 - Implement HTTP Authentication
 - Implement Logs
+- Implement Toastify
 
 ### To implement
 
-- Implement Toastify
 - Unfocus Submit buttons on submit event
 - Loading icon when navigating pages
 - Implement loading icon while waiting to reconect after a restart
