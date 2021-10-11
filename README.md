@@ -43,7 +43,6 @@
 
 ### To implement
 
-- Loading icon when navigating pages
 - Implement loading icon while waiting to reconect after a restart
 - (3): In both cases the device will restart ! OR NOT ?!
 
