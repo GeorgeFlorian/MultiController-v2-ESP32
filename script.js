@@ -170,11 +170,13 @@ function toJSONstring(form) {
             if (radio_btn[0].checked) {
                 // console.log(radio_btn[0].id);
                 value = radio_btn[0].value;
-                toast(`${key === 'state1' ? 'Relay1 is On.' : 'Relay2 is On.'}`, true);
+                if (key === 'state1' || key === 'state2')
+                    toast(`${key === 'state1' ? 'Relay1 is On.' : 'Relay2 is On.'}`, true);
             } else if (radio_btn[1].checked) {
                 // console.log(radio_btn[1].id);
                 value = radio_btn[1].value;
-                toast(`${key === 'state1' ? 'Relay1 is Off.' : 'Relay2 is Off.'}`, true);
+                if (key === 'state1' || key === 'state2')
+                    toast(`${key === 'state1' ? 'Relay1 is Off.' : 'Relay2 is Off.'}`, true);
             }
         }
 
@@ -437,10 +439,12 @@ if (document.getElementById("settings")) {
         // handle input_form
         let input_form = document.getElementById("input");
         input_form.addEventListener("submit", function (e) {
+            let save_button = documen.getElementsByName('save_network');
             e.preventDefault();
             if (ValidateIPaddress(input_form)) {
                 saveSettings(input_form, "input/post");
                 input_form.reset();
+                save_button.blur();
             }
         });
         // handle output_form
