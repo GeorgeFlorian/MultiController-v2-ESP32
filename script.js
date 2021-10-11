@@ -439,12 +439,10 @@ if (document.getElementById("settings")) {
         // handle input_form
         let input_form = document.getElementById("input");
         input_form.addEventListener("submit", function (e) {
-            let save_button = documen.getElementsByName('save_network');
             e.preventDefault();
             if (ValidateIPaddress(input_form)) {
                 saveSettings(input_form, "input/post");
                 input_form.reset();
-                save_button.blur();
             }
         });
         // handle output_form
