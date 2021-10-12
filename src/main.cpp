@@ -585,6 +585,7 @@ StaticJsonDocument<1024> softReset()
   doc["user"]["username"] = "";
   doc["user"]["password"] = "";
   updateLiveState(doc);
+  logOutput("Soft Reset succeeded !");
   return doc;
 }
 
@@ -629,6 +630,7 @@ StaticJsonDocument<1024> factoryReset()
   doc["user"]["username"] = "";
   doc["user"]["password"] = "";
   updateLiveState(doc);
+  logOutput("Factory Reset succeeded !");
   return doc;
 }
 
@@ -856,9 +858,9 @@ void setup()
 
               JSONtoSettings(json);
 
-              String response;
-              serializeJsonPretty(json, response);
-              Serial.print('\n');
+              // String response;
+              // serializeJsonPretty(json, response);
+              // Serial.print('\n');
               json.clear();
               request->send(200);
             });
@@ -874,9 +876,9 @@ void setup()
 
               JSONtoSettings(json);
 
-              String response;
-              serializeJsonPretty(json, response);
-              Serial.print('\n');
+              // String response;
+              // serializeJsonPretty(json, response);
+              // Serial.print('\n');
               json.clear();
               request->send(200);
             });
@@ -1173,8 +1175,7 @@ void loop()
       relays.state1 = "Off";
       StaticJsonDocument<384> relay_json;
       relay_json["relay1"]["state1"] = "Off";
-      // relay_json["relay2"]["state2"] = relays.state2;
-      saveSettings(relay_json, "relay");
+      saveSettings(relay_json, "relay1");
       relay_json.clear();
       logOutput(" Relay 1 closed");
       relays.startTimer1 = 0;
@@ -1183,14 +1184,13 @@ void loop()
 
   if (relays.startTimer2 != 0 && !relays.manualClose2)
   {
-    if ((relays.deltaTimer2 - relays.startTimer2) > (output.getTimer2().toInt() * 1000))
+    if (abs(relays.deltaTimer2 - relays.startTimer2) > (output.getTimer2().toInt() * 1000))
     {
       digitalWrite(RELAY2, LOW);
       relays.state2 = "Off";
       StaticJsonDocument<384> relay_json;
       relay_json["relay2"]["state2"] = "Off";
-      // relay_json["relay1"]["state1"] = relays.state1;
-      saveSettings(relay_json, "relay");
+      saveSettings(relay_json, "relay2");
       relay_json.clear();
       logOutput("Relay 2 closed");
       relays.startTimer2 = 0;

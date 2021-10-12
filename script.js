@@ -509,16 +509,24 @@ if (document.getElementById("settings")) {
         soft_reset_form.addEventListener("submit", function (e) {
             e.preventDefault();
             fetch('/api/soft-reset')
-                .then(response => response.json())
-                .then(data => console.log(data));
+                .then(response => {
+                    if (response.status === 200)
+                        toast('Soft Reset succeeded !', true);
+                    else
+                        toast('Soft Reset failed !', false);
+                });
         });
         // handle factory_reset_form
         let factory_reset_form = document.getElementById("factory_reset_form");
         factory_reset_form.addEventListener("submit", function (e) {
             e.preventDefault();
             fetch('/api/factory-reset')
-                .then(response => response.json())
-                .then(data => console.log(data));
+                .then(response => {
+                    if (response.status === 200)
+                        toast('Factory Reset succeeded !', true);
+                    else
+                        toast('Factory Reset failed !', false);
+                });
         });
 
         let check_network_connection = document.getElementById("check_network_connection");
