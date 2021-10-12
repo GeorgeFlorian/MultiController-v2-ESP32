@@ -311,7 +311,7 @@
                     <div class="container rfid_wrapper col-md p-2">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="card-title">Upgrade Firmware</h5>
+                                <h5 class="card-title">Update Firmware</h5>
                             </div>
                             <p class="px-3 py-2 mb-1">Please upload the provided <span
                                     style="color:#e11422">firmware.bin</span> file and/or
@@ -328,16 +328,16 @@
                                 (3): In both cases the device will restart ! OR NOT ?!
                             </div>
                             <!-- Form -->
-                            <form class="card-body mb-0" id="update" name="update" method="POST"
+                            <form class="card-body mb-0" id="update_form" name="update_form" method="POST"
                                 enctype="multipart/form-data">
                                 <!-- Input row -->
                                 <div class="row g-2 d-flex justify-content-between">
                                     <div class="col-12 col-sm-auto">
                                         <input class="form-control form-control-small" type="file" id="update_file"
-                                            multiple>
+                                            name="update" required>
                                     </div>
                                     <button class="btn btn-primary col-auto ms-1" type="submit" name="update_btn"
-                                        id="update_btn">Upgrade</button>
+                                        id="update_btn">Update</button>
                                 </div>
                             </form>
                         </div>
@@ -372,15 +372,16 @@
                                         </div>
                                     </form>
                                     <!-- Input row -->
-                                    <label for="upload_file" class="form-label">Restore configuration from
+                                    <label for="restore" class="form-label">Restore configuration from
                                         file:</label>
                                     <form class="row g-2 d-flex justify-content-between" method="POST"
-                                        enctype="multipart/form-data" id="restore_form">
+                                        enctype="multipart/form-data" name="restore_form" id="restore_form">
                                         <div class="col-12 col-sm-auto">
-                                            <input class="form-control form-control-small" type="file" id="upload_file">
+                                            <input class="form-control form-control-small" type="file"
+                                                name="restore_file" id="restore_file" required>
                                         </div>
-                                        <button class="btn btn-primary col-auto ms-1" type="submit" name="upload_btn"
-                                            id="upload_btn">Upload</button>
+                                        <button class="btn btn-primary col-auto ms-1" name="restore_btn"
+                                            id="restore_btn" type="submit">Upload</button>
                                     </form>
                                 </div>
                                 <!-- Factory Reset Tab -->

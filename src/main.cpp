@@ -135,11 +135,11 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
       }
     }
   }
-  else if (filename.indexOf(".json") > 0)
+  else if (filename == "config.json")
   {
     if (!index)
     {
-      logOutput((String) "Started uploading: " + filename);
+      // logOutput((String) "Started uploading: " + filename);
       // open the file on first call and store the file handle in the request object
       request->_tempFile = SPIFFS.open("/" + filename, "w");
     }
@@ -150,10 +150,12 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
     }
     if (final)
     {
-      logOutput((String)filename + " was successfully uploaded! File size: " + index + len);
+      logOutput((String)filename + " was successfully uploaded !");
+      Serial.println((String) "File size: " + index + len);
       // close the file handle as the upload is now done
       request->_tempFile.close();
-      // request->redirect("/files");
+      // request->send(200);
+      request->redirect("/settings");
     }
   }
 }
@@ -858,7 +860,7 @@ void setup()
               serializeJsonPretty(json, response);
               Serial.print('\n');
               json.clear();
-              request->send(200, "application/json", response);
+              request->send(200);
             });
 
   server.on("/api/factory-reset", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -876,7 +878,7 @@ void setup()
               serializeJsonPretty(json, response);
               Serial.print('\n');
               json.clear();
-              request->send(200, "application/json", response);
+              request->send(200);
             });
 
   server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)

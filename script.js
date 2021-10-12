@@ -469,11 +469,40 @@ if (document.getElementById("settings")) {
             }
         });
         // handle update_form
-        let update_form = document.getElementById("update");
+        let update_form = document.getElementById("update_form");
         update_form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            // saveSettings(update_form, "update");
-            // fetch(api/restart)
+            let update_file = document.getElementById('update_file');
+            let filename = update_file.files[0].name;
+            if (update_file.files.length > 0) {
+                switch (filename) {
+                    case 'spiffs.bin':
+                    case 'firmware.bin':
+                        toast(`File ${filename} was successfully uploaded !`);
+                        break;
+                    default:
+                        toast('File was not uploaded. Try again !', false);
+                        e.preventDefault();
+                        break;
+                }
+            }
+        });
+        // handle restore_form
+        let restore_form = document.getElementById("restore_form");
+        restore_form.addEventListener("submit", function (e) {
+            let restore_file = document.getElementById('restore_file');
+            alert(restore_file.files.length);
+            let filename = restore_file.files[0].name;
+            if (restore_file.files.length > 0) {
+                switch (filename) {
+                    case 'config.json':
+                        toast(`File ${filename} was successfully uploaded !`);
+                        break;
+                    default:
+                        toast('File was not uploaded. Try again !', false);
+                        e.preventDefault();
+                        break;
+                }
+            }
         });
         // handle soft_reset_form
         let soft_reset_form = document.getElementById("soft_reset_form");
