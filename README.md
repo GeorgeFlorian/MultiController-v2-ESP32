@@ -43,7 +43,9 @@
 
 ### To implement
 
+- Separate code into headers
 - Check functionality
+- Add more Logs
 - (3): In both cases the device will restart ! OR NOT ?!
 - Implement loading icon while waiting to reconect after a restart
 
@@ -51,3 +53,7 @@
 - Add Metrici's color theme
 - Don't forget to minify files before compressing them into gzip
 - Final touch
+
+### Back-end
+
+- logs.h > common.h > state.h > server_logic.h = connection.h
