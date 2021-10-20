@@ -79,7 +79,7 @@ int WiegandState::getPulseGap()
 WiegandState wiegand_state;
 
 // RFID state
-RFID::RFID() : ip_rfid(""), port_rfid(""){};
+RFID::RFID() : ip_rfid(""), port_rfid(""), activate_rfid(false), reader_command(true){};
 RFID rfid;
 
 // User state
@@ -167,184 +167,13 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
 
     rfid.ip_rfid = doc["rfid"]["ip_rfid"] | "Not working";
     rfid.port_rfid = doc["rfid"]["port_rfid"] | "Not working";
+    rfid.activate_rfid = (rfid.ip_rfid == "Not Set" || rfid.ip_rfid == "Not working" || rfid.port_rfid == "Not Set" || rfid.port_rfid == "Not working") ? false : true;
 
     user.setUsername(doc["user"]["username"] | "Not working");
     user.setUserPassword(doc["user"]["password"] | "Not working");
 }
 
-void updateRelay(StaticJsonDocument<384> json)
-{
-    String oldState1 = relays.state1;
-    String oldState2 = relays.state2;
-    relays.state1 = json["relay1"]["state1"].as<String>();
-    relays.state2 = json["relay2"]["state2"].as<String>();
-
-    if (oldState1 != relays.state1)
-    {
-        if (relays.state1 == "On")
-        {
-            digitalWrite(RELAY1, HIGH);
-            logOutput("Relay1 is ON");
-            if (output.getTimer1() == 0)
-            {
-                relays.manualClose1 = true;
-                // logOutput(" Relay 1 will remain open until it is manually closed !");
-                Serial.println(" Relay 1 will remain open until it is manually closed !");
-            }
-            else
-            {
-                relays.manualClose1 = false;
-                relays.startTimer1 = millis();
-                logOutput((String)"Relay 1 will automatically close in " + output.getTimer1() + " seconds !");
-            }
-        }
-        else if (relays.state1 == "Off")
-        {
-            digitalWrite(RELAY1, LOW);
-            relays.manualClose1 = true;
-            logOutput(" Relay 1 is Off");
-        }
-    }
-
-    if (oldState2 != relays.state2)
-    {
-        if (relays.state2 == "On")
-        {
-            digitalWrite(RELAY2, HIGH);
-            logOutput("Relay 2 is ON");
-            if (output.getTimer2() == 0)
-            {
-                relays.manualClose2 = true;
-                Serial.println("Relay 2 will remain open until it is manually closed !");
-            }
-            else
-            {
-                relays.manualClose2 = false;
-                logOutput((String)"Relay 2 will automatically close in " + output.getTimer2() + " seconds !");
-            }
-            relays.startTimer2 = millis();
-        }
-        else if (relays.state2 == "Off")
-        {
-            digitalWrite(RELAY2, LOW);
-            logOutput(" Relay 2 is OFF");
-            relays.manualClose2 = true;
-        }
-    }
-}
-
-void updateUser()
-{
-    if (user.getUsername().length() > 0 && user.getUserPassword().length() > 0)
-        user.user_flag = true;
-    else
-        user.user_flag = false;
-}
-
-StaticJsonDocument<1024> softReset()
-{
-    StaticJsonDocument<1024> doc;
-
-    doc["network_settings"]["connection"] = network_settings.connection;
-    doc["network_settings"]["ip_type"] = network_settings.ip_type;
-    if (network_settings.connection == "WiFi")
-    {
-        doc["network_settings"]["ssid"] = network_settings.ssid;
-        doc["network_settings"]["password"] = network_settings.password;
-    }
-    else if (network_settings.connection == "Ethernet")
-    {
-        network_settings.ssid = "Ethernet Connection";
-        network_settings.password = "Ethernet Connection";
-    }
-    if (network_settings.ip_type == "DHCP")
-    {
-        doc["network_settings"]["ip_address"] = WiFi.localIP().toString();
-        doc["network_settings"]["gateway"] = WiFi.gatewayIP().toString();
-        doc["network_settings"]["subnet"] = WiFi.subnetMask().toString();
-        doc["network_settings"]["dns"] = WiFi.dnsIP().toString();
-    }
-    else if (network_settings.ip_type == "Static")
-    {
-        doc["network_settings"]["ip_address"] = network_settings.ip_address;
-        doc["network_settings"]["gateway"] = network_settings.gateway;
-        doc["network_settings"]["subnet"] = network_settings.subnet;
-        doc["network_settings"]["dns"] = network_settings.dns;
-    }
-
-    doc["input"]["ip_1"] = "Not Set";
-    doc["input"]["port_1"] = "Not Set";
-    doc["input"]["ip_2"] = "Not Set";
-    doc["input"]["port_2"] = "Not Set";
-
-    doc["output"]["timer1"] = "0";
-    doc["output"]["timer2"] = "0";
-
-    doc["relay1"]["state1"] = "Off";
-
-    doc["relay2"]["state2"] = "Off";
-
-    doc["wiegand"]["database_url"] = "Not Set";
-    doc["wiegand"]["pulse_width"] = "90";
-    doc["wiegand"]["pulse_gap"] = "90";
-
-    doc["rfid"]["ip_rfid"] = "Not Set";
-    doc["rfid"]["port_rfid"] = "Not Set";
-
-    doc["user"]["username"] = "";
-    doc["user"]["password"] = "";
-    updateLiveState(doc);
-    logOutput("Soft Reset succeeded !");
-    return doc;
-}
-
-StaticJsonDocument<1024> factoryReset()
-{
-    StaticJsonDocument<1024> doc;
-
-    // doc["network_settings"]["connection"] = "Ethernet";
-    // doc["network_settings"]["ip_type"] = "Static";
-    // doc["network_settings"]["ssid"] = "";
-    // doc["network_settings"]["password"] = "";
-
-    doc["network_settings"]["connection"] = "WiFi";
-    doc["network_settings"]["ip_type"] = "DHCP";
-    doc["network_settings"]["ssid"] = "Jorj-2.4";
-    doc["network_settings"]["password"] = "cafea.amara";
-
-    doc["network_settings"]["ip_address"] = "";
-    doc["network_settings"]["gateway"] = "";
-    doc["network_settings"]["subnet"] = "";
-    doc["network_settings"]["dns"] = "";
-
-    doc["input"]["ip_1"] = "Not Set";
-    doc["input"]["port_1"] = "Not Set";
-    doc["input"]["ip_2"] = "Not Set";
-    doc["input"]["port_2"] = "Not Set";
-
-    doc["output"]["timer1"] = "0";
-    doc["output"]["timer2"] = "0";
-
-    doc["relay1"]["state1"] = "Off";
-
-    doc["relay2"]["state2"] = "Off";
-
-    doc["wiegand"]["database_url"] = "Not Set";
-    doc["wiegand"]["pulse_width"] = "90";
-    doc["wiegand"]["pulse_gap"] = "90";
-
-    doc["rfid"]["ip_rfid"] = "Not Set";
-    doc["rfid"]["port_rfid"] = "Not Set";
-
-    doc["user"]["username"] = "";
-    doc["user"]["password"] = "";
-    updateLiveState(doc);
-    logOutput("Factory Reset succeeded !");
-    return doc;
-}
-
-// Get settings from /config.json
-StaticJsonDocument<1024> fileToJson()
+StaticJsonDocument<1024> readSettings()
 {
     StaticJsonDocument<1024> doc;
     // Open file to read
@@ -428,19 +257,27 @@ void saveSettings(StaticJsonDocument<384> json, String key)
         // Serial.print(json[key][nested_key].as<String>());
         // Serial.println("'");
 
+        // if received value is empty do not change it in /config.json
         if (json[key][nested_key].as<String>().length() == 0)
         {
             if (nested_key == "timer1" || nested_key == "timer2")
                 doc[key][nested_key] = "0";
             else if (nested_key == "pulse_width" || nested_key == "pulse_gap")
                 doc[key][nested_key] = "90";
-            else if (nested_key == "database_url")
-                doc[key][nested_key] = "Not Set";
+            // else if (nested_key == "database_url")
+            //     doc[key][nested_key] = "Not Set";
             else if (nested_key == "username" || nested_key == "password")
                 doc[key][nested_key] = "";
         }
         else
+        {
             doc[key][nested_key] = json[key][nested_key];
+            // if (nested_key == "ip_rfid" || nested_key == "port_rfid")
+            // {
+            //     doc[key][nested_key] = "";
+            //     rfid.activate_rfid = true;
+            // }
+        }
     }
 
     file = SPIFFS.open("/config.json", "w");
@@ -466,6 +303,182 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     doc.clear();
     file.close();
 }
+
+void updateRelay(StaticJsonDocument<384> json)
+{
+    String oldState1 = relays.state1;
+    String oldState2 = relays.state2;
+    relays.state1 = json["relay1"]["state1"].as<String>();
+    relays.state2 = json["relay2"]["state2"].as<String>();
+
+    if (oldState1 != relays.state1)
+    {
+        if (relays.state1 == "On")
+        {
+            digitalWrite(RELAY1, HIGH);
+            logOutput("Relay1 is ON");
+            if (output.getTimer1() == 0)
+            {
+                relays.manualClose1 = true;
+                // logOutput(" Relay 1 will remain open until it is manually closed !");
+                Serial.println(" Relay 1 will remain open until it is manually closed !");
+            }
+            else
+            {
+                relays.manualClose1 = false;
+                relays.startTimer1 = millis();
+                logOutput((String) "Relay 1 will automatically close in " + output.getTimer1() + " seconds !");
+            }
+        }
+        else if (relays.state1 == "Off")
+        {
+            digitalWrite(RELAY1, LOW);
+            relays.manualClose1 = true;
+            logOutput(" Relay 1 is Off");
+        }
+    }
+
+    if (oldState2 != relays.state2)
+    {
+        if (relays.state2 == "On")
+        {
+            digitalWrite(RELAY2, HIGH);
+            logOutput("Relay 2 is ON");
+            if (output.getTimer2() == 0)
+            {
+                relays.manualClose2 = true;
+                Serial.println("Relay 2 will remain open until it is manually closed !");
+            }
+            else
+            {
+                relays.manualClose2 = false;
+                logOutput((String) "Relay 2 will automatically close in " + output.getTimer2() + " seconds !");
+            }
+            relays.startTimer2 = millis();
+        }
+        else if (relays.state2 == "Off")
+        {
+            digitalWrite(RELAY2, LOW);
+            logOutput(" Relay 2 is OFF");
+            relays.manualClose2 = true;
+        }
+    }
+}
+
+void updateUser()
+{
+    if (user.getUsername().length() > 0 && user.getUserPassword().length() > 0)
+        user.user_flag = true;
+    else
+        user.user_flag = false;
+}
+
+StaticJsonDocument<1024> softReset()
+{
+    StaticJsonDocument<1024> doc;
+
+    doc["network_settings"]["connection"] = network_settings.connection;
+    doc["network_settings"]["ip_type"] = network_settings.ip_type;
+    if (network_settings.connection == "WiFi")
+    {
+        doc["network_settings"]["ssid"] = network_settings.ssid;
+        doc["network_settings"]["password"] = network_settings.password;
+    }
+    else if (network_settings.connection == "Ethernet")
+    {
+        network_settings.ssid = "Ethernet Connection";
+        network_settings.password = "Ethernet Connection";
+    }
+    if (network_settings.ip_type == "DHCP")
+    {
+        doc["network_settings"]["ip_address"] = WiFi.localIP().toString();
+        doc["network_settings"]["gateway"] = WiFi.gatewayIP().toString();
+        doc["network_settings"]["subnet"] = WiFi.subnetMask().toString();
+        doc["network_settings"]["dns"] = WiFi.dnsIP().toString();
+    }
+    else if (network_settings.ip_type == "Static")
+    {
+        doc["network_settings"]["ip_address"] = network_settings.ip_address;
+        doc["network_settings"]["gateway"] = network_settings.gateway;
+        doc["network_settings"]["subnet"] = network_settings.subnet;
+        doc["network_settings"]["dns"] = network_settings.dns;
+    }
+
+    doc["input"]["ip_1"] = "Not Set";
+    doc["input"]["port_1"] = "Not Set";
+    doc["input"]["ip_2"] = "Not Set";
+    doc["input"]["port_2"] = "Not Set";
+
+    doc["output"]["timer1"] = "0";
+    doc["output"]["timer2"] = "0";
+
+    doc["relay1"]["state1"] = "Off";
+
+    doc["relay2"]["state2"] = "Off";
+
+    doc["wiegand"]["database_url"] = "Not Set";
+    doc["wiegand"]["pulse_width"] = "90";
+    doc["wiegand"]["pulse_gap"] = "90";
+
+    doc["rfid"]["ip_rfid"] = "Not Set";
+    doc["rfid"]["port_rfid"] = "Not Set";
+
+    doc["user"]["username"] = "";
+    doc["user"]["password"] = "";
+
+    updateLiveState(doc);
+    logOutput("Soft Reset succeeded !");
+
+    return doc;
+}
+
+StaticJsonDocument<1024> factoryReset()
+{
+    StaticJsonDocument<1024> doc;
+
+    // doc["network_settings"]["connection"] = "Ethernet";
+    // doc["network_settings"]["ip_type"] = "Static";
+    // doc["network_settings"]["ssid"] = "";
+    // doc["network_settings"]["password"] = "";
+
+    doc["network_settings"]["connection"] = "WiFi";
+    doc["network_settings"]["ip_type"] = "DHCP";
+    doc["network_settings"]["ssid"] = "Jorj-2.4";
+    doc["network_settings"]["password"] = "cafea.amara";
+
+    doc["network_settings"]["ip_address"] = "";
+    doc["network_settings"]["gateway"] = "";
+    doc["network_settings"]["subnet"] = "";
+    doc["network_settings"]["dns"] = "";
+
+    doc["input"]["ip_1"] = "Not Set";
+    doc["input"]["port_1"] = "Not Set";
+    doc["input"]["ip_2"] = "Not Set";
+    doc["input"]["port_2"] = "Not Set";
+
+    doc["output"]["timer1"] = "0";
+    doc["output"]["timer2"] = "0";
+
+    doc["relay1"]["state1"] = "Off";
+
+    doc["relay2"]["state2"] = "Off";
+
+    doc["wiegand"]["database_url"] = "Not Set";
+    doc["wiegand"]["pulse_width"] = "90";
+    doc["wiegand"]["pulse_gap"] = "90";
+
+    doc["rfid"]["ip_rfid"] = "Not Set";
+    doc["rfid"]["port_rfid"] = "Not Set";
+
+    doc["user"]["username"] = "";
+    doc["user"]["password"] = "";
+
+    updateLiveState(doc);
+    logOutput("Factory Reset succeeded !");
+
+    return doc;
+}
+
 
 bool JSONtoSettings(StaticJsonDocument<1024> doc)
 {

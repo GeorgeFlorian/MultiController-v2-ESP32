@@ -84,6 +84,8 @@ struct RFID
 public:
     String ip_rfid;
     String port_rfid;
+    bool activate_rfid;
+    bool reader_command;
     RFID();
 };
 extern RFID rfid;
@@ -114,9 +116,9 @@ void updateRelay(StaticJsonDocument<384> json);
 void updateUser();
 
 // Get settings from /config.json
-StaticJsonDocument<1024> fileToJson();
+StaticJsonDocument<1024> readSettings();
 
-// Save settings in /config.json
+// Save settings to /config.json
 void saveSettings(StaticJsonDocument<384>, String);
 
 /*

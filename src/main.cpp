@@ -3,6 +3,7 @@
 #include <connection.h>
 #include <wiegand.h>
 #include <input_output.h>
+#include <RFID.h>
 
 void setup()
 {
@@ -12,8 +13,8 @@ void setup()
     Serial.println(F("An Error has occurred while mounting SPIFFS ! Formatting in progress"));
     return;
   }
-  // get settings from /config.json and update Live state
-  if (fileToJson().isNull())
+  // Read settings from /config.json and update live state
+  if (readSettings().isNull())
   {
     logOutput("ERROR: Could not get start-up configuration. Restarting...");
     restartSequence(2);
@@ -42,4 +43,5 @@ void loop()
   inputRoutine();
   outputRoutine();
   wiegandRoutine();
+  rfidRoutine();
 }

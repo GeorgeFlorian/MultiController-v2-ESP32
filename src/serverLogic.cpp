@@ -241,10 +241,10 @@ void start_esp_server()
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
                   }
-                  StaticJsonDocument<1024> json = fileToJson();
+                  StaticJsonDocument<1024> json = readSettings();
 
                   String response;
-                  serializeJsonPretty(json, response);
+                  serializeJson(json, response);
                   // Serial.print('\n');
                   // serializeJsonPretty(json, Serial);
                   json.clear();
