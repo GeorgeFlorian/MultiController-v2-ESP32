@@ -3,6 +3,7 @@
 #include <AsyncJson.h>
 #include <ArduinoJson.h>
 #include <SPIFFS.h>
+#include <HTTPClient.h>
 #include <logs.h>
 
 #define RELAY1 32

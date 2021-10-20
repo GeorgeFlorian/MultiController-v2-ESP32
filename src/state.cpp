@@ -49,7 +49,7 @@ Relay::Relay() : state1(""), state2(""), manualClose1(false), manualClose2(false
 Relay relays;
 
 // Wiegand state
-WiegandState::WiegandState() : pulse_width(""), pulse_gap(""), database_url(""){};
+WiegandState::WiegandState() : pulse_width(""), pulse_gap(""), database_url(""), wiegand_flag(false), working(false), plate_number(""){};
 
 void WiegandState::setPulseWidth(String x)
 {
@@ -67,13 +67,13 @@ void WiegandState::setPulseGap(String x)
     else
         pulse_gap = x;
 }
-String WiegandState::getPulseWidth()
+int WiegandState::getPulseWidth()
 {
-    return pulse_width;
+    return pulse_width.toInt();
 }
-String WiegandState::getPulseGap()
+int WiegandState::getPulseGap()
 {
-    return pulse_gap;
+    return pulse_gap.toInt();
 }
 
 WiegandState wiegand_state;

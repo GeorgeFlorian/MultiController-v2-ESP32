@@ -68,10 +68,13 @@ private:
 
 public:
     String database_url;
+    bool wiegand_flag;
+    bool working;
+    String plate_number;
     void setPulseWidth(String x);
     void setPulseGap(String x);
-    String getPulseWidth();
-    String getPulseGap();
+    int getPulseWidth();
+    int getPulseGap();
     WiegandState();
 };
 extern WiegandState wiegand_state;

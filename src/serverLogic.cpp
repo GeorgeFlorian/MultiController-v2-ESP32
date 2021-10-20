@@ -231,8 +231,9 @@ AsyncCallbackJsonWebHandler *user_handler =
                                         restartSequence(1);
                                     });
 
+// Main server function
 void start_esp_server()
-{    
+{
     server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
               {
                   if (user.user_flag)
@@ -369,6 +370,34 @@ void start_esp_server()
                   }
                   circle.print();
                   request->send(200, "text/plain", strlog);
+              });
+
+    server.on("/wiegand", HTTP_POST, [](AsyncWebServerRequest *request)
+              {
+                  if (wiegand_state.working)
+                  {
+                      request->send(200, "text/plain", "Warning: Another Wiegand is being sent.");
+                  }
+                  else
+                  {
+                      if (request->hasArg("number"))
+                      {
+                          wiegand_state.plate_number = request->arg("number");
+                          wiegand_state.wiegand_flag = true;
+                          Serial.println("(Inside POST /wiegand) - Plate Number: " + wiegand_state.plate_number);
+                          // size_t size = request->contentLength();
+                          // Serial.print("Post Size: ");
+                          // Serial.println(size);
+                          // logOutput((String)"The Plate Number is: " + wiegand_state.plate_number);
+                          request->send(200, "text/plain", (String) "Plate Number: " + wiegand_state.plate_number + " received. Sending Wiegand ID.");
+                      }
+                      else
+                      {
+                          Serial.println("Post did not have a 'number' field.");
+                          wiegand_state.wiegand_flag = false;
+                          request->send(200, "text/plain", "Post did not have a 'number' field.");
+                      }
+                  }
               });
 
     server.addHandler(network_handler);

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <serverLogic.h>
 #include <connection.h>
+#include <wiegand.h>
 
 void setup()
 {
@@ -36,7 +37,6 @@ void setup()
 
 void loop()
 {
-  delay(1000);
   updateUser();
   // Outputs Routine
   relays.deltaTimer1 = millis();
@@ -71,4 +71,6 @@ void loop()
       relays.startTimer2 = 0;
     }
   }
+
+  wiegandRoutine();
 }
