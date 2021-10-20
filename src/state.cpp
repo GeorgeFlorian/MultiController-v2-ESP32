@@ -32,13 +32,13 @@ void Output::setTimer2(String x)
         timer2 = x;
 }
 
-String Output::getTimer1()
+int Output::getTimer1()
 {
-    return timer1;
+    return timer1.toInt();
 }
-String Output::getTimer2()
+int Output::getTimer2()
 {
-    return timer2;
+    return timer2.toInt();
 }
 
 Output output;
@@ -185,7 +185,7 @@ void updateRelay(StaticJsonDocument<384> json)
         {
             digitalWrite(RELAY1, HIGH);
             logOutput("Relay1 is ON");
-            if (output.getTimer1().toInt() == 0)
+            if (output.getTimer1() == 0)
             {
                 relays.manualClose1 = true;
                 // logOutput(" Relay 1 will remain open until it is manually closed !");
@@ -195,7 +195,7 @@ void updateRelay(StaticJsonDocument<384> json)
             {
                 relays.manualClose1 = false;
                 relays.startTimer1 = millis();
-                logOutput(" Relay 1 will automatically close in " + output.getTimer1() + " seconds !");
+                logOutput((String)"Relay 1 will automatically close in " + output.getTimer1() + " seconds !");
             }
         }
         else if (relays.state1 == "Off")
@@ -212,7 +212,7 @@ void updateRelay(StaticJsonDocument<384> json)
         {
             digitalWrite(RELAY2, HIGH);
             logOutput("Relay 2 is ON");
-            if (output.getTimer2().toInt() == 0)
+            if (output.getTimer2() == 0)
             {
                 relays.manualClose2 = true;
                 Serial.println("Relay 2 will remain open until it is manually closed !");
@@ -220,7 +220,7 @@ void updateRelay(StaticJsonDocument<384> json)
             else
             {
                 relays.manualClose2 = false;
-                logOutput("Relay 2 will automatically close in " + output.getTimer2() + " seconds !");
+                logOutput((String)"Relay 2 will automatically close in " + output.getTimer2() + " seconds !");
             }
             relays.startTimer2 = millis();
         }

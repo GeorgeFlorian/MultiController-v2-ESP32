@@ -57,3 +57,4 @@
 ### Back-end
 
 - logs.h > common.h > state.h > server_logic.h = connection.h
+                              > wiegand = inputs_outputs = rfid

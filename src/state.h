@@ -39,8 +39,8 @@ public:
     void setTimer1(String x);
     void setTimer2(String x);
 
-    String getTimer1();
-    String getTimer2();
+    int getTimer1();
+    int getTimer2();
     Output();
 };
 extern Output output;
@@ -52,10 +52,10 @@ public:
     String state2;
     bool manualClose1;
     bool manualClose2;
-    long startTimer1;
-    long startTimer2;
-    long deltaTimer1;
-    long deltaTimer2;
+    unsigned long startTimer1;
+    unsigned long startTimer2;
+    unsigned long deltaTimer1;
+    unsigned long deltaTimer2;
     Relay();
 };
 extern Relay relays;

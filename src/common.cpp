@@ -1,5 +1,13 @@
 #include <common.h>
 
+void waitDelay(unsigned long current, unsigned long previous, unsigned long interval)
+{
+    if (current - previous > interval)
+    {
+        previous += interval;
+    }
+}
+
 void restartSequence(unsigned int countdown)
 {
     for (int i = countdown; i >= 0; i--)

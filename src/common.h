@@ -17,6 +17,8 @@
 #define BUTTON 34
 #define BUZZER 16
 
+void waitDelay(unsigned long, unsigned long, unsigned long);
+
 void restartSequence(unsigned int);
 
 void listAllFiles();
