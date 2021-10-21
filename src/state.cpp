@@ -113,6 +113,45 @@ String User::getUserPassword()
 
 User user;
 
+StaticJsonDocument<1024> getLiveState()
+{
+    StaticJsonDocument<1024> doc;
+
+    doc["network_settings"]["connection"] = network_settings.connection;
+    doc["network_settings"]["ip_type"] = network_settings.ip_type;
+    doc["network_settings"]["ssid"] = network_settings.ssid;
+    doc["network_settings"]["password"] = network_settings.password;
+
+    doc["network_settings"]["ip_address"] = network_settings.ip_address;
+    doc["network_settings"]["gateway"] = network_settings.gateway;
+    doc["network_settings"]["subnet"] = network_settings.subnet;
+    doc["network_settings"]["dns"] = network_settings.dns;
+
+    doc["input"]["ip_1"] = input.ip_1;
+    doc["input"]["port_1"] = input.port_1;
+    doc["input"]["ip_2"] = input.ip_2;
+    doc["input"]["port_2"] = input.port_2;
+
+    doc["output"]["timer1"] = output.getTimer1();
+    doc["output"]["timer2"] = output.getTimer2();
+
+    doc["relay1"]["state1"] = relays.state1;
+
+    doc["relay2"]["state2"] = relays.state2;
+
+    doc["wiegand"]["database_url"] = wiegand_state.database_url;
+    doc["wiegand"]["pulse_width"] = wiegand_state.getPulseWidth();
+    doc["wiegand"]["pulse_gap"] = wiegand_state.getPulseGap();
+
+    doc["rfid"]["ip_rfid"] = rfid.ip_rfid;
+    doc["rfid"]["port_rfid"] = rfid.port_rfid;
+
+    doc["user"]["username"] = user.getUsername();
+    doc["user"]["password"] = user.getUserPassword();
+
+    return doc;
+}
+
 void updateLiveState(StaticJsonDocument<1024> &doc)
 {
     network_settings.connection = doc["network_settings"]["connection"] | "Not working";
@@ -122,7 +161,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
         network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
         network_settings.password = doc["network_settings"]["password"] | "Not working";
     }
-    else if (network_settings.connection == "Ethernet")
+    else if (network_settings.connection == "Ethernet" || network_settings.connection == "")
     {
         network_settings.ssid = "";
         network_settings.password = "";
@@ -141,7 +180,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
         network_settings.dns = WiFi.dnsIP().toString();
         doc["network_settings"]["dns"] = WiFi.dnsIP().toString();
     }
-    else if (network_settings.ip_type == "Static")
+    else if (network_settings.ip_type == "Static" || network_settings.ip_type == "")
     {
         network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
         network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
@@ -436,15 +475,15 @@ StaticJsonDocument<1024> factoryReset()
 {
     StaticJsonDocument<1024> doc;
 
-    // doc["network_settings"]["connection"] = "Ethernet";
-    // doc["network_settings"]["ip_type"] = "Static";
-    // doc["network_settings"]["ssid"] = "";
-    // doc["network_settings"]["password"] = "";
+    doc["network_settings"]["connection"] = "Ethernet";
+    doc["network_settings"]["ip_type"] = "Static";
+    doc["network_settings"]["ssid"] = "";
+    doc["network_settings"]["password"] = "";
 
-    doc["network_settings"]["connection"] = "WiFi";
-    doc["network_settings"]["ip_type"] = "DHCP";
-    doc["network_settings"]["ssid"] = "Jorj-2.4";
-    doc["network_settings"]["password"] = "cafea.amara";
+    // doc["network_settings"]["connection"] = "WiFi";
+    // doc["network_settings"]["ip_type"] = "DHCP";
+    // doc["network_settings"]["ssid"] = "Jorj-2.4";
+    // doc["network_settings"]["password"] = "cafea.amara";
 
     doc["network_settings"]["ip_address"] = "";
     doc["network_settings"]["gateway"] = "";
@@ -478,7 +517,6 @@ StaticJsonDocument<1024> factoryReset()
 
     return doc;
 }
-
 
 bool JSONtoSettings(StaticJsonDocument<1024> doc)
 {

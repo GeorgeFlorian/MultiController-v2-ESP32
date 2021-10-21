@@ -232,7 +232,7 @@ AsyncCallbackJsonWebHandler *user_handler =
                                     });
 
 // Main server function
-void start_esp_server()
+void startEspServer()
 {
     server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
               {
@@ -241,7 +241,7 @@ void start_esp_server()
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
                   }
-                  StaticJsonDocument<1024> json = readSettings();
+                  StaticJsonDocument<1024> json = getLiveState();
 
                   String response;
                   serializeJson(json, response);
@@ -252,7 +252,14 @@ void start_esp_server()
               });
 
     server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/config.json", String(), true); });
+              {
+                  if (user.user_flag)
+                  {
+                      if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
+                          return request->requestAuthentication(NULL, false);
+                  }
+                  request->send(SPIFFS, "/config.json", String(), true);
+              });
 
     server.on("/api/soft-reset", HTTP_GET, [](AsyncWebServerRequest *request)
               {

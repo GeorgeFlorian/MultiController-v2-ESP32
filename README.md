@@ -41,10 +41,14 @@
 - Implement Logs
 - Implement Toastify
 - Separate code into headers
-- Move Bootstrap to local and CACHE
+- Move Bootstrap to local and cache the files
+- Fixed /api/settings/get
 
 ### To implement
 
+- Implement AP
+- Fix Network connection
+- Fix User change
 - Add Reset button to each Setting's form
 - Add more Logs
 - Implement loading icon while waiting to reconect after a restart

@@ -44,7 +44,7 @@ void WiFiEvent(WiFiEvent_t event)
     }
 }
 
-void eth_connection()
+void ethConnection()
 {
     ETH.begin();
 
@@ -55,7 +55,7 @@ void eth_connection()
 
     if (!ETH.config(local_sta, gateway_sta, subnet_sta, primary_dns))
     {
-        Serial.println(F("Couldn't configure STATIC IP ! Obtaining DHCP IP !"));
+        logOutput(F("Couldn't configure STATIC IP ! Obtaining DHCP IP !"));
     }
 
     int k = 0;
@@ -68,20 +68,30 @@ void eth_connection()
 
     if (!eth_connected)
     {
-        Serial.println(F("(1) Could not connect to network ! Trying again..."));
-        Serial.println(F("Controller will restart in 5 seconds !"));
-        delay(5000);
-        ESP.restart();
+        logOutput(F("(1) Could not connect to network ! Trying again..."));
+        logOutput(F("Controller will restart in 5 seconds !"));
+        restartSequence(5);
     }
 }
 
-void wifi_connection()
+void wifiConnection()
 {
 }
 
-void start_connection()
+void startConnection()
 {
     WiFi.onEvent(WiFiEvent);
+
+    if (ap_mode)
+        WiFi.mode(WIFI_AP);
+    else
+        WiFi.mode(WIFI_STA);
+
+    if (network_settings.connection == "WiFi")
+        wifiConnection();
+    else if (network_settings.connection == "Ethernet")
+        ethConnection();
+
     Serial.print("SSID: ");
     Serial.println(network_settings.ssid);
     Serial.print("Password: ");

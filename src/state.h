@@ -109,24 +109,29 @@ public:
 };
 extern User user;
 
+// Gets settings from live state and returns a json document to be sent to /api/settings/get
+StaticJsonDocument<1024> getLiveState();
+
+// Updates live state
 void updateLiveState(StaticJsonDocument<1024> &doc);
 
+// Updates relays state
 void updateRelay(StaticJsonDocument<384> json);
 
+// Checks for user settings and changes user.user_flag accordingly
 void updateUser();
 
-// Get settings from /config.json
+// Reads settings from /config.json and updates live state
 StaticJsonDocument<1024> readSettings();
 
-// Save settings to /config.json
+// Saves settings to /config.json
 void saveSettings(StaticJsonDocument<384>, String);
 
-/*
-Write settings to /config.json
-Function used when resetting settings
-*/
+// Writes settings to /config.json after resetting settings
 bool JSONtoSettings(StaticJsonDocument<1024>);
 
+// Resets settings but keeps Network Configuration
 StaticJsonDocument<1024> softReset();
 
+// Resets all settings
 StaticJsonDocument<1024> factoryReset();

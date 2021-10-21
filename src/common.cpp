@@ -1,5 +1,7 @@
 #include <common.h>
 
+bool ap_mode = true;
+
 void waitDelay(unsigned long current, unsigned long previous, unsigned long interval)
 {
     if (current - previous > interval)

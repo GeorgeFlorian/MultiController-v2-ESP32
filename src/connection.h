@@ -4,8 +4,8 @@
 
 void WiFiEvent(WiFiEvent_t);
 
-void eth_connection();
+void ethConnection();
 
-void wifi_connection();
+void wifiConnection();
 
-void start_connection();
+void startConnection();

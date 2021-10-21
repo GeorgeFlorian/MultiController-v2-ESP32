@@ -1,9 +1,9 @@
 {
     "network_settings": {
-        "connection": "WiFi",
-        "ip_type": "DHCP",
-        "ssid": "Jorje-2.4",
-        "password": "cafea.amara",
+        "connection": "",
+        "ip_type": "",
+        "ssid": "",
+        "password": "",
         "ip_address": "",
         "gateway": "",
         "subnet": "",

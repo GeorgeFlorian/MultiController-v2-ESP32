@@ -17,6 +17,8 @@
 #define BUTTON 34
 #define BUZZER 16
 
+extern bool ap_mode;
+
 void waitDelay(unsigned long, unsigned long, unsigned long);
 
 void restartSequence(unsigned int);
