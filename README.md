@@ -45,6 +45,7 @@
 ### To implement
 
 - Add Reset button to each Setting's form
+- Move bootstrap to local and CACHE
 - Add more Logs
 - (3): In both cases the device will restart ! OR NOT ?!
 - Implement loading icon while waiting to reconect after a restart
