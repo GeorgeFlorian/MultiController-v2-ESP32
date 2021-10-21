@@ -419,11 +419,11 @@ void start_esp_server()
     {
         server.serveStatic("/settings", SPIFFS, "/www/settings.html");
         server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
-        server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
         server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER);
+        server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
     }
 
-    server.serveStatic("/", SPIFFS, "/");
+    server.serveStatic("/", SPIFFS, "/").setCacheControl("max-age=600");
 
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->redirect("/dashboard"); });

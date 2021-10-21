@@ -41,18 +41,18 @@
 - Implement Logs
 - Implement Toastify
 - Separate code into headers
+- Move Bootstrap to local and CACHE
 
 ### To implement
 
 - Add Reset button to each Setting's form
-- Move bootstrap to local and CACHE
 - Add more Logs
-- (3): In both cases the device will restart ! OR NOT ?!
 - Implement loading icon while waiting to reconect after a restart
 
 - Move from SPIFFS to LittleFS
 - Add Metrici's color theme
 - Don't forget to minify files before compressing them into gzip
+- (3): In both cases the device will restart ! OR NOT ?!
 - Check functionality
 - Final touch
 

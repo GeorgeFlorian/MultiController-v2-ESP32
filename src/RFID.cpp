@@ -1,8 +1,11 @@
 #include <RFID.h>
 
 String rf_id = "";
+String p_old = "";
 bool udp_on = false;
 unsigned long start_buzzer = 0;
+
+WiFiUDP udp;
 
 int StrToHex(char str[])
 {

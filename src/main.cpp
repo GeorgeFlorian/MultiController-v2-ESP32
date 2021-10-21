@@ -23,12 +23,25 @@ void setup()
   // network_conn();
   updateUser();
 
+  //setting the pins for Inputs
+  pinMode(INPUT_1, INPUT_PULLUP);
+  pinMode(INPUT_2, INPUT_PULLUP);
+  pinMode(BUTTON, INPUT_PULLUP);
+
   //setting the pins for Outputs
   pinMode(RELAY1, OUTPUT);
   pinMode(RELAY2, OUTPUT);
   digitalWrite(RELAY1, LOW);
   digitalWrite(RELAY2, LOW);
 
+  //setting the pins for Wiegand
+  pinMode(W0, OUTPUT);
+  pinMode(W1, OUTPUT);
+  digitalWrite(W0, HIGH);
+  digitalWrite(W1, HIGH);
+
+  pinMode(BUZZER, OUTPUT);
+  digitalWrite(BUZZER, LOW);
   // listAllFiles();
 
   // connect to network
