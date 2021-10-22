@@ -41,12 +41,12 @@
 - Implement Logs
 - Implement Toastify
 - Separate code into headers
+- Implemented functionality (io, wiegand, rfid)
 - Move Bootstrap to local and cache the files
 - Changed /api/settings/get to get settings from live state objects and not from file
 - Handle Restore configuration from file
 - Implement AP
 - Fix Network connection
-- Implemented functionality (io, wiegand, rfid)
 
 ### To implement
 
