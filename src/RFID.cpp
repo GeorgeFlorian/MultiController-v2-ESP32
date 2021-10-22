@@ -39,7 +39,7 @@ void rfidRoutine()
         }
 
         // Initialise RFID UDP 0
-        if (p_old != rfid.port_rfid && rfid.port_rfid != "Not Set")
+        if (p_old != rfid.port_rfid && rfid.port_rfid != "not set")
         {
             p_old = rfid.port_rfid;
             Serial.println("New RFID Port: " + p_old);
@@ -89,7 +89,7 @@ void rfidRoutine()
             // Serial.println((char *)buffer);
 
             // send packet to server
-            if (rfid.ip_rfid.length() != 0 && rfid.ip_rfid != "Not Set" && udp_on)
+            if (rfid.ip_rfid.length() != 0 && rfid.ip_rfid != "not set" && udp_on)
             {
                 udp.beginPacket(rfid.ip_rfid.c_str(), rfid.port_rfid.toInt());
                 udp.write(buffer, sizeof(buffer));

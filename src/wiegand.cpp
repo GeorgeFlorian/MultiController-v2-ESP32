@@ -92,7 +92,7 @@ void wiegandRoutine()
     // Wiegand Routine
     if (wiegand_state.wiegand_flag)
     {
-        if (wiegand_state.database_url == "Not Set")
+        if (wiegand_state.database_url == "not set")
         {
             logOutput("ERROR: Wiegand's Database URL is not set. Can't send plate number.");
             wiegand_state.wiegand_flag = false;

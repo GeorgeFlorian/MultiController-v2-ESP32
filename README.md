@@ -53,6 +53,11 @@
 - Improved handleUpload(), softReset() and factoryReset() functions;
 - Improved restart logic;
 - Add more Logs;
+- Added "Updating..." toast;
+- Fixed input ambiguity: the user now 3 input posibilities:
+  - no input - used to keep(not change) the preious setting;
+  - 'not set' - used for resetting the setting
+  - a valid input - used to create or update a setting
 
 ### To implement
 

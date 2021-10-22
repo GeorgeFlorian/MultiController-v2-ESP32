@@ -145,15 +145,16 @@ void startConnection()
 
     WiFi.onEvent(WiFiEvent);
 
-    Serial.println(network_settings.ip_address);
-    Serial.println(network_settings.gateway);
-    Serial.println(network_settings.subnet);
-    Serial.println(network_settings.dns);
 
     if (network_settings.connection == "WiFi")
         wifiConnection();
     else if (network_settings.connection == "Ethernet")
         ethConnection();
-
+    
+    // debug purpose - checking live state
+    Serial.println(network_settings.ip_address);
+    Serial.println(network_settings.gateway);
+    Serial.println(network_settings.subnet);
+    Serial.println(network_settings.dns);
     changed_network_config = false;
 }

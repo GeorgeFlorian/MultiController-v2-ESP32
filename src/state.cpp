@@ -224,7 +224,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
 
     rfid.ip_rfid = doc["rfid"]["ip_rfid"] | "Not working";
     rfid.port_rfid = doc["rfid"]["port_rfid"] | "Not working";
-    rfid.activate_rfid = (rfid.ip_rfid == "Not Set" || rfid.ip_rfid == "Not working" || rfid.port_rfid == "Not Set" || rfid.port_rfid == "Not working") ? false : true;
+    rfid.activate_rfid = (rfid.ip_rfid == "not set" || rfid.ip_rfid == "Not working" || rfid.port_rfid == "not set" || rfid.port_rfid == "Not working") ? false : true;
 
     user.setUsername(doc["user"]["username"] | "Not working");
     user.setUserPassword(doc["user"]["password"] | "Not working");
@@ -309,22 +309,26 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     for (JsonPair i : json[key].as<JsonObject>())
     {
         nested_key = i.key().c_str();
-        json[key][nested_key].as<String>().trim();
-        // Serial.print("json[key][nested_key].as<String>() : '");
-        // Serial.print(json[key][nested_key].as<String>());
+        String nested_value = json[key][nested_key].as<String>();
+        nested_value.trim();
+        nested_value.toLowerCase();
+        // Serial.print("nested_value : '");
+        // Serial.print(nested_value);
         // Serial.println("'");
 
-        // if received value is empty do not change it in /config.json
-        if (json[key][nested_key].as<String>().length() == 0)
+        // if received value is empty or 'not set' then don't change it in /config.json
+        if (nested_value.length() == 0)
         {
             if (nested_key == "timer1" || nested_key == "timer2")
                 doc[key][nested_key] = "0";
             else if (nested_key == "pulse_width" || nested_key == "pulse_gap")
                 doc[key][nested_key] = "90";
-            // else if (nested_key == "database_url")
-            //     doc[key][nested_key] = "Not Set";
             else if (nested_key == "username" || nested_key == "password")
                 doc[key][nested_key] = "";
+        }
+        else if (nested_value == "not set")
+        {
+            doc[key][nested_key] = "not set";
         }
         else
         {
@@ -464,10 +468,10 @@ StaticJsonDocument<1024> softReset()
         doc["network_settings"]["dns"] = network_settings.dns;
     }
 
-    doc["input"]["ip_1"] = "Not Set";
-    doc["input"]["port_1"] = "Not Set";
-    doc["input"]["ip_2"] = "Not Set";
-    doc["input"]["port_2"] = "Not Set";
+    doc["input"]["ip_1"] = "not set";
+    doc["input"]["port_1"] = "not set";
+    doc["input"]["ip_2"] = "not set";
+    doc["input"]["port_2"] = "not set";
 
     doc["output"]["timer1"] = "0";
     doc["output"]["timer2"] = "0";
@@ -476,12 +480,12 @@ StaticJsonDocument<1024> softReset()
 
     doc["relay2"]["state2"] = "Off";
 
-    doc["wiegand"]["database_url"] = "Not Set";
+    doc["wiegand"]["database_url"] = "not set";
     doc["wiegand"]["pulse_width"] = "90";
     doc["wiegand"]["pulse_gap"] = "90";
 
-    doc["rfid"]["ip_rfid"] = "Not Set";
-    doc["rfid"]["port_rfid"] = "Not Set";
+    doc["rfid"]["ip_rfid"] = "not set";
+    doc["rfid"]["port_rfid"] = "not set";
 
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";
@@ -512,10 +516,10 @@ StaticJsonDocument<1024> factoryReset()
     doc["network_settings"]["subnet"] = "255.255.255.0";
     doc["network_settings"]["dns"] = "8.8.8.8";
 
-    doc["input"]["ip_1"] = "Not Set";
-    doc["input"]["port_1"] = "Not Set";
-    doc["input"]["ip_2"] = "Not Set";
-    doc["input"]["port_2"] = "Not Set";
+    doc["input"]["ip_1"] = "not set";
+    doc["input"]["port_1"] = "not set";
+    doc["input"]["ip_2"] = "not set";
+    doc["input"]["port_2"] = "not set";
 
     doc["output"]["timer1"] = "0";
     doc["output"]["timer2"] = "0";
@@ -524,12 +528,12 @@ StaticJsonDocument<1024> factoryReset()
 
     doc["relay2"]["state2"] = "Off";
 
-    doc["wiegand"]["database_url"] = "Not Set";
+    doc["wiegand"]["database_url"] = "not set";
     doc["wiegand"]["pulse_width"] = "90";
     doc["wiegand"]["pulse_gap"] = "90";
 
-    doc["rfid"]["ip_rfid"] = "Not Set";
-    doc["rfid"]["port_rfid"] = "Not Set";
+    doc["rfid"]["ip_rfid"] = "not set";
+    doc["rfid"]["port_rfid"] = "not set";
 
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";

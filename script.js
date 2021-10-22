@@ -22,9 +22,9 @@ function connectedStatus() {
     conn.innerHTML = connected ? "Yes" : "No";
 }
 
-function ValidateIPaddressOnChange(input) {
-    var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    var strtype = "";
+function validateFormOnChange(input) {
+    let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    let strtype = "";
     switch (input.id) {
         case "ip_address":
             strtype = "IP Address";
@@ -64,28 +64,55 @@ function ValidateIPaddressOnChange(input) {
     }
 }
 
-function ValidateIPaddress(form) {
-    var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+function validateForm(form) {
+    let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
+    let number_format = /\d{1,5}/;
+    let url_format = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+
+    /*
+    The user has 3 input posibilities:
+     - no input - used to keep(not change) the preious setting;
+     - 'not set' - used for resetting the setting
+     - a valid input - used  to create or update a setting
+     */
     for (let i = 0; i < form.elements.length - 1; i++) {
-        // Select only the ip Address inputs
         if (form.elements[i].ariaLabel.includes("Address")) {
+            // Network Settings form
             if (form.elements[i].ariaLabel.includes("Network") && form.elements[i].placeholder != 'DHCP IP' &&
                 !form.elements[i].value.match(ipformat)) {
                 alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
                 form.elements[i].focus();
                 return false;
-            } else if (form.elements[i].value.length > 0 && !form.elements[i].value.match(ipformat)) {
+            }
+            // the other forms that have an IP address input
+            else if (form.elements[i].value.length == 0 || form.elements[i].value.toLowerCase() === 'not set') {
+                continue;
+            } else if (!form.elements[i].value.match(ipformat)) {
+                alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
+                form.elements[i].focus();
+                return false;
+            }
+        } else if (form.elements[i].ariaLabel.includes("Number")) {
+            if (form.elements[i].value.length == 0 || form.elements[i].value.toLowerCase() === 'not set') {
+                continue;
+            } else if (!form.elements[i].value.match(number_format)) {
+                alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
+                form.elements[i].focus();
+                return false;
+            }
+        } else if (form.elements[i].ariaLabel.includes("Database")) {
+            if (form.elements[i].value.length == 0 || form.elements[i].value.toLowerCase() === 'not set') {
+                continue;
+            } else if (!form.elements[i].value.match(url_format)) {
                 alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
                 form.elements[i].focus();
                 return false;
             }
         }
+        return true;
     }
-    return true;
 }
-
-
 // function to enable or disable network inputs based on connection type
 function checkConnection() {
     let checked_element;
@@ -273,6 +300,11 @@ async function getSettings() {
                                     radio_btn[0].checked = false;
                                     radio_btn[1].checked = true;
                                 }
+                            } else if (key === 'state1' || key === 'state2' || key === 'username' || key === 'password') {
+                                continue;
+                            } else {
+                                let elem = document.getElementById(key);
+                                elem.value = json_data[i][key];
                             }
                             checkConnection();
                             checkType();
@@ -420,6 +452,11 @@ if (document.getElementById("index")) {
     });
 }
 
+const updatingToast = () => {
+    const fc = () => toast(`Updating...`, true);
+    setInterval(fc, 3000);
+}
+
 // attach addEventListener() only to the page that has <body id="settings"></body>
 if (document.getElementById("settings")) {
     window.addEventListener("load", function () {
@@ -432,7 +469,7 @@ if (document.getElementById("settings")) {
         let network_form = document.getElementById("network_settings");
         network_form.addEventListener("submit", function (e) {
             e.preventDefault();
-            if (ValidateIPaddress(network_form)) {
+            if (validateForm(network_form)) {
                 saveSettings(network_form, "network/post");
                 network_form.reset();
             }
@@ -442,33 +479,41 @@ if (document.getElementById("settings")) {
         let input_form = document.getElementById("input");
         input_form.addEventListener("submit", function (e) {
             e.preventDefault();
-            if (ValidateIPaddress(input_form)) {
+            if (validateForm(input_form)) {
                 saveSettings(input_form, "input/post");
                 input_form.reset();
             }
+            getSettings();
         });
         // handle output_form
         let output_form = document.getElementById("output");
         output_form.addEventListener("submit", function (e) {
             e.preventDefault();
-            saveSettings(output_form, "output/post");
-            output_form.reset();
+            if (validateForm(output_form)) {
+                saveSettings(output_form, "output/post");
+                output_form.reset();
+            }
+            getSettings();
         });
         // handle wiegand_form
         let wiegand_form = document.getElementById("wiegand");
         wiegand_form.addEventListener("submit", function (e) {
             e.preventDefault();
-            saveSettings(wiegand_form, "wiegand/post");
-            wiegand_form.reset();
+            if (validateForm(wiegand_form)) {
+                saveSettings(wiegand_form, "wiegand/post");
+                wiegand_form.reset();
+            }
+            getSettings();
         });
         // handle rfid_form
         let rfid_form = document.getElementById("rfid");
         rfid_form.addEventListener("submit", function (e) {
             e.preventDefault();
-            if (ValidateIPaddress(rfid_form)) {
+            if (validateForm(rfid_form)) {
                 saveSettings(rfid_form, "rfid/post");
                 rfid_form.reset();
             }
+            getSettings();
         });
         // handle update_form
         let update_form = document.getElementById("update_form");
@@ -481,6 +526,7 @@ if (document.getElementById("settings")) {
                     case 'firmware.bin':
                         toast(`File ${filename} was successfully uploaded !`, true);
                         toast(`The update process has started...`, true);
+                        updatingToast();
                         break;
                     default:
                         toast('File was not uploaded. Try again !', false);
@@ -488,6 +534,7 @@ if (document.getElementById("settings")) {
                         break;
                 }
             }
+            getSettings();
         });
         // handle restore_form
         let restore_form = document.getElementById("restore_form");
@@ -505,6 +552,7 @@ if (document.getElementById("settings")) {
                         break;
                 }
             }
+            getSettings();
         });
         // handle soft_reset_form
         let soft_reset_form = document.getElementById("soft_reset_form");
@@ -519,6 +567,7 @@ if (document.getElementById("settings")) {
                     toast('Soft Reset succeeded !', true);
                     return response.text();
                 });
+            getSettings();
         });
         // handle factory_reset_form
         let factory_reset_form = document.getElementById("factory_reset_form");
@@ -537,6 +586,7 @@ if (document.getElementById("settings")) {
                     console.log(text);
                     toast(`Please navigate to ${text}`, true);
                 });
+            getSettings();
         });
 
         let check_network_connection = document.getElementById("check_network_connection");

@@ -20,7 +20,7 @@ void inputRoutine()
 {
     delta_timer = millis();
     // Initialise or re-initialise UDP 1
-    if (p1_old != input.port_1 && input.port_1 != "Not Set" && input.port_1.length() != 0)
+    if (p1_old != input.port_1 && input.port_1 != "not set" && input.port_1.length() != 0)
     {
         p1_old = input.port_1;
         Serial.println("New Input 1 Port: " + p1_old);
@@ -47,7 +47,7 @@ void inputRoutine()
             logOutput("Trigger1 received.");
             uint8_t buffer[19] = "statechange,201,1\r";
             // send packet to server
-            if (input.ip_1.length() != 0 && input.ip_1 != "Not Set" && udp_on1)
+            if (input.ip_1.length() != 0 && input.ip_1 != "not set" && udp_on1)
             {
                 udp1.beginPacket(input.ip_1.c_str(), input.port_1.toInt());
                 udp1.write(buffer, sizeof(buffer));
@@ -68,7 +68,7 @@ void inputRoutine()
     }
 
     // Initialise or re-initialise UDP 2
-    if (p2_old != input.port_2 && input.port_2 != "Not Set" && input.port_2.length() != 0)
+    if (p2_old != input.port_2 && input.port_2 != "not set" && input.port_2.length() != 0)
     {
         p2_old = input.port_2;
         Serial.println("New Input 2 Port: " + p2_old);
@@ -96,7 +96,7 @@ void inputRoutine()
             logOutput("Trigger2 received.");
             uint8_t buffer[19] = "statechange,201,1\r";
             // send packet to server
-            if (input.ip_2.length() != 0 && input.ip_2 != "Not Set" && udp_on2)
+            if (input.ip_2.length() != 0 && input.ip_2 != "not set" && udp_on2)
             {
                 udp2.beginPacket(input.ip_2.c_str(), input.port_2.toInt());
                 udp2.write(buffer, sizeof(buffer));

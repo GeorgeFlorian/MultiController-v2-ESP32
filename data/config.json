@@ -10,10 +10,10 @@
         "dns": "8.8.8.8"
     },
     "input": {
-        "ip_1": "Not Set",
-        "port_1": "Not Set",
-        "ip_2": "Not Set",
-        "port_2": "Not Set"
+        "ip_1": "not set",
+        "port_1": "not set",
+        "ip_2": "not set",
+        "port_2": "not set"
     },
     "output": {
         "timer1": "0",
@@ -26,13 +26,13 @@
         "state2": "Off"
     },
     "wiegand": {
-        "database_url": "Not Set",
+        "database_url": "not set",
         "pulse_width": "90",
         "pulse_gap": "90"
     },
     "rfid": {
-        "ip_rfid": "Not Set",
-        "port_rfid": "Not Set"
+        "ip_rfid": "not set",
+        "port_rfid": "not set"
     },
     "user": {
         "username": "",

@@ -191,8 +191,7 @@
                                             onchange="ValidateIPaddressOnChange(this)">
                                         <span class="input-group-text">:</span>
                                         <input type="text" class="form-control" placeholder="Port"
-                                            aria-label="Input 1 Port" name="port_1" id="port_1" pattern="\d*"
-                                            maxlength="5">
+                                            aria-label="Input 1 Port Number" name="port_1" id="port_1">
                                     </div>
                                     <!-- Input row -->
                                     <span>Input 2 Address:</span>
@@ -202,8 +201,7 @@
                                             onchange="ValidateIPaddressOnChange(this)">
                                         <span class="input-group-text">:</span>
                                         <input type="text" class="form-control" placeholder="Port"
-                                            aria-label="Input 2 Port" name="port_2" id="port_2" pattern="\d*"
-                                            maxlength="5">
+                                            aria-label="Input 2 Port Number" name="port_2" id="port_2">
                                     </div>
                                     <!-- Submit Button -->
                                     <div class="buttons d-flex justify-content-between">
@@ -220,7 +218,7 @@
                                             1(s):</label>
                                         <div class="col-auto">
                                             <input type="text" class="form-control" name="timer1" id="timer1"
-                                                placeholder="Timer 1">
+                                                placeholder="Timer 1" aria-label="Timer 1 Number">
                                         </div>
                                     </div>
                                     <!-- Input row -->
@@ -229,7 +227,7 @@
                                             2(s):</label>
                                         <div class="col-auto">
                                             <input type="text" class="form-control" name="timer2" id="timer2"
-                                                placeholder="Timer 2">
+                                                placeholder="Timer 2" aria-label="Timer 2 Number">
                                         </div>
                                     </div>
                                     <!-- Submit Button -->
@@ -255,8 +253,8 @@
                                     <label for="database_url" class="col-form-label col-4 text-nowrap">Database
                                         URL:</label>
                                     <div class="col-auto">
-                                        <input type="url" class="form-control" name="database_url" id="database_url"
-                                            placeholder="Database URL">
+                                        <input type="text" class="form-control" name="database_url" id="database_url"
+                                            placeholder="Database URL" aria-label="Database URL">
                                     </div>
                                 </div>
                                 <!-- Input row -->
@@ -265,7 +263,7 @@
                                         Width:</label>
                                     <div class="col-auto">
                                         <input type="text" class="form-control" name="pulse_width" id="pulse_width"
-                                            placeholder="Pulse Width" pattern="\d*" maxlength="5">
+                                            placeholder="Pulse Width" aria-label="Pulse Width Number">
                                     </div>
                                 </div>
                                 <!-- Input row -->
@@ -274,7 +272,7 @@
                                         Gap:</label>
                                     <div class="col-auto">
                                         <input type="text" class="form-control" name="pulse_gap" id="pulse_gap"
-                                            placeholder="Pulse Gap" pattern="\d*" maxlength="5">
+                                            placeholder="Pulse Gap" aria-label="Pulse Gap Number">
                                     </div>
                                 </div>
                                 <!-- Submit Button -->
@@ -293,12 +291,12 @@
                                 <!-- Input row -->
                                 <span>RFID Address:</span>
                                 <div class="input-group mb-3">
-                                    <input type="text" class="form-control" placeholder="IP-Address"
-                                        aria-label="RFID IP Address" name="ip_rfid" id="ip_rfid"
+                                    <input type="text" name="ip_rfid" id="ip_rfid" class="form-control"
+                                        placeholder="IP-Address" aria-label="RFID IP Address"
                                         onchange="ValidateIPaddressOnChange(this)">
                                     <span class="input-group-text">:</span>
-                                    <input type="text" class="form-control" placeholder="Port" aria-label="RFID Port"
-                                        name="port_rfid" id="port_rfid" pattern="\d*" maxlength="5">
+                                    <input type="text" name="port_rfid" id="port_rfid" class="form-control"
+                                        placeholder="Port" aria-label="RFID Port Number">
                                 </div>
                                 <!-- Submit Button -->
                                 <button class="btn btn-primary" type="submit" name="save_rfid">Save</button>
