@@ -18,6 +18,7 @@
 #define BUZZER 16
 
 extern bool ap_mode;
+extern bool changed_network_config;
 
 void waitDelay(unsigned long, unsigned long, unsigned long);
 

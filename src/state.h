@@ -1,5 +1,6 @@
 #pragma once
 #include <WiFi.h>
+#include <ETH.h>
 #include <common.h>
 
 // Live state of the controller

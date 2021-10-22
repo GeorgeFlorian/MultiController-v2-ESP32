@@ -65,7 +65,8 @@ void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t
             // close the file handle as the upload is now done
             request->_tempFile.close();
             // request->send(200);
-            request->redirect("/settings");
+            // request->redirect("/settings");
+            restartSequence(2);
         }
     }
 }
@@ -270,13 +271,11 @@ void startEspServer()
                   }
                   StaticJsonDocument<1024> json = softReset();
 
-                  JSONtoSettings(json);
-
-                  // String response;
-                  // serializeJsonPretty(json, response);
-                  // Serial.print('\n');
-                  json.clear();
-                  request->send(200);
+                  if (JSONtoSettings(json))
+                  {
+                      request->send(200);
+                      restartSequence(2);
+                  }
               });
 
     server.on("/api/factory-reset", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -288,13 +287,12 @@ void startEspServer()
                   }
                   StaticJsonDocument<1024> json = factoryReset();
 
-                  JSONtoSettings(json);
-
-                  // String response;
-                  // serializeJsonPretty(json, response);
-                  // Serial.print('\n');
-                  json.clear();
-                  request->send(200);
+                  if (JSONtoSettings(json))
+                  {
+                    //   request->send(200);
+                    request->send(200, "text/plain", json["network_settings"]["ip_address"].as<String>());
+                    restartSequence(2);
+                  }
               });
 
     server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -417,17 +415,15 @@ void startEspServer()
 
     if (user.user_flag)
     {
-        server.serveStatic("/settings", SPIFFS, "/www/settings.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
-        server.serveStatic("/dashboard", SPIFFS, "/www/index.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
-        server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER).setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
-        server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER).setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+        server.serveStatic("/settings", SPIFFS, "/settings.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+        server.serveStatic("/dashboard", SPIFFS, "/index.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
+        server.serveStatic("/user", SPIFFS, "/user.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
     }
     else
     {
-        server.serveStatic("/settings", SPIFFS, "/www/settings.html");
-        server.serveStatic("/dashboard", SPIFFS, "/www/index.html");
-        server.serveStatic("/user", SPIFFS, "/www/user_sta.html").setFilter(ON_STA_FILTER);
-        server.serveStatic("/user", SPIFFS, "/ap/user_ap.html").setFilter(ON_AP_FILTER);
+        server.serveStatic("/settings", SPIFFS, "/settings.html");
+        server.serveStatic("/dashboard", SPIFFS, "/index.html");
+        server.serveStatic("/user", SPIFFS, "/user.html");
     }
 
     server.serveStatic("/", SPIFFS, "/").setCacheControl("max-age=600");

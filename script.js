@@ -490,12 +490,11 @@ if (document.getElementById("settings")) {
         let restore_form = document.getElementById("restore_form");
         restore_form.addEventListener("submit", function (e) {
             let restore_file = document.getElementById('restore_file');
-            alert(restore_file.files.length);
             let filename = restore_file.files[0].name;
             if (restore_file.files.length > 0) {
                 switch (filename) {
                     case 'config.json':
-                        toast(`File ${filename} was successfully uploaded !`);
+                        toast(`File ${filename} was successfully uploaded !`, true);
                         break;
                     default:
                         toast('File was not uploaded. Try again !', false);
@@ -510,10 +509,12 @@ if (document.getElementById("settings")) {
             e.preventDefault();
             fetch('/api/soft-reset')
                 .then(response => {
-                    if (response.status === 200)
-                        toast('Soft Reset succeeded !', true);
-                    else
+                    if (!response.ok) {
                         toast('Soft Reset failed !', false);
+                        throw new Error(`HTTP error, status = ${response.status}`);
+                    }
+                    toast('Soft Reset succeeded !', true);
+                    return response.text();
                 });
         });
         // handle factory_reset_form
@@ -522,10 +523,16 @@ if (document.getElementById("settings")) {
             e.preventDefault();
             fetch('/api/factory-reset')
                 .then(response => {
-                    if (response.status === 200)
-                        toast('Factory Reset succeeded !', true);
-                    else
+                    if (!response.ok) {
                         toast('Factory Reset failed !', false);
+                        throw new Error(`HTTP error, status = ${response.status}`);
+                    }
+                    toast('Factory Reset succeeded !', true);
+                    return response.text();
+                })
+                .then(text => {
+                    console.log(text);
+                    toast(`Please navigate to ${text}`, true);
                 });
         });
 

@@ -42,25 +42,28 @@
 - Implement Toastify
 - Separate code into headers
 - Move Bootstrap to local and cache the files
-- Fixed /api/settings/get
+- Changed /api/settings/get to get settings from live state objects and not from file
+- Handle Restore configuration from file
+- Implement AP
+- Fix Network connection
 
 ### To implement
 
-- Implement AP
-- Fix Network connection
-- Fix User change
-- Add Reset button to each Setting's form
+- Update - (3): In both cases the device will restart ! OR NOT ?!
+- Fix User change - Save user in flash memory ?
+- Fix Connected status
+
+- Add Reset button to each Setting's form ?
 - Add more Logs
-- Implement loading icon while waiting to reconect after a restart
+- Implement loading icon while reconnecting after a restart
 
 - Move from SPIFFS to LittleFS
 - Add Metrici's color theme
 - Don't forget to minify files before compressing them into gzip
-- (3): In both cases the device will restart ! OR NOT ?!
 - Check functionality
 - Final touch
 
 ### Back-end
 
 - logs.h > common.h > state.h > server_logic.h = connection.h
-                              > wiegand = inputs_outputs = rfid
+-                             > wiegand = inputs_outputs = rfid

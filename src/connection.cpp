@@ -2,6 +2,11 @@
 
 static bool eth_connected = false;
 
+IPAddress ip_address;
+IPAddress gateway;
+IPAddress subnet;
+IPAddress dns;
+
 void WiFiEvent(WiFiEvent_t event)
 {
     switch (event)
@@ -44,58 +49,20 @@ void WiFiEvent(WiFiEvent_t event)
     }
 }
 
-void ethConnection()
-{
-    ETH.begin();
-
-    IPAddress local_sta(192, 168, 100, 10);
-    IPAddress gateway_sta(192, 168, 100, 1);
-    IPAddress subnet_sta(255, 255, 255, 0);
-    IPAddress primary_dns(8, 8, 8, 8);
-
-    if (!ETH.config(local_sta, gateway_sta, subnet_sta, primary_dns))
-    {
-        logOutput(F("Couldn't configure STATIC IP ! Obtaining DHCP IP !"));
-    }
-
-    int k = 0;
-    while (!eth_connected && k < 20)
-    {
-        Serial.println((String) "[" + (k + 1) + "] - Establishing ETHERNET Connection ... ");
-        delay(1000);
-        k++;
-    }
-
-    if (!eth_connected)
-    {
-        logOutput(F("(1) Could not connect to network ! Trying again..."));
-        logOutput(F("Controller will restart in 5 seconds !"));
-        restartSequence(5);
-    }
-}
-
 void wifiConnection()
 {
-}
+    if (network_settings.ip_type == "Static")
+    {
+        ip_address.fromString(network_settings.ip_address);
+        gateway.fromString(network_settings.gateway);
+        subnet.fromString(network_settings.subnet);
+        dns.fromString(network_settings.dns);
 
-void startConnection()
-{
-    WiFi.onEvent(WiFiEvent);
-
-    if (ap_mode)
-        WiFi.mode(WIFI_AP);
-    else
-        WiFi.mode(WIFI_STA);
-
-    if (network_settings.connection == "WiFi")
-        wifiConnection();
-    else if (network_settings.connection == "Ethernet")
-        ethConnection();
-
-    Serial.print("SSID: ");
-    Serial.println(network_settings.ssid);
-    Serial.print("Password: ");
-    Serial.println(network_settings.password);
+        if (!WiFi.config(ip_address, gateway, subnet, dns))
+        {
+            logOutput("WARNING: Couldn't configure STATIC IP ! Obtaining DHCP IP !");
+        }
+    }
 
     WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
 
@@ -104,11 +71,107 @@ void startConnection()
     {
         k++;
         delay(1000);
+        Serial.println((String) "[" + k + "] - Establishing WiFi Connection ... ");
     }
 
     if (WiFi.status() != WL_CONNECTED)
-        ESP.restart();
+    {
+        logOutput("(1) Could not access Wireless Network ! Trying again...");
+        logOutput("Controller will restart in 5 seconds !");
+        restartSequence(5);
+    }
 
-    Serial.print("WiFi.getMode() ");
+    network_settings.ip_address = WiFi.localIP().toString();
+    network_settings.gateway = WiFi.gatewayIP().toString();
+    network_settings.subnet = WiFi.subnetMask().toString();
+    network_settings.dns = WiFi.dnsIP().toString();
+    logOutput((String) "IP address: " + WiFi.localIP().toString());
+    logOutput((String) "Gateway: " + WiFi.gatewayIP().toString());
+    logOutput((String) "Subnet: " + WiFi.subnetMask().toString());
+    logOutput((String) "DNS: " + WiFi.dnsIP().toString());
+}
+
+void ethConnection()
+{    
+    ETH.begin();
+
+    if (network_settings.ip_type == "Static")
+    {
+        ip_address.fromString(network_settings.ip_address);
+        gateway.fromString(network_settings.gateway);
+        subnet.fromString(network_settings.subnet);
+        dns.fromString(network_settings.dns);
+
+        if (!ETH.config(ip_address, gateway, subnet, dns))
+        {
+            logOutput("WARNING: Couldn't configure STATIC IP ! Obtaining DHCP IP !");
+        }
+    }
+
+    int k = 0;
+    while (!eth_connected && k < 20)
+    {
+        k++;
+        delay(1000);
+        Serial.println((String) "[" + k + "] - Establishing ETHERNET Connection ... ");
+    }
+
+    if (!eth_connected)
+    {
+        logOutput("(1) Could not connect to network ! Trying again...");
+        logOutput("Controller will restart in 5 seconds !");
+        restartSequence(5);
+    }
+    network_settings.ip_address = ETH.localIP().toString();
+    network_settings.gateway = ETH.gatewayIP().toString();
+    network_settings.subnet = ETH.subnetMask().toString();
+    network_settings.dns = ETH.dnsIP().toString();
+    logOutput((String) "IP address: " + ETH.localIP().toString());
+    logOutput((String) "Gateway: " + ETH.gatewayIP().toString());
+    logOutput((String) "Subnet: " + ETH.subnetMask().toString());
+    logOutput((String) "DNS: " + ETH.dnsIP().toString());
+}
+
+void startConnection()
+{
+    if (ap_mode)
+    {
+        if (!WiFi.mode(WIFI_AP))
+        {
+            logOutput("ERROR: Controller couldn't go in AP_MODE. Restarting in 5 seconds.");
+            restartSequence(5);
+            exit(1);
+        }
+
+        String ssid_ap = (String) "Metrici-" + WiFi.macAddress().substring(WiFi.macAddress().length() - 5, WiFi.macAddress().length());
+        String password_ap = "metrici@admin";
+
+        IPAddress local_ap(192, 168, 100, 10);
+        IPAddress subnet_ap(255, 255, 255, 0);
+
+        logOutput("Starting AP ... ");
+        logOutput(WiFi.softAP(ssid_ap.c_str(), password_ap.c_str()) ? (String)ssid_ap + " ready" : "AP failed !");
+        logOutput("Setting AP configuration ... ");
+        logOutput(WiFi.softAPConfig(local_ap, local_ap, subnet_ap) ? "Ready" : "Failed!");
+        return;
+    }
+
+    if (!WiFi.mode(WIFI_STA))
+    {
+        logOutput("ERROR: Controller couldn't go in STA_MODE. Restarting in 5 seconds.");
+        restartSequence(5);
+        exit(1);
+    }
+
+    Serial.print("WiFi.getMode() [1 = STA / 2 = AP] : ");
     Serial.println(WiFi.getMode());
+
+    WiFi.onEvent(WiFiEvent);
+
+    if (network_settings.connection == "WiFi")
+        wifiConnection();
+    else if (network_settings.connection == "Ethernet")
+        ethConnection();
+
+    changed_network_config = false;
 }

@@ -160,27 +160,42 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
     {
         network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
         network_settings.password = doc["network_settings"]["password"] | "Not working";
+        if (network_settings.ip_type == "DHCP")
+        {
+            network_settings.ip_address = WiFi.localIP().toString();
+            doc["network_settings"]["ip_address"] = network_settings.ip_address;
+
+            network_settings.gateway = WiFi.gatewayIP().toString();
+            doc["network_settings"]["gateway"] = network_settings.gateway;
+
+            network_settings.subnet = WiFi.subnetMask().toString();
+            doc["network_settings"]["subnet"] = network_settings.subnet;
+
+            network_settings.dns = WiFi.dnsIP().toString();
+            doc["network_settings"]["dns"] = network_settings.dns;
+        }
     }
     else if (network_settings.connection == "Ethernet" || network_settings.connection == "")
     {
         network_settings.ssid = "";
         network_settings.password = "";
+        if (network_settings.ip_type == "DHCP")
+        {
+            network_settings.ip_address = ETH.localIP().toString();
+            doc["network_settings"]["ip_address"] = network_settings.ip_address;
+
+            network_settings.gateway = ETH.gatewayIP().toString();
+            doc["network_settings"]["gateway"] = network_settings.gateway;
+
+            network_settings.subnet = ETH.subnetMask().toString();
+            doc["network_settings"]["subnet"] = network_settings.subnet;
+
+            network_settings.dns = ETH.dnsIP().toString();
+            doc["network_settings"]["dns"] = network_settings.dns;
+        }
     }
-    if (network_settings.ip_type == "DHCP")
-    {
-        network_settings.ip_address = WiFi.localIP().toString();
-        doc["network_settings"]["ip_address"] = WiFi.localIP().toString();
 
-        network_settings.gateway = WiFi.gatewayIP().toString();
-        doc["network_settings"]["gateway"] = WiFi.gatewayIP().toString();
-
-        network_settings.subnet = WiFi.subnetMask().toString();
-        doc["network_settings"]["subnet"] = WiFi.subnetMask().toString();
-
-        network_settings.dns = WiFi.dnsIP().toString();
-        doc["network_settings"]["dns"] = WiFi.dnsIP().toString();
-    }
-    else if (network_settings.ip_type == "Static" || network_settings.ip_type == "")
+    if (network_settings.ip_type == "Static" || network_settings.ip_type == "")
     {
         network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
         network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
@@ -210,6 +225,11 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
 
     user.setUsername(doc["user"]["username"] | "Not working");
     user.setUserPassword(doc["user"]["password"] | "Not working");
+
+    if (network_settings.connection == "")
+        ap_mode = true;
+    else
+        ap_mode = false;
 }
 
 StaticJsonDocument<1024> readSettings()
@@ -262,7 +282,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     File file = SPIFFS.open("/config.json", "r");
     if (!file)
     {
-        logOutput("ERROR: Failed to save settings. Try again.");
+        logOutput("(1)ERROR: Failed to save settings. Try again.");
         Serial.println("Could not open file to read config !!!");
         return;
     }
@@ -270,7 +290,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     int file_size = file.size();
     if (file_size > 1024)
     {
-        logOutput("ERROR: Failed to save settings. Try again.");
+        logOutput("(2)ERROR: Failed to save settings. Try again.");
         Serial.println("Config file bigger than JSON document. Alocate more capacity !");
         doc.clear();
         return;
@@ -280,7 +300,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     DeserializationError error = deserializeJson(doc, file);
     if (error)
     {
-        logOutput("ERROR: Failed to save settings. Try again.");
+        logOutput("(3)ERROR: Failed to save settings. Try again.");
         Serial.println("Failed to read file, using default configuration");
         return;
     }
@@ -322,7 +342,7 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     file = SPIFFS.open("/config.json", "w");
     if (!file)
     {
-        logOutput("ERROR: Failed to save settings. Try again.");
+        logOutput("(4)ERROR: Failed to save settings. Try again.");
         Serial.println("Could not open file to read config !!!");
         return;
     }
@@ -332,12 +352,15 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     {
         doc.clear();
         file.close();
-        logOutput("ERROR: Failed to save settings. Try again.");
+        logOutput("(5)ERROR: Failed to save settings. Try again.");
         Serial.println("Failed to write to file");
         return;
     }
     // Update Live state
     updateLiveState(doc);
+
+    if (key == "network_settings")
+        changed_network_config = true;
 
     doc.clear();
     file.close();
@@ -481,14 +504,16 @@ StaticJsonDocument<1024> factoryReset()
     doc["network_settings"]["password"] = "";
 
     // doc["network_settings"]["connection"] = "WiFi";
-    // doc["network_settings"]["ip_type"] = "DHCP";
+    // doc["network_settings"]["ip_type"] = "Static";
     // doc["network_settings"]["ssid"] = "Jorj-2.4";
     // doc["network_settings"]["password"] = "cafea.amara";
 
-    doc["network_settings"]["ip_address"] = "";
-    doc["network_settings"]["gateway"] = "";
-    doc["network_settings"]["subnet"] = "";
-    doc["network_settings"]["dns"] = "";
+    doc["network_settings"]["ip_address"] = "192.168.0.160";
+    doc["network_settings"]["gateway"] = "192.168.0.1";
+    // doc["network_settings"]["ip_address"] = "192.168.100.10";
+    // doc["network_settings"]["gateway"] = "192.168.100.1";
+    doc["network_settings"]["subnet"] = "255.255.255.0";
+    doc["network_settings"]["dns"] = "8.8.8.8";
 
     doc["input"]["ip_1"] = "Not Set";
     doc["input"]["port_1"] = "Not Set";
@@ -512,8 +537,8 @@ StaticJsonDocument<1024> factoryReset()
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";
 
-    updateLiveState(doc);
     logOutput("Factory Reset succeeded !");
+    logOutput("Please navigate to 192.168.100.10");
 
     return doc;
 }

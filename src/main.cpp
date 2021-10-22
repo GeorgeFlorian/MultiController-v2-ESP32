@@ -44,17 +44,18 @@ void setup()
   }
   setPins();
   // listAllFiles();
-  
-  updateUser();
 
-  // connect to network
+  updateUser();
+  // Connect to a network or enter AP_MODE
   startConnection();
-  // start back-end server
+  // Start back-end server
   startEspServer();
 }
 
 void loop()
 {
+  if (changed_network_config)
+    restartSequence(2);
   // updateUser();
   inputRoutine();
   outputRoutine();
