@@ -46,6 +46,7 @@
 - Handle Restore configuration from file
 - Implement AP
 - Fix Network connection
+- Implemented functionality (io, wiegand, rfid)
 
 ### To implement
 
