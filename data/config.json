@@ -1,13 +1,13 @@
 {
     "network_settings": {
-        "connection": "",
-        "ip_type": "",
+        "connection": "Ethernet",
+        "ip_type": "Static",
         "ssid": "",
         "password": "",
-        "ip_address": "",
-        "gateway": "",
-        "subnet": "",
-        "dns": ""
+        "ip_address": "192.168.0.100",
+        "gateway": "192.168.0.1",
+        "subnet": "255.255.255.0",
+        "dns": "8.8.8.8"
     },
     "input": {
         "ip_1": "Not Set",

@@ -92,7 +92,7 @@ void wifiConnection()
 }
 
 void ethConnection()
-{    
+{
     ETH.begin();
 
     if (network_settings.ip_type == "Static")
@@ -134,28 +134,6 @@ void ethConnection()
 
 void startConnection()
 {
-    if (ap_mode)
-    {
-        if (!WiFi.mode(WIFI_AP))
-        {
-            logOutput("ERROR: Controller couldn't go in AP_MODE. Restarting in 5 seconds.");
-            restartSequence(5);
-            exit(1);
-        }
-
-        String ssid_ap = (String) "Metrici-" + WiFi.macAddress().substring(WiFi.macAddress().length() - 5, WiFi.macAddress().length());
-        String password_ap = "metrici@admin";
-
-        IPAddress local_ap(192, 168, 100, 10);
-        IPAddress subnet_ap(255, 255, 255, 0);
-
-        logOutput("Starting AP ... ");
-        logOutput(WiFi.softAP(ssid_ap.c_str(), password_ap.c_str()) ? (String)ssid_ap + " ready" : "AP failed !");
-        logOutput("Setting AP configuration ... ");
-        logOutput(WiFi.softAPConfig(local_ap, local_ap, subnet_ap) ? "Ready" : "Failed!");
-        return;
-    }
-
     if (!WiFi.mode(WIFI_STA))
     {
         logOutput("ERROR: Controller couldn't go in STA_MODE. Restarting in 5 seconds.");
@@ -163,10 +141,14 @@ void startConnection()
         exit(1);
     }
 
-    Serial.print("WiFi.getMode() [1 = STA / 2 = AP] : ");
-    Serial.println(WiFi.getMode());
+    Serial.println((String)"WiFi.getMode() [1 = STA / 2 = AP] : " + WiFi.getMode());
 
     WiFi.onEvent(WiFiEvent);
+
+    Serial.println(network_settings.ip_address);
+    Serial.println(network_settings.gateway);
+    Serial.println(network_settings.subnet);
+    Serial.println(network_settings.dns);
 
     if (network_settings.connection == "WiFi")
         wifiConnection();

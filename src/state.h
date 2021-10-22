@@ -128,7 +128,7 @@ StaticJsonDocument<1024> readSettings();
 // Saves settings to /config.json
 void saveSettings(StaticJsonDocument<384>, String);
 
-// Writes settings to /config.json after resetting settings
+// Writes passed json doc to /config.json after a reset or an update and updates live state
 bool JSONtoSettings(StaticJsonDocument<1024>);
 
 // Resets settings but keeps Network Configuration

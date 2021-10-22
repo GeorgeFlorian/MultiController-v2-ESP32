@@ -154,6 +154,9 @@ StaticJsonDocument<1024> getLiveState()
 
 void updateLiveState(StaticJsonDocument<1024> &doc)
 {
+    // serializeJsonPretty(doc, Serial);
+    // Serial.println("\n");
+
     network_settings.connection = doc["network_settings"]["connection"] | "Not working";
     network_settings.ip_type = doc["network_settings"]["ip_type"] | "Not working";
     if (network_settings.connection == "WiFi")
@@ -175,7 +178,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
             doc["network_settings"]["dns"] = network_settings.dns;
         }
     }
-    else if (network_settings.connection == "Ethernet" || network_settings.connection == "")
+    else if (network_settings.connection == "Ethernet")
     {
         network_settings.ssid = "";
         network_settings.password = "";
@@ -195,7 +198,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
         }
     }
 
-    if (network_settings.ip_type == "Static" || network_settings.ip_type == "")
+    if (network_settings.ip_type == "Static")
     {
         network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
         network_settings.gateway = doc["network_settings"]["gateway"] | "Not working";
@@ -225,11 +228,6 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
 
     user.setUsername(doc["user"]["username"] | "Not working");
     user.setUserPassword(doc["user"]["password"] | "Not working");
-
-    if (network_settings.connection == "")
-        ap_mode = true;
-    else
-        ap_mode = false;
 }
 
 StaticJsonDocument<1024> readSettings()
@@ -488,8 +486,7 @@ StaticJsonDocument<1024> softReset()
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";
 
-    updateLiveState(doc);
-    logOutput("Soft Reset succeeded !");
+    logOutput("Soft Reset in course ...");
 
     return doc;
 }
@@ -537,8 +534,7 @@ StaticJsonDocument<1024> factoryReset()
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";
 
-    logOutput("Factory Reset succeeded !");
-    logOutput("Please navigate to 192.168.100.10");
+    logOutput("Factory Reset in course ...");
 
     return doc;
 }
@@ -549,8 +545,8 @@ bool JSONtoSettings(StaticJsonDocument<1024> doc)
     File file = SPIFFS.open("/config.json", "w");
     if (!file)
     {
-        logOutput("ERROR: Failed to reset. Try again.");
-        Serial.println(F("Could not open file to write config !!!"));
+        logOutput("(1)ERROR: Failed to reset. Try again.");
+        Serial.println("Could not open file to write config !!!");
         return 0;
     }
 
@@ -559,11 +555,12 @@ bool JSONtoSettings(StaticJsonDocument<1024> doc)
     {
         doc.clear();
         file.close();
-        logOutput("ERROR: Failed to reset. Try again.");
-        Serial.println(F("Failed to write to file"));
+        logOutput("(2)ERROR: Failed to reset. Try again.");
+        Serial.println("Failed to write to file");
         return 0;
     }
 
+    updateLiveState(doc);
     doc.clear();
     file.close();
 

@@ -411,6 +411,7 @@ if (document.getElementById("user_body")) {
 if (document.getElementById("index")) {
     window.addEventListener("load", function () {
         getSettings();
+        getLogs();
         saveRelayState();
         connectedStatus();
         setInterval(connectedStatus, 500);
@@ -423,6 +424,7 @@ if (document.getElementById("index")) {
 if (document.getElementById("settings")) {
     window.addEventListener("load", function () {
         getSettings();
+        getLogs();
         connectedStatus();
         setInterval(connectedStatus, 500);
         setInterval(getLogs, 1000);
@@ -477,7 +479,8 @@ if (document.getElementById("settings")) {
                 switch (filename) {
                     case 'spiffs.bin':
                     case 'firmware.bin':
-                        toast(`File ${filename} was successfully uploaded !`);
+                        toast(`File ${filename} was successfully uploaded !`, true);
+                        toast(`The update process has started...`, true);
                         break;
                     default:
                         toast('File was not uploaded. Try again !', false);

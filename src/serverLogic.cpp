@@ -4,6 +4,13 @@ AsyncWebServer server(80);
 
 void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final)
 {
+    StaticJsonDocument<1024> currentConfig = getLiveState();
+    String ip = currentConfig["network_settings"]["ip_address"].as<String>();
+
+    String updateError = "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not update the device ! </br> Please try again ! </br><a href=\"http://" + ip + "\">Go back</a></div>";
+
+    String updateSuccess = "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> You have successfully updated the device to the latest version. </br>Please wait 10 seconds before navigating to <a href=\"http://" + ip + "\">" + ip + "</a></div>";
+
     if (filename.indexOf(".bin") > 0)
     {
         if (!index)
@@ -14,34 +21,41 @@ void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t
             if (!Update.begin(UPDATE_SIZE_UNKNOWN, cmd))
             {
                 Update.printError(Serial);
+                request->send(200, "text/html", updateError);
             }
         }
 
         if (Update.write(data, len) != len)
         {
             Update.printError(Serial);
+            request->send(200, "text/html", updateError);
         }
 
         if (final)
         {
-            if (filename.indexOf("spiffs") > -1)
-            {
-                request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">The device entered AP Mode ! Please connect to it.</div>");
-            }
-            else
-            {
-                request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> You have successfully updated the device to the latest version. </br>Please wait 10 seconds until the device reboots, then press on the \"Go Home\" button to go back to the main page.</br></br> <form method=\"post\" action=\"http://" + WiFi.localIP().toString() + "\"><input type=\"submit\" name=\"goHome\" value=\"Go Home\"/></form></div>");
-            }
-
             if (!Update.end(true))
             {
                 Update.printError(Serial);
+                request->send(200, "text/html", updateError);
             }
-            else
+            else // Update Succeeded
             {
-                logOutput("Update complete");
-                Serial.flush();
-                ESP.restart();
+                if (filename.indexOf("spiffs") > -1) // update spiffs.bin
+                {
+                    if (!JSONtoSettings(currentConfig))
+                    {
+                        request->send(200, "text/html", updateError);
+                        restart_flag = true;
+                    }
+                    request->send(200, "text/html", updateSuccess);
+                    restart_flag = true;
+                }
+                else // update firmware.bin
+                {
+                    request->send(200, "text/html", updateSuccess);
+                    restart_flag = true;
+                }
+                logOutput("Update complete !!!");
             }
         }
     }
@@ -64,9 +78,15 @@ void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t
             Serial.println((String) "File size: " + index + len);
             // close the file handle as the upload is now done
             request->_tempFile.close();
-            // request->send(200);
-            // request->redirect("/settings");
-            restartSequence(2);
+
+            if (readSettings().isNull())
+            {
+                logOutput("ERROR: Could not update configuration from file. Restarting...");
+                restart_flag = true;
+            }
+
+            request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> config.json has been uploaded. </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
+            restart_flag = true;
         }
     }
 }
@@ -229,7 +249,7 @@ AsyncCallbackJsonWebHandler *user_handler =
                                         user_data.clear();
                                         request->send(200);
                                         // Serial.println(response);
-                                        restartSequence(1);
+                                        restart_flag = true;
                                     });
 
 // Main server function
@@ -271,11 +291,16 @@ void startEspServer()
                   }
                   StaticJsonDocument<1024> json = softReset();
 
-                  if (JSONtoSettings(json))
+                  if (!JSONtoSettings(json))
                   {
-                      request->send(200);
-                      restartSequence(2);
+                      request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not reset the device ! </br> Please try again ! </br><a href=\"http://" + network_settings.ip_address + "\">Go back</a></div>");
+                      restart_flag = true;
                   }
+
+                  logOutput("Reset succeeded !");
+
+                  request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> Soft reset succeeded ! </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
+                  restart_flag = true;
               });
 
     server.on("/api/factory-reset", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -287,12 +312,16 @@ void startEspServer()
                   }
                   StaticJsonDocument<1024> json = factoryReset();
 
-                  if (JSONtoSettings(json))
+                  if (!JSONtoSettings(json))
                   {
-                    //   request->send(200);
-                    request->send(200, "text/plain", json["network_settings"]["ip_address"].as<String>());
-                    restartSequence(2);
+                      request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not reset the device ! </br> Please try again ! </br><a href=\"http://" + network_settings.ip_address + "\">Go back</a></div>");
+                      restart_flag = true;
                   }
+
+                  logOutput("Reset succeeded !");
+
+                  request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> config.json has been uploaded. </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
+                  restart_flag = true;
               });
 
     server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -302,7 +331,9 @@ void startEspServer()
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
                   }
-                  request->send(SPIFFS, "/config.json", String(), true);
+                  //   request->send(SPIFFS, "/config.json", String(), true);
+                  request->send(200, "text/plain", "Multi-Controller will restart in 2 seconds");
+                  restart_flag = true;
               });
 
     server.on("/relay1/on", HTTP_GET, [](AsyncWebServerRequest *request)

@@ -17,8 +17,8 @@
 #define BUTTON 34
 #define BUZZER 16
 
-extern bool ap_mode;
 extern bool changed_network_config;
+extern bool restart_flag;
 
 void waitDelay(unsigned long, unsigned long, unsigned long);
 
