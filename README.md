@@ -62,17 +62,15 @@
 - Fix buttons margin;
 - Improve Connected status;
 - Improved all JS handlers;
+- Add Metrici's color theme;
+- Add Metrici logo
 
 ## To implement
 
-- Add Metrici's color theme
-- Don't forget to minify files before compressing them into gzip
-
-- Move from SPIFFS to LittleFS
-
-- Test functionality
-
-- Final touch
+- Minify files before compressing them into gzip;
+- Move from SPIFFS to LittleFS;
+- Test functionality;
+- Final touch;
 
 ## Back-end
 
