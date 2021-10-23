@@ -1,12 +1,12 @@
 ## Interface
 
-### Dashboard View
+## Dashboard View
 
 - Current Live State of the Multi-controller
 - Relays State
 - Restart
 
-### Settings View
+## Settings View
 
 - Network Settings
 - Input Settings
@@ -16,12 +16,12 @@
 - Update
 - Reset
 
-### User View
+## User View
 
 - Create Username and Password used for basic HTTP Authentication
 - STA and AP pages for User Page
 
-### Implemented
+## Implemented
 
 - Move File Browser and Update to Settings Page;
 - Rename File Browser to Backup/Restore (Configuration) / Save Settings to File;
@@ -49,7 +49,7 @@
 
 - Remove AP Mode;
 - Implemented Reset button;
-- Implemented a [default configuration](/data/config.json)(a configuration that the controller will go to after the reset button on the ESP or the Factory Reset button in the interface was pressed);
+- Implemented a [default configuration](/data/config.json) (a configuration that the controller will go to after the reset button on the ESP or the Factory Reset button in the interface was pressed);
 - Improved handleUpload(), softReset() and factoryReset() functions;
 - Improved restart logic;
 - Add more Logs;
@@ -58,10 +58,11 @@
   - no input - used to keep(not change) the preious setting;
   - 'not set' - used for resetting the setting to default
   - a valid input - used to create or update a setting
-
-### To implement
-
+- Improved reset, form validation and network/post
 - Fix buttons margin
+
+## To implement
+
 - Add Metrici's color theme
 - Don't forget to minify files before compressing them into gzip
 
@@ -74,7 +75,7 @@
 
 - Final touch
 
-### Back-end
+## Back-end
 
 - logs.h > common.h > state.h > server_logic.h = connection.h
 -                             > wiegand = inputs_outputs = rfid
