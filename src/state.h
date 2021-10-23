@@ -104,7 +104,7 @@ public:
     void setUserPassword(String x);
     String getUserPassword();
 
-    bool user_flag;
+    bool userFlag();
 
     User();
 };
@@ -118,9 +118,6 @@ void updateLiveState(StaticJsonDocument<1024> &doc);
 
 // Updates relays state
 void updateRelay(StaticJsonDocument<384> json);
-
-// Checks for user settings and changes user.user_flag accordingly
-void updateUser();
 
 // Reads settings from /config.json and updates live state
 StaticJsonDocument<1024> readSettings();

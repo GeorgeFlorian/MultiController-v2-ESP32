@@ -17,13 +17,21 @@ function toast(message, type, dest = '') {
     }).showToast();
 }
 
-const updatingToast = (message, dest = '') => {
-    const fc = () => toast(message, true, dest);
+const updatingToast = (message, type = true, dest = '') => {
+    const fc = () => toast(message, type, dest);
     return setInterval(fc, 3000);
 }
 
+const checkConnected = () => {
+    const foo = () => {
+        console.log(connected);
+        if (!connected) toast("You are not connected to the device !", false);
+    }
+    return setInterval(foo, 3000);
+}
+
 // check if connected to ESP
-function connectedStatus() {
+function changeConnectedInInterface() {
     let conn = document.getElementById("connected");
     conn.innerHTML = connected ? "Yes" : "No";
 }
@@ -123,7 +131,7 @@ function validateForm(form) {
     return true;
 }
 // function to enable or disable network inputs based on connection type
-function checkConnection() {
+function checkConnectionType() {
     let checked_element;
     let radio_buttons = document.getElementsByName("connection");
     radio_buttons.forEach(element => {
@@ -157,7 +165,7 @@ function checkConnection() {
 }
 
 // function to enable or disable network inputs based on IP type
-function checkType() {
+function checkIpType() {
     let checked_element;
     let radio_buttons = document.getElementsByName("ip_type");
     radio_buttons.forEach(element => {
@@ -207,9 +215,9 @@ async function getLogs() {
         // }
     }).then(response => {
         if (!response.ok) {
-            connected = false;
-            const message = `An error has occured: ${response.status}`;
+            throw new Error(`HTTP error, status = ${response.status}`);
         }
+        connected = true;
         return response.text();
     }).then(text => {
         // console.log('getlogs(): ');
@@ -217,8 +225,7 @@ async function getLogs() {
     }).catch(function (error) {
         // request timeout
         connected = false;
-        toast('You are no longer connected to the device !!!',false);
-        console.log(error);
+        console.log("Error inside getLogs() catch: ", error);
     });
     clearTimeout(timeoutID);
 }
@@ -258,9 +265,7 @@ function toJSONstring(form) {
         form.reset();
     });
 
-    return JSON.stringify({
-        [form.name]: object
-    }, null, 2);
+    return JSON.stringify({ [form.name]: object }, null, 2);
     // return JSON.stringify({ [form.name]: object });
 }
 
@@ -317,8 +322,8 @@ function handleJSON(json_data) {
                         let elem = document.getElementById(key);
                         elem.value = json_data[i][key];
                     }
-                    checkConnection();
-                    checkType();
+                    checkConnectionType();
+                    checkIpType();
 
                 } // if (whichPage === null)
             } // if (json_data[i].hasOwnProperty(key))
@@ -354,38 +359,18 @@ function getSettings() {
         timeout: 3000,
     }).then(response => {
         if (!response.ok) {
-            const message = `An error has occured: ${response.status}`;
+            throw new Error(`HTTP error, status = ${response.status}`);
         }
+        connected = true;
         return response.json();
     }).then((json_data) => {
         // console.log("Received settings: " + json_data);
         handleJSON(json_data);
-        connected = true;
     }).catch(function (error) {
         // request timeout
-        console.log(error);
+        connected = false;
+        console.log("Error inside getSettings() catch: ", error);
     });
-}
-// send/post json
-async function postData(json_data, api_path) {
-    // let post_url = ROOT_URL + api_path;
-    // console.log(post_url);
-    const response = await fetch(api_path, {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: json_data,
-    });
-    //check
-    if (!response.ok) {
-        // connected = false;
-        throw new Error(`HTTP error, status = ${response.status}`);
-    }
-    // console.log("postData response: ");
-    // console.log(response);
-    return response;
 }
 
 function getFormMessage(form) {
@@ -414,13 +399,32 @@ function getFormMessage(form) {
     }
 }
 
+// send/post json
+async function postData(json_data, api_path) {
+    // let post_url = ROOT_URL + api_path;
+    // console.log(post_url);
+    const response = await fetch(api_path, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: json_data,
+        redirect: 'follow'
+    });
+    // console.log("postData response: ", response);
+    return response;
+}
 // send JSON data to server on /api/${destination}
 function saveSettings(form, destination) {
     let json_data = toJSONstring(form);
     // console.log("json_data:");
-    console.log(json_data);
+    // let res;
+    // console.log(json_data);
     postData(json_data, `/api/${destination}`)
         .then((response) => {
+            // res = response;
+            // console.log('res: ', res);
             // console.log(`/api/${destination} Response: `);
             if (!response.ok) {
                 // connected = false;
@@ -428,13 +432,54 @@ function saveSettings(form, destination) {
                 throw new Error(`HTTP error, status = ${response.status}`);
             }
             // connected = true;
-            if (form.name != 'relay1' && form.name != 'relay2') toast(`${getFormMessage(form)}`, true);
-
+            if (form.name != 'relay1' && form.name != 'relay2')
+                toast(`${getFormMessage(form)}`, true);
+            // response.redirect(response.status, response.url);
             return response.text();
         }).then(text => {
-            if (destination === 'network/post')
-                updatingToast(`Please wait 10 seconds then navigate to ${text}`, text);
+            if (destination === 'network/post') {
+                connected = false;
+                updatingToast(`You are no longer connected to the device !`, false);
+                updatingToast(`Please navigate to ${text}`, true, text);
+            }
+            // console.log('res: ', res);
+            // if (!res.redirected) {
+            //     res.redirect(res.url, 301);
+            // // window.location.href = res.url;
+            // }
         });
+}
+
+// handle user form submit
+function saveUser() {
+    let user_form = document.getElementById("user_form");
+    user_form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        // validate user settings
+        let username = document.getElementById('username').value;
+        let user_pass = document.getElementById('password').value;
+        if (username.length > 0 && user_pass.length === 0) {
+            toast('Please enter a password alongside the username !', false);
+        } else {
+            saveSettings(user_form, 'user/post');
+            user_form.reset();
+            getLogs();
+            if (username.length > 0 && user_pass.length > 0) {
+                toast('Please reload the page ');
+            }
+        }
+    });
+}
+
+// User page
+if (document.getElementById("user_body")) {
+    window.addEventListener("load", function () {
+        getLogs();
+
+        saveUser()
+
+        checkConnected();
+    });
 }
 
 // function that sends relays status to api/settings/relays
@@ -443,50 +488,45 @@ function saveRelayState() {
     relay1.addEventListener('change', function (e) {
         e.preventDefault();
         saveSettings(relay1, 'relay/post');
+        getSettings();
+        getLogs();
     });
     let relay2 = document.getElementById("relay2");
     relay2.addEventListener('change', function (e) {
         e.preventDefault();
         saveSettings(relay2, 'relay/post');
+        getSettings();
+        getLogs();
     });
 }
-// handle user form submit
-function saveUser() {
-    let user_form = document.getElementById("user_form");
-    user_form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        saveSettings(user_form, 'user/post');
-        user_form.reset();
-    });
-}
-
-if (document.getElementById("user_body")) {
-    window.addEventListener("load", function () {
-        saveUser();
-        setInterval(getLogs, 1000);
-    });
-}
-
+// Dashboard page
 if (document.getElementById("index")) {
     window.addEventListener("load", function () {
         getSettings();
         getLogs();
+        setInterval(changeConnectedInInterface, 500);
+        checkConnected();
+
         saveRelayState();
-        connectedStatus();
-        setInterval(connectedStatus, 500);
-        setInterval(getSettings, 1000);
-        setInterval(getLogs, 1000);
+
+        // setInterval(changeConnectedInInterface, 500);
+        // setInterval(getSettings, 1000);
+        // setInterval(getLogs, 1000);
+        // checkConnected();
     });
 }
 
+// Settings page
 // attach addEventListener() only to the page that has <body id="settings"></body>
 if (document.getElementById("settings")) {
     window.addEventListener("load", function () {
         getSettings();
         getLogs();
-        connectedStatus();
-        setInterval(connectedStatus, 500);
-        setInterval(getLogs, 1000);
+        setInterval(changeConnectedInInterface, 500);
+        checkConnected();
+
+        // setInterval(getLogs, 1000);    
+
         // handle network_form submit
         let network_form = document.getElementById("network_settings");
         network_form.addEventListener("submit", function (e) {
@@ -495,6 +535,8 @@ if (document.getElementById("settings")) {
                 saveSettings(network_form, "network/post");
                 network_form.reset();
                 getSettings();
+                getLogs();
+                connected = false;
             }
         });
         // handle input_form
@@ -505,6 +547,7 @@ if (document.getElementById("settings")) {
                 saveSettings(input_form, "input/post");
                 input_form.reset();
                 getSettings();
+                getLogs();
             }
         });
         // handle output_form
@@ -515,6 +558,7 @@ if (document.getElementById("settings")) {
                 saveSettings(output_form, "output/post");
                 output_form.reset();
                 getSettings();
+                getLogs();
             }
         });
         // handle wiegand_form
@@ -525,6 +569,7 @@ if (document.getElementById("settings")) {
                 saveSettings(wiegand_form, "wiegand/post");
                 wiegand_form.reset();
                 getSettings();
+                getLogs();
             }
         });
         // handle rfid_form
@@ -535,6 +580,7 @@ if (document.getElementById("settings")) {
                 saveSettings(rfid_form, "rfid/post");
                 rfid_form.reset();
                 getSettings();
+                getLogs();
             }
         });
         // handle update_form
@@ -548,7 +594,7 @@ if (document.getElementById("settings")) {
                     case 'firmware.bin':
                         toast(`File ${filename} was successfully uploaded !`, true);
                         toast(`The update process has started...`, true);
-                        updatingToast('Updating...');
+                        updatingToast('Updating...', true);
                         break;
                     default:
                         toast('File was not uploaded. Try again !', false);
@@ -557,6 +603,7 @@ if (document.getElementById("settings")) {
                 }
             }
             getSettings();
+            getLogs();
         });
         // handle restore_form
         let restore_form = document.getElementById("restore_form");
@@ -575,6 +622,7 @@ if (document.getElementById("settings")) {
                 }
             }
             getSettings();
+            getLogs();
         });
         // handle soft_reset_form
         let soft_reset_form = document.getElementById("soft_reset_form");
@@ -592,6 +640,7 @@ if (document.getElementById("settings")) {
                     toast(text, true);
                 });
             getSettings();
+            getLogs();
         });
         // handle factory_reset_form
         let factory_reset_form = document.getElementById("factory_reset_form");
@@ -606,17 +655,16 @@ if (document.getElementById("settings")) {
                     toast('Factory resetting !', true);
                     return response.text();
                 }).then(text => {
-                    updatingToast(`Please wait 10 seconds then navigate to ${text}`, text);
+                    updatingToast(`Please wait 10 seconds then navigate to ${text}`, true, text);
                 });
             getSettings();
+            getLogs();
         });
 
         let check_network_connection = document.getElementById("check_network_connection");
-        check_network_connection.addEventListener('change', checkConnection, false);
+        check_network_connection.addEventListener('change', checkConnectionType, false);
 
         let check_ip_type = document.getElementById("check_ip_type");
-        check_ip_type.addEventListener('change', checkType, false);
-
-        connectedStatus();
+        check_ip_type.addEventListener('change', checkIpType, false);
     });
 }

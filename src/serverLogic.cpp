@@ -250,9 +250,10 @@ AsyncCallbackJsonWebHandler *user_handler =
                                         serializeJsonPretty(user_data, Serial);
                                         Serial.print('\n');
                                         user_data.clear();
-                                        request->send(200);
                                         // Serial.println(response);
                                         restart_flag = true;
+                                        request->redirect("/dashboard");
+                                        // ESP.restart();
                                     });
 
 // Main server function
@@ -260,7 +261,7 @@ void startEspServer()
 {
     server.on("/api/settings/get", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -277,7 +278,7 @@ void startEspServer()
 
     server.on("/api/backup", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -287,7 +288,7 @@ void startEspServer()
 
     server.on("/api/soft-reset", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -306,7 +307,7 @@ void startEspServer()
 
     server.on("/api/factory-reset", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -326,7 +327,7 @@ void startEspServer()
 
     server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -338,7 +339,7 @@ void startEspServer()
 
     server.on("/relay1/on", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -353,7 +354,7 @@ void startEspServer()
 
     server.on("/relay1/off", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUserPassword().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -369,7 +370,7 @@ void startEspServer()
 
     server.on("/relay2/on", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -383,7 +384,7 @@ void startEspServer()
               });
     server.on("/relay2/off", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -399,7 +400,7 @@ void startEspServer()
 
     server.on("/api/logs", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-                  if (user.user_flag)
+                  if (user.userFlag())
                   {
                       if (!request->authenticate(user.getUsername().c_str(), user.getUserPassword().c_str()))
                           return request->requestAuthentication(NULL, false);
@@ -444,7 +445,7 @@ void startEspServer()
     server.addHandler(relay_handler);
     server.addHandler(user_handler);
 
-    if (user.user_flag)
+    if (user.userFlag())
     {
         server.serveStatic("/settings", SPIFFS, "/settings.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());
         server.serveStatic("/dashboard", SPIFFS, "/index.html").setAuthentication(user.getUsername().c_str(), user.getUserPassword().c_str());

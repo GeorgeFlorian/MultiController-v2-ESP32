@@ -77,7 +77,6 @@ void setup()
   }
   // listAllFiles();
 
-  updateUser();
   // Connect to a network or enter AP_MODE
   startConnection();
   // Start back-end server
@@ -90,10 +89,15 @@ void loop()
 {
   delay(1);
   if (changed_network_config)
+  {
+    Serial.println("Changed NETWORK configuration. Restarting...");
     restartSequence(2);
+  }
   if (restart_flag)
+  {
+    Serial.println("Changed other configuration. Restarting...");
     restartSequence(2);
-  // updateUser();
+  }
   inputRoutine();
   outputRoutine();
   wiegandRoutine();

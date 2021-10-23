@@ -83,7 +83,7 @@ RFID::RFID() : ip_rfid(""), port_rfid(""), activate_rfid(false), reader_command(
 RFID rfid;
 
 // User state
-User::User() : username(""), password(""), user_flag(false){};
+User::User() : username(""), password(""){};
 
 void User::setUsername(String x)
 {
@@ -109,6 +109,14 @@ void User::setUserPassword(String x)
 String User::getUserPassword()
 {
     return password;
+}
+
+bool User::userFlag()
+{
+    if (getUsername().length() > 0 && getUserPassword().length() > 0)
+        return true;
+    else
+        return false;
 }
 
 User user;
@@ -425,14 +433,6 @@ void updateRelay(StaticJsonDocument<384> json)
             relays.manualClose2 = true;
         }
     }
-}
-
-void updateUser()
-{
-    if (user.getUsername().length() > 0 && user.getUserPassword().length() > 0)
-        user.user_flag = true;
-    else
-        user.user_flag = false;
 }
 
 StaticJsonDocument<1024> softReset()

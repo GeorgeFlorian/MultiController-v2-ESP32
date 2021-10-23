@@ -56,19 +56,17 @@
 - Added "Updating..." toast;
 - Fixed input ambiguity: the user now 3 input posibilities:
   - no input - used to keep(not change) the preious setting;
-  - 'not set' - used for resetting the setting to default
-  - a valid input - used to create or update a setting
-- Improved reset, form validation and network/post
-- Fix buttons margin
-- Improve Connected status
+  - 'not set' - used for resetting the setting to default;
+  - a valid input - used to create or update a setting;
+- Improved reset, form validation and network/post;
+- Fix buttons margin;
+- Improve Connected status;
+- Improved all JS handlers;
 
 ## To implement
 
 - Add Metrici's color theme
 - Don't forget to minify files before compressing them into gzip
-
-- Improve User change - Save user in flash memory ?
-
 
 - Move from SPIFFS to LittleFS
 

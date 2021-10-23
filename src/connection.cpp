@@ -145,7 +145,6 @@ void startConnection()
 
     WiFi.onEvent(WiFiEvent);
 
-
     if (network_settings.connection == "WiFi")
         wifiConnection();
     else if (network_settings.connection == "Ethernet")
