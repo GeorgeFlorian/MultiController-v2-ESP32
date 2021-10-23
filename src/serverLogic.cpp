@@ -7,9 +7,9 @@ void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t
     StaticJsonDocument<1024> currentConfig = getLiveState();
     String ip = currentConfig["network_settings"]["ip_address"].as<String>();
 
-    String updateError = "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not update the device ! </br> Please try again ! </br><a href=\"http://" + ip + "\">Go back</a></div>";
+    String updateError = (String) "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not update the device ! </br> Please try again ! </br><a href=\"http://" + ip + "\">Go back</a></div>";
 
-    String updateSuccess = "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> You have successfully updated the device to the latest version. </br>Please wait 10 seconds before navigating to <a href=\"http://" + ip + "\">" + ip + "</a></div>";
+    String updateSuccess = (String) "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> You have successfully updated the device to the latest version. </br>Please wait 10 seconds before navigating to <a href=\"http://" + ip + "\">" + ip + "</a></div>";
 
     if (filename.indexOf(".bin") > 0)
     {
@@ -85,7 +85,7 @@ void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t
                 restart_flag = true;
             }
 
-            request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> config.json has been uploaded. </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
+            request->send(200, "text/html", (String) "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> config.json has been uploaded. </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
             restart_flag = true;
         }
     }
@@ -110,7 +110,10 @@ AsyncCallbackJsonWebHandler *network_handler =
                                         serializeJsonPretty(network, Serial);
                                         Serial.print('\n');
                                         network.clear();
-                                        request->send(200);
+                                        String response = "http://" + network_settings.ip_address;
+                                        request->send(200, "text/plain", response);
+
+                                        changed_network_config = true;
                                         // Serial.println(response);
                                     });
 
@@ -293,13 +296,11 @@ void startEspServer()
 
                   if (!JSONtoSettings(json))
                   {
-                      request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not reset the device ! </br> Please try again ! </br><a href=\"http://" + network_settings.ip_address + "\">Go back</a></div>");
+                      request->send(500);
                       restart_flag = true;
                   }
-
-                  logOutput("Reset succeeded !");
-
-                  request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> Soft reset succeeded ! </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
+                  logOutput("Soft reset succeeded !");
+                  request->send(200, "text/plain", "Soft reset succeeded !");
                   restart_flag = true;
               });
 
@@ -314,13 +315,12 @@ void startEspServer()
 
                   if (!JSONtoSettings(json))
                   {
-                      request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">ERROR ! </br> Could not reset the device ! </br> Please try again ! </br><a href=\"http://" + network_settings.ip_address + "\">Go back</a></div>");
+                      request->send(500);
                       restart_flag = true;
                   }
-
-                  logOutput("Reset succeeded !");
-
-                  request->send(200, "text/html", "<div style=\"margin:0 auto; text-align:center; font-family:arial;\">Congratulation ! </br> config.json has been uploaded. </br>Please wait 10 seconds before navigating to  <a href=\"http://" + network_settings.ip_address + "\">" + network_settings.ip_address + "</a></div>");
+                  logOutput("Factory reset succeeded !");
+                  String response = "http://" + network_settings.ip_address;
+                  request->send(200, "text/plain", response);
                   restart_flag = true;
               });
 

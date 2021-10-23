@@ -319,16 +319,17 @@ void saveSettings(StaticJsonDocument<384> json, String key)
         // if received value is empty or 'not set' then don't change it in /config.json
         if (nested_value.length() == 0)
         {
-            if (nested_key == "timer1" || nested_key == "timer2")
-                doc[key][nested_key] = "0";
-            else if (nested_key == "pulse_width" || nested_key == "pulse_gap")
-                doc[key][nested_key] = "90";
-            else if (nested_key == "username" || nested_key == "password")
+            if (nested_key == "username" || nested_key == "password")
                 doc[key][nested_key] = "";
         }
         else if (nested_value == "not set")
         {
-            doc[key][nested_key] = "not set";
+            if (nested_key == "timer1" || nested_key == "timer2")
+                doc[key][nested_key] = "0";
+            else if (nested_key == "pulse_width" || nested_key == "pulse_gap")
+                doc[key][nested_key] = "90";
+            else
+                doc[key][nested_key] = "not set";
         }
         else
         {
@@ -360,9 +361,6 @@ void saveSettings(StaticJsonDocument<384> json, String key)
     }
     // Update Live state
     updateLiveState(doc);
-
-    if (key == "network_settings")
-        changed_network_config = true;
 
     doc.clear();
     file.close();
@@ -490,7 +488,7 @@ StaticJsonDocument<1024> softReset()
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";
 
-    logOutput("Soft Reset in course ...");
+    logOutput("Soft Resetting ...");
 
     return doc;
 }
@@ -538,7 +536,7 @@ StaticJsonDocument<1024> factoryReset()
     doc["user"]["username"] = "";
     doc["user"]["password"] = "";
 
-    logOutput("Factory Reset in course ...");
+    logOutput("Factory Resetting ...");
 
     return doc;
 }

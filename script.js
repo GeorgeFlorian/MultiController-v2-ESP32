@@ -3,7 +3,7 @@ let connected = false;
 
 // show a toast notification
 // type: true for info, false for error
-function toast(message, type) {
+function toast(message, type, dest = '') {
     Toastify({
         text: message,
         duration: 3000,
@@ -12,8 +12,14 @@ function toast(message, type) {
         position: "right", // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         className: type ? "info" : "error",
+        destination: dest
         // onClick: function () { } // Callback after click
     }).showToast();
+}
+
+const updatingToast = (message, dest = '') => {
+    const fc = () => toast(message, true, dest);
+    return setInterval(fc, 3000);
 }
 
 // check if connected to ESP
@@ -22,7 +28,7 @@ function connectedStatus() {
     conn.innerHTML = connected ? "Yes" : "No";
 }
 
-function validateFormOnChange(input) {
+function ValidateIPaddressOnChange(input) {
     let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     let strtype = "";
     switch (input.id) {
@@ -51,24 +57,26 @@ function validateFormOnChange(input) {
             break;
     }
 
-    if (!input.value.match(ipformat) && !input.placeholder != 'DHCP IP') {
-        document.getElementById(input.id).className =
-            document.getElementById(input.id).className.replace(/(?:^|\s)correct(?!\S)/g, '');
-        document.getElementById(input.id).className += " wrong";
+    let element = document.getElementById(input.id);
+    if (input.value == 'not set' || input.value.length == 0) {
+        element.classList.remove('correct');
+        element.classList.remove('wrong');
+    } else if (!input.value.match(ipformat) && !input.placeholder != 'DHCP IP') {
+        element.classList.remove('correct');
+        element.classList.add('wrong');
         input.focus();
         alert(strtype + " is invalid!");
     } else if (input.value != null) {
-        document.getElementById(input.id).className =
-            document.getElementById(input.id).className.replace(/(?:^|\s)wrong(?!\S)/g, '');
-        document.getElementById(input.id).className += " correct";
+        element.classList.remove('wrong');
+        element.classList.add('correct');
     }
 }
 
 function validateForm(form) {
     let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
-    let number_format = /\d{1,5}/;
-    let url_format = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+    let number_format = /^([0-9]{1,5})$/;
+    let url_format = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
 
     /*
     The user has 3 input posibilities:
@@ -77,6 +85,7 @@ function validateForm(form) {
      - a valid input - used  to create or update a setting
      */
     for (let i = 0; i < form.elements.length - 1; i++) {
+        // console.log(form.elements[i].ariaLabel, form.elements[i].value);
         if (form.elements[i].ariaLabel.includes("Address")) {
             // Network Settings form
             if (form.elements[i].ariaLabel.includes("Network") && form.elements[i].placeholder != 'DHCP IP' &&
@@ -86,7 +95,7 @@ function validateForm(form) {
                 return false;
             }
             // the other forms that have an IP address input
-            else if (form.elements[i].value.length == 0 || form.elements[i].value.toLowerCase() === 'not set') {
+            if (form.elements[i].value.length == 0 || form.elements[i].value.toLowerCase() === 'not set') {
                 continue;
             } else if (!form.elements[i].value.match(ipformat)) {
                 alert(`You have entered an invalid ${form.elements[i].ariaLabel}!`);
@@ -110,8 +119,8 @@ function validateForm(form) {
                 return false;
             }
         }
-        return true;
     }
+    return true;
 }
 // function to enable or disable network inputs based on connection type
 function checkConnection() {
@@ -249,77 +258,76 @@ async function get_json(api_path, options = {}) {
 }
 
 async function getSettings() {
-    try {
-        get_json("/api/settings/get", {
-            timeout: 5000,
-        }).then((json_data) => {
-            // console.log("Received settings: " + json_data);
-            let whichPage = document.getElementById('settings');
-            for (let i in json_data) {
-                // console.log("Received settings: " + json_data[i]);
-                for (let key in json_data[i]) {
-                    // console.log(`key: ${key}`);
-                    if (json_data[i].hasOwnProperty(key)) {
-                        // console.log(`json_data[i][key]: ${json_data[i][key]}`);
-                        if (whichPage === null) { // if I am not on the Settings page
+    get_json("/api/settings/get", {
+        timeout: 5000,
+    }).then((json_data) => {
+        // console.log("Received settings: " + json_data);
+        let whichPage = document.getElementById('settings');
+        for (let i in json_data) {
+            // console.log("Received settings: " + json_data[i]);
+            for (let key in json_data[i]) {
+                // console.log(`key: ${key}`);
+                if (json_data[i].hasOwnProperty(key)) {
+                    // console.log(`json_data[i][key]: ${json_data[i][key]}`);
+                    if (whichPage === null) { // if I am not on the Settings page
+                        let elem = document.getElementById(key);
+                        // console.log(elem);
+                        if (key === 'username' || key === 'password') continue;
+                        else if (key === 'state1' || key === 'state2') {
+                            let radio_btn = document.getElementsByName(key);
+                            if (json_data[i][key] === "On") {
+                                radio_btn[0].checked = true;
+                                radio_btn[1].checked = false;
+                            }
+                            if (json_data[i][key] === "Off") {
+                                radio_btn[0].checked = false;
+                                radio_btn[1].checked = true;
+                            }
+                        } else { // if (key === 'state1' || key === 'state2')
+                            // console.log(key);
+                            elem.innerHTML = json_data[i][key] + "";
+                        }
+                    } else { // if (whichPage === null) // if I am on the Settings page
+                        if (key === 'connection') {
+                            let radio_btn = document.getElementsByName(key);
+                            if (json_data[i][key] === "WiFi") {
+                                radio_btn[0].checked = true;
+                                radio_btn[1].checked = false;
+                            }
+                            if (json_data[i][key] === "Ethernet") {
+                                radio_btn[0].checked = false;
+                                radio_btn[1].checked = true;
+                            }
+                        } else if (key === 'ip_type') {
+                            let radio_btn = document.getElementsByName(key);
+                            if (json_data[i][key] === "DHCP") {
+                                radio_btn[0].checked = true;
+                                radio_btn[1].checked = false;
+                            }
+                            if (json_data[i][key] === "Static") {
+                                radio_btn[0].checked = false;
+                                radio_btn[1].checked = true;
+                            }
+                        } else if (key === 'state1' || key === 'state2' || key === 'username' || key === 'password') {
+                            continue;
+                        } else {
                             let elem = document.getElementById(key);
-                            // console.log(elem);
-                            if (key === 'username' || key === 'password') continue;
-                            else if (key === 'state1' || key === 'state2') {
-                                let radio_btn = document.getElementsByName(key);
-                                if (json_data[i][key] === "On") {
-                                    radio_btn[0].checked = true;
-                                    radio_btn[1].checked = false;
-                                }
-                                if (json_data[i][key] === "Off") {
-                                    radio_btn[0].checked = false;
-                                    radio_btn[1].checked = true;
-                                }
-                            } else { // if (key === 'state1' || key === 'state2')
-                                // console.log(key);
-                                elem.innerHTML = json_data[i][key] + "";
-                            }
-                        } else { // if (whichPage === null) // if I am on the Settings page
-                            if (key === 'connection') {
-                                let radio_btn = document.getElementsByName(key);
-                                if (json_data[i][key] === "WiFi") {
-                                    radio_btn[0].checked = true;
-                                    radio_btn[1].checked = false;
-                                }
-                                if (json_data[i][key] === "Ethernet") {
-                                    radio_btn[0].checked = false;
-                                    radio_btn[1].checked = true;
-                                }
-                            } else if (key === 'ip_type') {
-                                let radio_btn = document.getElementsByName(key);
-                                if (json_data[i][key] === "DHCP") {
-                                    radio_btn[0].checked = true;
-                                    radio_btn[1].checked = false;
-                                }
-                                if (json_data[i][key] === "Static") {
-                                    radio_btn[0].checked = false;
-                                    radio_btn[1].checked = true;
-                                }
-                            } else if (key === 'state1' || key === 'state2' || key === 'username' || key === 'password') {
-                                continue;
-                            } else {
-                                let elem = document.getElementById(key);
-                                elem.value = json_data[i][key];
-                            }
-                            checkConnection();
-                            checkType();
+                            elem.value = json_data[i][key];
+                        }
+                        checkConnection();
+                        checkType();
 
-                        } // if (whichPage === null)
-                    } // if (json_data[i].hasOwnProperty(key))
-                } // for (let key in json_data[i])
-            } // for (let i in json_data)
-            connected = true;
-        });
-    } catch (error) {
+                    } // if (whichPage === null)
+                } // if (json_data[i].hasOwnProperty(key))
+            } // for (let key in json_data[i])
+        } // for (let i in json_data)
+        connected = true;
+    }).catch(function (error) {
         // request timeout
+        console.log(error);
         connected = false;
         console.log(error.name === "AbortError");
-    }
+    });
 }
 // send/post json
 async function postData(json_data, api_path) {
@@ -376,7 +384,7 @@ function saveSettings(form, destination) {
     // console.log("json_data:");
     console.log(json_data);
     postData(json_data, `/api/${destination}`).then((response) => {
-        console.log(`/api/${destination} Response: `);
+        // console.log(`/api/${destination} Response: `);
         if (response.status == 200 || response.ok) {
             connected = true;
             if (form.name != 'relay1' && form.name != 'relay2') toast(`${getFormMessage(form)}`, true);
@@ -385,6 +393,10 @@ function saveSettings(form, destination) {
             connected = false;
             if (form.name != 'relay1' && form.name != 'relay2') toast(`Settings not saved !`, false);
         }
+        return response.text();
+    }).then(text => {
+        if (destination === 'network/post')
+            updatingToast(`Please wait 10 seconds then navigate to ${text}`, text);
     });
 }
 
@@ -452,11 +464,6 @@ if (document.getElementById("index")) {
     });
 }
 
-const updatingToast = () => {
-    const fc = () => toast(`Updating...`, true);
-    setInterval(fc, 3000);
-}
-
 // attach addEventListener() only to the page that has <body id="settings"></body>
 if (document.getElementById("settings")) {
     window.addEventListener("load", function () {
@@ -472,8 +479,8 @@ if (document.getElementById("settings")) {
             if (validateForm(network_form)) {
                 saveSettings(network_form, "network/post");
                 network_form.reset();
+                getSettings();
             }
-            getSettings();
         });
         // handle input_form
         let input_form = document.getElementById("input");
@@ -482,8 +489,8 @@ if (document.getElementById("settings")) {
             if (validateForm(input_form)) {
                 saveSettings(input_form, "input/post");
                 input_form.reset();
+                getSettings();
             }
-            getSettings();
         });
         // handle output_form
         let output_form = document.getElementById("output");
@@ -492,8 +499,8 @@ if (document.getElementById("settings")) {
             if (validateForm(output_form)) {
                 saveSettings(output_form, "output/post");
                 output_form.reset();
+                getSettings();
             }
-            getSettings();
         });
         // handle wiegand_form
         let wiegand_form = document.getElementById("wiegand");
@@ -502,8 +509,8 @@ if (document.getElementById("settings")) {
             if (validateForm(wiegand_form)) {
                 saveSettings(wiegand_form, "wiegand/post");
                 wiegand_form.reset();
+                getSettings();
             }
-            getSettings();
         });
         // handle rfid_form
         let rfid_form = document.getElementById("rfid");
@@ -512,8 +519,8 @@ if (document.getElementById("settings")) {
             if (validateForm(rfid_form)) {
                 saveSettings(rfid_form, "rfid/post");
                 rfid_form.reset();
+                getSettings();
             }
-            getSettings();
         });
         // handle update_form
         let update_form = document.getElementById("update_form");
@@ -526,7 +533,7 @@ if (document.getElementById("settings")) {
                     case 'firmware.bin':
                         toast(`File ${filename} was successfully uploaded !`, true);
                         toast(`The update process has started...`, true);
-                        updatingToast();
+                        updatingToast('Updating...');
                         break;
                     default:
                         toast('File was not uploaded. Try again !', false);
@@ -564,8 +571,10 @@ if (document.getElementById("settings")) {
                         toast('Soft Reset failed !', false);
                         throw new Error(`HTTP error, status = ${response.status}`);
                     }
-                    toast('Soft Reset succeeded !', true);
+                    toast('Soft resetting !', true);
                     return response.text();
+                }).then(text => {
+                    toast(text, true);
                 });
             getSettings();
         });
@@ -579,12 +588,10 @@ if (document.getElementById("settings")) {
                         toast('Factory Reset failed !', false);
                         throw new Error(`HTTP error, status = ${response.status}`);
                     }
-                    toast('Factory Reset succeeded !', true);
+                    toast('Factory resetting !', true);
                     return response.text();
-                })
-                .then(text => {
-                    console.log(text);
-                    toast(`Please navigate to ${text}`, true);
+                }).then(text => {
+                    updatingToast(`Please wait 10 seconds then navigate to ${text}`, text);
                 });
             getSettings();
         });

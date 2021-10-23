@@ -152,9 +152,10 @@ void startConnection()
         ethConnection();
     
     // debug purpose - checking live state
-    Serial.println(network_settings.ip_address);
-    Serial.println(network_settings.gateway);
-    Serial.println(network_settings.subnet);
-    Serial.println(network_settings.dns);
+    // Serial.println(network_settings.ip_address);
+    // Serial.println(network_settings.gateway);
+    // Serial.println(network_settings.subnet);
+    // Serial.println(network_settings.dns);
+    
     changed_network_config = false;
 }
