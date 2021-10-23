@@ -193,6 +193,36 @@ function checkType() {
     }
 }
 
+async function getLogs() {
+    options = {};
+    const { timeout = 3000 } = options;
+    const controller = new AbortController();
+    const timeoutID = setTimeout(() => controller.abort(), timeout);
+    await fetch('/api/logs', {
+        ...options,
+        signal: controller.signal,
+        // headers: {
+        //   'Content-Type': 'application/json',
+        //   'Accept': 'application/json'
+        // }
+    }).then(response => {
+        if (!response.ok) {
+            connected = false;
+            const message = `An error has occured: ${response.status}`;
+        }
+        return response.text();
+    }).then(text => {
+        // console.log('getlogs(): ');
+        document.getElementById('logs').innerHTML = text;
+    }).catch(function (error) {
+        // request timeout
+        connected = false;
+        toast('You are no longer connected to the device !!!',false);
+        console.log(error);
+    });
+    clearTimeout(timeoutID);
+}
+
 // parse form data into json
 function toJSONstring(form) {
     // console.log(`form: ${form.name}`);
@@ -234,12 +264,74 @@ function toJSONstring(form) {
     // return JSON.stringify({ [form.name]: object });
 }
 
+function handleJSON(json_data) {
+    let whichPage = document.getElementById('settings');
+    for (let i in json_data) {
+        // console.log("Received settings: " + json_data[i]);
+        for (let key in json_data[i]) {
+            // console.log(`key: ${key}`);
+            if (json_data[i].hasOwnProperty(key)) {
+                // console.log(`json_data[i][key]: ${json_data[i][key]}`);
+                if (whichPage === null) { // if I am not on the Settings page
+                    let elem = document.getElementById(key);
+                    // console.log(elem);
+                    if (key === 'username' || key === 'password') continue;
+                    else if (key === 'state1' || key === 'state2') {
+                        let radio_btn = document.getElementsByName(key);
+                        if (json_data[i][key] === "On") {
+                            radio_btn[0].checked = true;
+                            radio_btn[1].checked = false;
+                        }
+                        if (json_data[i][key] === "Off") {
+                            radio_btn[0].checked = false;
+                            radio_btn[1].checked = true;
+                        }
+                    } else { // if (key === 'state1' || key === 'state2')
+                        // console.log(key);
+                        elem.innerHTML = json_data[i][key] + "";
+                    }
+                } else { // if (whichPage === null) // if I am on the Settings page
+                    if (key === 'connection') {
+                        let radio_btn = document.getElementsByName(key);
+                        if (json_data[i][key] === "WiFi") {
+                            radio_btn[0].checked = true;
+                            radio_btn[1].checked = false;
+                        }
+                        if (json_data[i][key] === "Ethernet") {
+                            radio_btn[0].checked = false;
+                            radio_btn[1].checked = true;
+                        }
+                    } else if (key === 'ip_type') {
+                        let radio_btn = document.getElementsByName(key);
+                        if (json_data[i][key] === "DHCP") {
+                            radio_btn[0].checked = true;
+                            radio_btn[1].checked = false;
+                        }
+                        if (json_data[i][key] === "Static") {
+                            radio_btn[0].checked = false;
+                            radio_btn[1].checked = true;
+                        }
+                    } else if (key === 'state1' || key === 'state2' || key === 'username' || key === 'password') {
+                        continue;
+                    } else {
+                        let elem = document.getElementById(key);
+                        elem.value = json_data[i][key];
+                    }
+                    checkConnection();
+                    checkType();
+
+                } // if (whichPage === null)
+            } // if (json_data[i].hasOwnProperty(key))
+        } // for (let key in json_data[i])
+    } // for (let i in json_data)
+}
+
 // get json
 async function get_json(api_path, options = {}) {
     // const url = api_path;
     // console.log(ROOT_URL);
     // console.log(api_path);
-    const { timeout = 8000 } = options;
+    const { timeout = 3000 } = options;
     const controller = new AbortController();
     const timeoutID = setTimeout(() => controller.abort(), timeout);
 
@@ -254,79 +346,24 @@ async function get_json(api_path, options = {}) {
     clearTimeout(timeoutID);
 
     // console.log(response.json);
-    return response.json();
+    return response;
 }
 
-async function getSettings() {
-    get_json("/api/settings/get", {
-        timeout: 5000,
+function getSettings() {
+    return get_json("/api/settings/get", {
+        timeout: 3000,
+    }).then(response => {
+        if (!response.ok) {
+            const message = `An error has occured: ${response.status}`;
+        }
+        return response.json();
     }).then((json_data) => {
         // console.log("Received settings: " + json_data);
-        let whichPage = document.getElementById('settings');
-        for (let i in json_data) {
-            // console.log("Received settings: " + json_data[i]);
-            for (let key in json_data[i]) {
-                // console.log(`key: ${key}`);
-                if (json_data[i].hasOwnProperty(key)) {
-                    // console.log(`json_data[i][key]: ${json_data[i][key]}`);
-                    if (whichPage === null) { // if I am not on the Settings page
-                        let elem = document.getElementById(key);
-                        // console.log(elem);
-                        if (key === 'username' || key === 'password') continue;
-                        else if (key === 'state1' || key === 'state2') {
-                            let radio_btn = document.getElementsByName(key);
-                            if (json_data[i][key] === "On") {
-                                radio_btn[0].checked = true;
-                                radio_btn[1].checked = false;
-                            }
-                            if (json_data[i][key] === "Off") {
-                                radio_btn[0].checked = false;
-                                radio_btn[1].checked = true;
-                            }
-                        } else { // if (key === 'state1' || key === 'state2')
-                            // console.log(key);
-                            elem.innerHTML = json_data[i][key] + "";
-                        }
-                    } else { // if (whichPage === null) // if I am on the Settings page
-                        if (key === 'connection') {
-                            let radio_btn = document.getElementsByName(key);
-                            if (json_data[i][key] === "WiFi") {
-                                radio_btn[0].checked = true;
-                                radio_btn[1].checked = false;
-                            }
-                            if (json_data[i][key] === "Ethernet") {
-                                radio_btn[0].checked = false;
-                                radio_btn[1].checked = true;
-                            }
-                        } else if (key === 'ip_type') {
-                            let radio_btn = document.getElementsByName(key);
-                            if (json_data[i][key] === "DHCP") {
-                                radio_btn[0].checked = true;
-                                radio_btn[1].checked = false;
-                            }
-                            if (json_data[i][key] === "Static") {
-                                radio_btn[0].checked = false;
-                                radio_btn[1].checked = true;
-                            }
-                        } else if (key === 'state1' || key === 'state2' || key === 'username' || key === 'password') {
-                            continue;
-                        } else {
-                            let elem = document.getElementById(key);
-                            elem.value = json_data[i][key];
-                        }
-                        checkConnection();
-                        checkType();
-
-                    } // if (whichPage === null)
-                } // if (json_data[i].hasOwnProperty(key))
-            } // for (let key in json_data[i])
-        } // for (let i in json_data)
+        handleJSON(json_data);
         connected = true;
     }).catch(function (error) {
         // request timeout
         console.log(error);
-        connected = false;
-        console.log(error.name === "AbortError");
     });
 }
 // send/post json
@@ -343,9 +380,8 @@ async function postData(json_data, api_path) {
     });
     //check
     if (!response.ok) {
-        connected = false;
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
+        // connected = false;
+        throw new Error(`HTTP error, status = ${response.status}`);
     }
     // console.log("postData response: ");
     // console.log(response);
@@ -383,21 +419,22 @@ function saveSettings(form, destination) {
     let json_data = toJSONstring(form);
     // console.log("json_data:");
     console.log(json_data);
-    postData(json_data, `/api/${destination}`).then((response) => {
-        // console.log(`/api/${destination} Response: `);
-        if (response.status == 200 || response.ok) {
-            connected = true;
+    postData(json_data, `/api/${destination}`)
+        .then((response) => {
+            // console.log(`/api/${destination} Response: `);
+            if (!response.ok) {
+                // connected = false;
+                if (form.name != 'relay1' && form.name != 'relay2') toast(`Settings not saved !`, false);
+                throw new Error(`HTTP error, status = ${response.status}`);
+            }
+            // connected = true;
             if (form.name != 'relay1' && form.name != 'relay2') toast(`${getFormMessage(form)}`, true);
-        }
-        else {
-            connected = false;
-            if (form.name != 'relay1' && form.name != 'relay2') toast(`Settings not saved !`, false);
-        }
-        return response.text();
-    }).then(text => {
-        if (destination === 'network/post')
-            updatingToast(`Please wait 10 seconds then navigate to ${text}`, text);
-    });
+
+            return response.text();
+        }).then(text => {
+            if (destination === 'network/post')
+                updatingToast(`Please wait 10 seconds then navigate to ${text}`, text);
+        });
 }
 
 // function that sends relays status to api/settings/relays
@@ -421,28 +458,6 @@ function saveUser() {
         saveSettings(user_form, 'user/post');
         user_form.reset();
     });
-}
-
-async function getLogs() {
-    options = {};
-    const { timeout = 8000 } = options;
-    const controller = new AbortController();
-    const timeoutID = setTimeout(() => controller.abort(), timeout);
-    await fetch('/api/logs', {
-        ...options,
-        signal: controller.signal,
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   'Accept': 'application/json'
-        // }
-    }).then(response => {
-        // console.log('getlogs(): ');
-        response.text().then(text => {
-            document.getElementById('logs').innerHTML = text;
-            // console.log(text);
-        });
-    });
-    clearTimeout(timeoutID);
 }
 
 if (document.getElementById("user_body")) {

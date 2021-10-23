@@ -60,6 +60,7 @@
   - a valid input - used to create or update a setting
 - Improved reset, form validation and network/post
 - Fix buttons margin
+- Improve Connected status
 
 ## To implement
 
@@ -67,7 +68,7 @@
 - Don't forget to minify files before compressing them into gzip
 
 - Improve User change - Save user in flash memory ?
-- Improve Connected status
+
 
 - Move from SPIFFS to LittleFS
 
