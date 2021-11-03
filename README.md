@@ -69,7 +69,7 @@
 - Set Relay1 and Relay2 on OFF on start-up
 
 - Change Navigation bg color
-
+- Improved input :focurs and :hover colors
 
 ## To implement
 

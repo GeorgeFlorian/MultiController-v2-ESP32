@@ -63,7 +63,7 @@ body {
   color: white;
 }
 .form-control:focus {
-  box-shadow: 0 0 0 0.1rem #dc3545;
+  box-shadow: 0 0 0 0.1rem #adb5bd;
   color: white;
   letter-spacing: 1px;
 }
@@ -74,15 +74,22 @@ body {
   color: #adb5bd !important;
 }
 
+/* Submit buttons */
 .btn {
   min-width: 104px;
 }
-
 .btn-danger {
   background-color: #e11422 !important;
-  border-color: #e11422 !important;
+  border: 0 !important;
+}
+.btn-danger:hover {
+  background-color: #7d0b12 !important;
+}
+.btn-danger:focus {
+  box-shadow: 0 0 0 0.1rem #adb5bd;
 }
 
+/* Radio Buttons */
 .btn-outline-danger {
   border-color: #e11422 !important;
 }
@@ -90,8 +97,9 @@ body {
   background-color: #e11422 !important;
 }
 .btn-outline-danger:hover {
-  background-color: #e11422 !important;
+  background-color: #7d0b12 !important;
 }
+/* Choose file buttons */
 input[type="file"]::file-selector-button {
   background-color: #b4101b !important;
   color: white !important;
