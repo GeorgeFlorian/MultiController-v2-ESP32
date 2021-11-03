@@ -275,6 +275,10 @@ StaticJsonDocument<1024> readSettings()
 
     file.close();
 
+    // Set Relay1 and Relay2 on OFF on start-up
+    doc["relay1"]["state1"] = "Off";
+    doc["relay2"]["state2"] = "Off";
+
     updateLiveState(doc);
     // serializeJsonPretty(doc, Serial);
 

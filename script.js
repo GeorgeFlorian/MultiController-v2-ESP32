@@ -24,7 +24,7 @@ const updatingToast = (message, type = true, dest = '') => {
 
 const checkConnected = () => {
     const foo = () => {
-        console.log(connected);
+        // console.log(connected ? 'Connected to the device !' : 'Not connected to the device !');
         if (!connected) toast("You are not connected to the device !", false);
     }
     return setInterval(foo, 3000);
@@ -510,7 +510,7 @@ if (document.getElementById("index")) {
         saveRelayState();
 
         // setInterval(changeConnectedInInterface, 500);
-        // setInterval(getSettings, 1000);
+        setInterval(getSettings, 1000);
         // setInterval(getLogs, 1000);
         // checkConnected();
     });
