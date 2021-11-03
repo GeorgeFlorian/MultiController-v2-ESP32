@@ -60,10 +60,14 @@
   - a valid input - used to create or update a setting;
 - Improved reset, form validation and network/post;
 - Fix buttons margin;
-- Improve Connected status;
+- Improved Connected status;
 - Improved all JS handlers;
 - Add Metrici's color theme;
 - Add Metrici logo
+
+- Updated Wiegand Algorithm
+- Set Relay1 and Relay2 on OFF on start-up
+
 
 ## To implement
 

@@ -4,27 +4,42 @@
 class Wiegand
 {
 private:
-    std::vector<bool> wiegandArray;
+    // Wiegand ID with parity bits
+    std::vector<bool> wiegandOF;
+    // Wiegand ID without parity bits
+    std::vector<bool> wiegand26b;
+    // Facility Code in binary
     std::vector<bool> facilityCode;
+    // Card Number in binary
     std::vector<bool> cardNumber;
-    String s1;
+    String facility_code;
+    String card_number;
 
-    void calculateFacilityCode(uint8_t dec);
-    void calculateCardNumber(uint16_t dec);
-    void calculateWiegand();
+    // calculate Facility Code in binary
+    void fCodeToBinary(uint8_t dec);
+    // Calculate Card Number in binary
+    void cNumberToBinary(uint16_t dec);
+    // Calculates two wiegand arrays
+    // 'wiegandOF' with parity bits and 'wiegand26b' without them
+    void calculateBothWiegandIDs();
+    long convertToDec(String n);
 
 public:
-    void update(String fCode, String cNumber);
-    //returns a 26 length std::vector<bool>
+    void createWiegand(String fCode, String cNumber);
+    // returns a 26 length Wiegand Binary with parity bits
     std::vector<bool> getWiegandBinary();
-    // returns an 8 characters long String
-    String getCardID();
+    // returns a 26 length Wiegand Binary with parity bits in String format
+    String getWiegandBinaryInString();
+    // returns Wiegand without parity bits
+    String getWiegand26b();
+    // returns wiegand id in Open Format
+    String getWiegandOF();
 
     std::vector<bool> getFacilityCode_vector();
     std::vector<bool> getCardNumber_vector();
-    uint8_t getFacilityCode_int();
-    uint16_t getCardNumber_int();
+    String getFacilityCode_string();
+    String getCardNumber_string();
     Wiegand();
-} ;
+};
 
 void wiegandRoutine();
