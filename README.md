@@ -73,6 +73,8 @@
 
 ## To implement
 
+- Do not forget to change default IP ADDRESS
+
 - Minify files before compressing them into gzip;
 - Move from SPIFFS to LittleFS;
 - Test functionality;

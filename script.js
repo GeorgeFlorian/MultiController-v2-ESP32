@@ -34,6 +34,7 @@ const checkConnected = () => {
 function changeConnectedInInterface() {
     let conn = document.getElementById("connected");
     conn.innerHTML = connected ? "Yes" : "No";
+    // console.log(connected);
 }
 
 function ValidateIPaddressOnChange(input) {
@@ -475,10 +476,9 @@ function saveUser() {
 if (document.getElementById("user_body")) {
     window.addEventListener("load", function () {
         getLogs();
-
         saveUser()
-
         checkConnected();
+        setInterval(getLogs, 1000);
     });
 }
 
@@ -509,9 +509,8 @@ if (document.getElementById("index")) {
 
         saveRelayState();
 
-        // setInterval(changeConnectedInInterface, 500);
         setInterval(getSettings, 1000);
-        // setInterval(getLogs, 1000);
+        setInterval(getLogs, 1000);
         // checkConnected();
     });
 }
@@ -525,7 +524,7 @@ if (document.getElementById("settings")) {
         setInterval(changeConnectedInInterface, 500);
         checkConnected();
 
-        // setInterval(getLogs, 1000);    
+        setInterval(getLogs, 1000);
 
         // handle network_form submit
         let network_form = document.getElementById("network_settings");

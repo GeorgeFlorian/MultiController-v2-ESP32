@@ -511,7 +511,7 @@ StaticJsonDocument<1024> factoryReset()
     // doc["network_settings"]["ssid"] = "Jorj-2.4";
     // doc["network_settings"]["password"] = "cafea.amara";
 
-    doc["network_settings"]["ip_address"] = "192.168.0.160";
+    doc["network_settings"]["ip_address"] = "192.168.0.100";
     doc["network_settings"]["gateway"] = "192.168.0.1";
     // doc["network_settings"]["ip_address"] = "192.168.100.10";
     // doc["network_settings"]["gateway"] = "192.168.100.1";
