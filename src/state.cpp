@@ -3,7 +3,7 @@
 // Live state of the controller
 
 // Network Settings state
-Settings::Settings() : connection(""), ip_type(""), ssid(""), password(""), ip_address(""), gateway(""), subnet(""), dns(""){};
+Settings::Settings() : connection(""), ip_type(""), ssid(""), password(""), mac_address(""), ip_address(""), gateway(""), subnet(""), dns(""){};
 
 Settings network_settings;
 
@@ -130,6 +130,7 @@ StaticJsonDocument<1024> getLiveState()
     doc["network_settings"]["ssid"] = network_settings.ssid;
     doc["network_settings"]["password"] = network_settings.password;
 
+    doc["network_settings"]["mac_address"] = network_settings.mac_address;
     doc["network_settings"]["ip_address"] = network_settings.ip_address;
     doc["network_settings"]["gateway"] = network_settings.gateway;
     doc["network_settings"]["subnet"] = network_settings.subnet;
@@ -171,6 +172,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
     {
         network_settings.ssid = doc["network_settings"]["ssid"] | "Not working";
         network_settings.password = doc["network_settings"]["password"] | "Not working";
+
         if (network_settings.ip_type == "DHCP")
         {
             network_settings.ip_address = WiFi.localIP().toString();
@@ -190,6 +192,7 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
     {
         network_settings.ssid = "";
         network_settings.password = "";
+
         if (network_settings.ip_type == "DHCP")
         {
             network_settings.ip_address = ETH.localIP().toString();
@@ -206,6 +209,8 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
         }
     }
 
+    doc["network_settings"]["mac_address"] = network_settings.mac_address;
+    
     if (network_settings.ip_type == "Static")
     {
         network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";
@@ -450,7 +455,7 @@ StaticJsonDocument<1024> softReset()
         doc["network_settings"]["ssid"] = network_settings.ssid;
         doc["network_settings"]["password"] = network_settings.password;
     }
-    else if (network_settings.connection == "Ethernet")
+    if (network_settings.connection == "Ethernet")
     {
         network_settings.ssid = "Ethernet Connection";
         network_settings.password = "Ethernet Connection";
@@ -462,7 +467,7 @@ StaticJsonDocument<1024> softReset()
         doc["network_settings"]["subnet"] = WiFi.subnetMask().toString();
         doc["network_settings"]["dns"] = WiFi.dnsIP().toString();
     }
-    else if (network_settings.ip_type == "Static")
+    if (network_settings.ip_type == "Static")
     {
         doc["network_settings"]["ip_address"] = network_settings.ip_address;
         doc["network_settings"]["gateway"] = network_settings.gateway;
@@ -508,7 +513,7 @@ StaticJsonDocument<1024> factoryReset()
 
     // doc["network_settings"]["connection"] = "WiFi";
     // doc["network_settings"]["ip_type"] = "Static";
-    // doc["network_settings"]["ssid"] = "Jorj-2.4";
+    // doc["network_settings"]["ssid"] = "Jorje-2.4";
     // doc["network_settings"]["password"] = "cafea.amara";
 
     doc["network_settings"]["ip_address"] = "192.168.0.100";

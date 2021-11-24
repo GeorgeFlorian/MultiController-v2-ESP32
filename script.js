@@ -202,35 +202,6 @@ function checkIpType() {
     }
 }
 
-async function getLogs() {
-    options = {};
-    const { timeout = 3000 } = options;
-    const controller = new AbortController();
-    const timeoutID = setTimeout(() => controller.abort(), timeout);
-    await fetch('/api/logs', {
-        ...options,
-        signal: controller.signal,
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   'Accept': 'application/json'
-        // }
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error, status = ${response.status}`);
-        }
-        connected = true;
-        return response.text();
-    }).then(text => {
-        // console.log('getlogs(): ');
-        document.getElementById('logs').innerHTML = text;
-    }).catch(function (error) {
-        // request timeout
-        connected = false;
-        console.log("Error inside getLogs() catch: ", error);
-    });
-    clearTimeout(timeoutID);
-}
-
 // parse form data into json
 function toJSONstring(form) {
     // console.log(`form: ${form.name}`);
@@ -271,14 +242,14 @@ function toJSONstring(form) {
 }
 
 function handleJSON(json_data) {
-    let whichPage = document.getElementById('settings');
+    let settingsPage = document.getElementById('settings');
     for (let i in json_data) {
         // console.log("Received settings: " + json_data[i]);
         for (let key in json_data[i]) {
             // console.log(`key: ${key}`);
             if (json_data[i].hasOwnProperty(key)) {
                 // console.log(`json_data[i][key]: ${json_data[i][key]}`);
-                if (whichPage === null) { // if I am not on the Settings page
+                if (!settingsPage) { // if I am not on the Settings page
                     let elem = document.getElementById(key);
                     // console.log(elem);
                     if (key === 'username' || key === 'password') continue;
@@ -296,7 +267,7 @@ function handleJSON(json_data) {
                         // console.log(key);
                         elem.innerHTML = json_data[i][key] + "";
                     }
-                } else { // if (whichPage === null) // if I am on the Settings page
+                } else { // if (!settingsPage) // if I am on the Settings page
                     if (key === 'connection') {
                         let radio_btn = document.getElementsByName(key);
                         if (json_data[i][key] === "WiFi") {
@@ -317,7 +288,13 @@ function handleJSON(json_data) {
                             radio_btn[0].checked = false;
                             radio_btn[1].checked = true;
                         }
-                    } else if (key === 'state1' || key === 'state2' || key === 'username' || key === 'password') {
+                    } else if (
+                        key === 'state1' ||
+                        key === 'state2' ||
+                        key === 'username' ||
+                        key === 'password' ||
+                        key === 'mac_address'
+                    ) {
                         continue;
                     } else {
                         let elem = document.getElementById(key);
@@ -326,18 +303,15 @@ function handleJSON(json_data) {
                     checkConnectionType();
                     checkIpType();
 
-                } // if (whichPage === null)
+                } // if (!settingsPage)
             } // if (json_data[i].hasOwnProperty(key))
         } // for (let key in json_data[i])
     } // for (let i in json_data)
 }
 
 // get json
-async function get_json(api_path, options = {}) {
-    // const url = api_path;
-    // console.log(ROOT_URL);
-    // console.log(api_path);
-    const { timeout = 3000 } = options;
+async function getData(api_path, options = {}) {
+    const { timeout } = options;
     const controller = new AbortController();
     const timeoutID = setTimeout(() => controller.abort(), timeout);
 
@@ -355,9 +329,9 @@ async function get_json(api_path, options = {}) {
     return response;
 }
 
-function getSettings() {
-    return get_json("/api/settings/get", {
-        timeout: 3000,
+async function getSettings() {
+    return getData("/api/settings/get", {
+        timeout: 8000,
     }).then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error, status = ${response.status}`);
@@ -368,9 +342,26 @@ function getSettings() {
         // console.log("Received settings: " + json_data);
         handleJSON(json_data);
     }).catch(function (error) {
-        // request timeout
         connected = false;
         console.log("Error inside getSettings() catch: ", error);
+    });
+}
+
+async function getLogs() {
+    return getData('/api/logs', {
+        timeout: 8000,
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error, status = ${response.status}`);
+        }
+        connected = true;
+        return response.text();
+    }).then(text => {
+        // console.log('getlogs():', text);
+        document.getElementById('logs').innerHTML = text;
+    }).catch(function (error) {
+        connected = false;
+        console.log("Error inside getLogs() catch: ", error);
     });
 }
 
@@ -472,16 +463,6 @@ function saveUser() {
     });
 }
 
-// User page
-if (document.getElementById("user_body")) {
-    window.addEventListener("load", function () {
-        getLogs();
-        saveUser()
-        checkConnected();
-        setInterval(getLogs, 1000);
-    });
-}
-
 // function that sends relays status to api/settings/relays
 function saveRelayState() {
     let relay1 = document.getElementById("relay1");
@@ -499,19 +480,36 @@ function saveRelayState() {
         getLogs();
     });
 }
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function mySetInterval(callback, ms) {
+    while (true) {
+        await callback();
+        await delay(ms);
+    }
+}
+
+// User page
+if (document.getElementById("user_body")) {
+    window.addEventListener("load", function () {
+        saveUser()
+        checkConnected();
+        mySetInterval(getLogs, 1000);
+    });
+}
+
 // Dashboard page
 if (document.getElementById("index")) {
     window.addEventListener("load", function () {
-        getSettings();
-        getLogs();
         setInterval(changeConnectedInInterface, 500);
         checkConnected();
 
         saveRelayState();
-
-        setInterval(getSettings, 1000);
-        setInterval(getLogs, 1000);
-        // checkConnected();
+        mySetInterval(getSettings, 1000);
+        mySetInterval(getLogs, 1000);
     });
 }
 
@@ -520,11 +518,10 @@ if (document.getElementById("index")) {
 if (document.getElementById("settings")) {
     window.addEventListener("load", function () {
         getSettings();
-        getLogs();
         setInterval(changeConnectedInInterface, 500);
         checkConnected();
 
-        setInterval(getLogs, 1000);
+        mySetInterval(getLogs, 1000);
 
         // handle network_form submit
         let network_form = document.getElementById("network_settings");

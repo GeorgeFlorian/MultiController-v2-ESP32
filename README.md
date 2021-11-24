@@ -71,9 +71,14 @@
 - Change Navigation bg color
 - Improved input :focurs and :hover colors
 
+- Changed timeout to 5000ms on getLogs() and getSettings()
+- Added MAC Address in the Dashboard
+- Implemented better functionality for fetching data on set interval
+
 ## To implement
 
 - Do not forget to change default IP ADDRESS
+- Change ETH Mac to WiFi MAC
 
 - Minify files before compressing them into gzip;
 - Move from SPIFFS to LittleFS;

@@ -406,6 +406,7 @@ void startEspServer()
                           return request->requestAuthentication(NULL, false);
                   }
                   circle.print();
+                //   Serial.println(strlog);
                   request->send(200, "text/plain", strlog);
               });
 

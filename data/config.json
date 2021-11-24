@@ -1,9 +1,10 @@
 {
     "network_settings": {
-        "connection": "Ethernet",
+        "connection": "WiFi",
         "ip_type": "Static",
-        "ssid": "",
-        "password": "",
+        "ssid": "Jorje-2.4",
+        "password": "cafea.amara",
+        "mac_address": "",
         "ip_address": "192.168.0.100",
         "gateway": "192.168.0.1",
         "subnet": "255.255.255.0",

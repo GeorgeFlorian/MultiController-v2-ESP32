@@ -77,7 +77,7 @@ void setup()
   }
   // listAllFiles();
 
-  // Connect to a network or enter AP_MODE
+  // Connect to a network
   startConnection();
   // Start back-end server
   startEspServer();
@@ -88,6 +88,10 @@ void setup()
   // wiegand_state.wiegand_flag = true;
   // wiegand_state.plate_number = "B059811";
   // wiegand_state.database_url = "https://dev2.metrici.ro/io/lpr/get_wiegand_id.php";
+  Serial.print("WiFi Mac:");
+  Serial.println(WiFi.macAddress());
+  Serial.print("ETH Mac:");
+  Serial.println(ETH.macAddress());
 }
 
 void loop()

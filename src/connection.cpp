@@ -9,6 +9,9 @@ IPAddress dns;
 
 void WiFiEvent(WiFiEvent_t event)
 {
+    uint8_t mac[] = {};
+    esp_wifi_get_mac(WIFI_IF_STA, &mac[0]);
+    esp_eth_set_mac(&mac[0]);
     switch (event)
     {
     case SYSTEM_EVENT_ETH_START:
@@ -65,6 +68,7 @@ void wifiConnection()
     }
 
     WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
+    WiFi.setHostname("Metrici-MultiController-WiFi");
 
     int k = 0;
     while (WiFi.status() != WL_CONNECTED && k < 20)
@@ -85,6 +89,7 @@ void wifiConnection()
     network_settings.gateway = WiFi.gatewayIP().toString();
     network_settings.subnet = WiFi.subnetMask().toString();
     network_settings.dns = WiFi.dnsIP().toString();
+    // logOutput((String) "Hostname: " + WiFi.getHostname());
     logOutput((String) "IP address: " + WiFi.localIP().toString());
     logOutput((String) "Gateway: " + WiFi.gatewayIP().toString());
     logOutput((String) "Subnet: " + WiFi.subnetMask().toString());
@@ -93,6 +98,12 @@ void wifiConnection()
 
 void ethConnection()
 {
+    // uint8_t mac[] = {};
+    // esp_wifi_get_mac(WIFI_IF_STA, &mac[0]);
+    // esp_eth_set_mac(&mac[0]);
+    // Serial.print("ETH MAC: ");
+    // Serial.println(ETH.macAddress());
+    
     ETH.begin();
 
     if (network_settings.ip_type == "Static")
@@ -122,10 +133,12 @@ void ethConnection()
         logOutput("Controller will restart in 5 seconds !");
         restartSequence(5);
     }
+
     network_settings.ip_address = ETH.localIP().toString();
     network_settings.gateway = ETH.gatewayIP().toString();
     network_settings.subnet = ETH.subnetMask().toString();
     network_settings.dns = ETH.dnsIP().toString();
+    // logOutput((String) "Hostname: " + ETH.getHostname());
     logOutput((String) "IP address: " + ETH.localIP().toString());
     logOutput((String) "Gateway: " + ETH.gatewayIP().toString());
     logOutput((String) "Subnet: " + ETH.subnetMask().toString());
@@ -134,14 +147,23 @@ void ethConnection()
 
 void startConnection()
 {
+    // esp_base_mac_addr_set;
+    // uint8_t mac[] = {};
+    // esp_efuse_mac_get_custom(&mac[0]);
+    // for (int i = 0; i < 6; i++)
+    //     Serial.print(mac[i]);
+
     if (!WiFi.mode(WIFI_STA))
     {
         logOutput("ERROR: Controller couldn't go in STA_MODE. Restarting in 5 seconds.");
         restartSequence(5);
-        exit(1);
+        return;
     }
 
-    Serial.println((String)"WiFi.getMode() [1 = STA / 2 = AP] : " + WiFi.getMode());
+    Serial.println((String) "WiFi.getMode() [1 = STA / 2 = AP] : " + WiFi.getMode());
+    network_settings.mac_address = WiFi.macAddress();
+    // uint8_t wifi_mac[] = {0x7C, 0x9E, 0xBD, 0x30, 0x2D, 0xA8};
+    // uint8_t eth_mac[] = {0x7C, 0x9E, 0xBD, 0x30, 0x2D, 0xAN};
 
     WiFi.onEvent(WiFiEvent);
 
@@ -149,12 +171,12 @@ void startConnection()
         wifiConnection();
     else if (network_settings.connection == "Ethernet")
         ethConnection();
-    
+
     // debug purpose - checking live state
     // Serial.println(network_settings.ip_address);
     // Serial.println(network_settings.gateway);
     // Serial.println(network_settings.subnet);
     // Serial.println(network_settings.dns);
-    
+
     changed_network_config = false;
 }

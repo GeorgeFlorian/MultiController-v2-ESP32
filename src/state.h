@@ -11,6 +11,7 @@ public:
     String ip_type;
     String ssid;
     String password;
+    String mac_address;
     String ip_address;
     String gateway;
     String subnet;
