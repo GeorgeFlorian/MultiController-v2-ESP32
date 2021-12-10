@@ -12,6 +12,7 @@
 </head>
 
 <body class="d-flex justify-content-center h-100 w-100 bg-black" id="settings">
+
     <div class="container-fluid h-100 w-100 p-0">
         <div class="row min-vh-100 d-flex flex-column-reverse flex-md-row justify-content-center m-0">
             <!-- Nav -->
@@ -367,25 +368,29 @@
                                 <!-- Factory Reset Tab -->
                                 <div class="tab-pane" id="reset-tab" name="reset-tab">
                                     <!-- Input row -->
-                                    <form class="row mb-2 g-0 d-flex justify-content-between" id="soft_reset_form"
-                                        name="soft_reset_form">
-                                        <label for="soft_reset_btn" class="col-form-label col-12 ">Reset settings but
+                                    <div class="row mb-2 g-0 d-flex justify-content-between" id="soft_reset_container"
+                                        name="soft_reset_container">
+                                        <label for="" class="col-form-label col-12 ">Reset settings
+                                            but
                                             keep Network Configuration:</label>
                                         <div class="col-auto">
-                                            <button class="btn btn-danger" type="submit" name="soft_reset_btn"
-                                                id="soft_reset_btn" style="min-width: 120px;">Soft Reset</button>
+                                            <button class="btn btn-danger" type="button" name="soft_reset_modal_btn"
+                                                id="soft_reset_modal_btn" data-reset='Soft'
+                                                style="min-width: 120px;">Soft Reset</button>
                                         </div>
-                                    </form>
+                                    </div>
                                     <!-- Input row -->
-                                    <form class="row mb-2 g-0 d-flex justify-content-between" id="factory_reset_form"
-                                        name="factory_reset_form">
-                                        <label for="factory_reset_btn" class="col-form-label col-12 text-nowrap">Reset
+                                    <div class="row mb-2 g-0 d-flex justify-content-between"
+                                        class="factory_reset_container" name="factory_reset_container">
+                                        <label for="" class="col-form-label col-12 text-nowrap">Reset
                                             all settings:</label>
                                         <div class="col-auto">
-                                            <button class="btn btn-danger" type="submit" name="factory_reset_btn"
-                                                id="factory_reset_btn" style="min-width: 120px;">Factory Reset</button>
+                                            <button class="btn btn-danger" type="button" name="factory_reset_modal_btn"
+                                                id="factory_reset_modal_btn" data-reset='Factory'
+                                                style="min-width: 120px;">Factory
+                                                Reset</button>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -438,6 +443,20 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Overlay / Backdrop used for modal -->
+        <div class="overlay close-modal hidden">
+        </div>
+        <!-- Soft Reset Modal -->
+        <div class="modal hidden" id="reset_form">
+            <button class="close-modal-btn close-modal" type="button" name="cancel_reset">&times;</button>
+            <label for="" class="modal-label">Are you sure ?</label>
+            <form class="modal-buttons" name="reset_form">
+                <button class="btn btn-primary close-modal" type="button" name="cancel_reset" id="cancel_reset"
+                    style="min-width: 120px;">Back</button>
+                <button class="btn btn-danger reset_btn" type="submit" name="reset_btn" id="reset_btn"
+                    style="min-width: 120px;">Reset</button>
+            </form>
         </div>
     </div>
     <script src="/bootstrap.js"></script>

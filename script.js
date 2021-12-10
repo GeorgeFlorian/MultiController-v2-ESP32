@@ -1,6 +1,10 @@
 const ROOT_URL = window.location.hostname; // for production
 let connected = false;
 
+const dashboardPage = document.getElementById("index");
+const settingsPage = document.getElementById("settings");
+const userPage = document.getElementById("user_body");
+
 // show a toast notification
 // type: true for info, false for error
 function toast(message, type, dest = "") {
@@ -274,7 +278,6 @@ function toJSONstring(form) {
 }
 
 function handleJSON(json_data) {
-  let settingsPage = document.getElementById("settings");
   for (let i in json_data) {
     // console.log("Received settings: " + json_data[i]);
     for (let key in json_data[i]) {
@@ -536,7 +539,7 @@ async function mySetInterval(callback, ms) {
 }
 
 // User page
-if (document.getElementById("user_body")) {
+if (userPage) {
   window.addEventListener("load", function () {
     saveUser();
     checkConnected();
@@ -545,7 +548,7 @@ if (document.getElementById("user_body")) {
 }
 
 // Dashboard page
-if (document.getElementById("index")) {
+if (dashboardPage) {
   window.addEventListener("load", function () {
     setInterval(changeConnectedInInterface, 500);
     checkConnected();
@@ -556,9 +559,114 @@ if (document.getElementById("index")) {
   });
 }
 
+const formHandler = function (e, form, path) {
+  e.preventDefault();
+  if (validateForm(form)) {
+    saveSettings(form, path);
+    form.reset();
+    getSettings();
+    getLogs();
+  }
+};
+
 // Settings page
-// attach addEventListener() only to the page that has <body id="settings"></body>
-if (document.getElementById("settings")) {
+if (settingsPage) {
+  // Overlay
+  const overlay = document.querySelector(".overlay");
+  // Modal
+  const modal = document.querySelector(".modal");
+  const modal_message = document.querySelector(".modal-label");
+  const reset_btn = document.querySelector(".reset_btn");
+  // Open Modal buttons
+  const soft_reset_modal_btn = document.getElementById("soft_reset_modal_btn");
+  const factory_reset_modal_btn = document.getElementById(
+    "factory_reset_modal_btn"
+  );
+  // Close Modal elements
+  const elementsCloseModal = document.querySelectorAll(".close-modal");
+  // Soft Reset callback
+  const soft_reset = function (e) {
+    e.preventDefault();
+    fetch("/api/soft-reset")
+      .then((response) => {
+        if (!response.ok) {
+          toast("Soft Reset failed !", false);
+          throw new Error(`HTTP error, status = ${response.status}`);
+        }
+        toast("Soft resetting !", true);
+        return response.text();
+      })
+      .then((text) => {
+        toast(text, true);
+      });
+
+    getSettings();
+    getLogs();
+    closeModal();
+  };
+
+  // Factory Reset callback
+  const factory_reset = function (e) {
+    e.preventDefault();
+    fetch("/api/factory-reset")
+      .then((response) => {
+        if (!response.ok) {
+          toast("Factory Reset failed !", false);
+          throw new Error(`HTTP error, status = ${response.status}`);
+        }
+        toast("Factory resetting !", true);
+        return response.text();
+      })
+      .then((text) => {
+        updatingToast(
+          `Please wait 10 seconds then navigate to ${text}`,
+          true,
+          text
+        );
+      });
+    getSettings();
+    getLogs();
+    closeModal();
+  };
+
+  const openModal = function (e, message) {
+    e?.preventDefault();
+    // Set styles for modal
+    document.querySelector("body").style.overflowY = "hidden";
+    modal.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+    // Get reset type
+    const reset_type = e.target.dataset.reset;
+    reset_btn.textContent = `${reset_type} Reset`;
+    modal_message.textContent = message;
+    // handle reset
+    if (reset_type.toLowerCase() === "soft") {
+      // handle soft_reset_form
+      const soft_reset_form = reset_btn.parentElement;
+      if (!soft_reset_form) return;
+      soft_reset_form.removeEventListener("submit", soft_reset, false);
+      soft_reset_form.removeEventListener("submit", factory_reset, false);
+      soft_reset_form.addEventListener("submit", soft_reset, false);
+    }
+    if (reset_type.toLowerCase() === "factory") {
+      // handle factory_reset_form
+      const factory_reset_form = reset_btn.parentElement;
+      if (!factory_reset_form) return;
+      factory_reset_form.removeEventListener("submit", soft_reset, false);
+      factory_reset_form.removeEventListener("submit", factory_reset), false;
+      factory_reset_form.addEventListener("submit", factory_reset, false);
+    }
+  };
+
+  const closeModal = function (e = null) {
+    e?.preventDefault();
+    // Set styles for modal
+    document.querySelector("body").style.overflowY = "visible";
+    modal.classList.add("hidden");
+    overlay.classList.add("hidden");
+  };
+
+  // Load event for Settings Page
   window.addEventListener("load", function () {
     getSettings();
     setInterval(changeConnectedInInterface, 500);
@@ -566,67 +674,53 @@ if (document.getElementById("settings")) {
 
     mySetInterval(getLogs, 1000);
 
-    // handle network_form submit
-    let network_form = document.getElementById("network_settings");
-    network_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (validateForm(network_form)) {
-        saveSettings(network_form, "network/post");
-        network_form.reset();
-        getSettings();
-        getLogs();
-        connected = false;
+    const soft_reset_msg = "Are you sure you want to Soft Reset ?";
+    const factory_reset_msg = "Are you sure you want to Factory Reset ?";
+
+    soft_reset_modal_btn.addEventListener("click", function (e) {
+      openModal(e, soft_reset_msg);
+    });
+    factory_reset_modal_btn.addEventListener("click", function (e) {
+      openModal(e, factory_reset_msg);
+    });
+    elementsCloseModal.forEach((el) =>
+      el.addEventListener("click", closeModal)
+    );
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+        closeModal(e);
       }
+    });
+    // handle network_form submit
+    const network_form = document.getElementById("network_settings");
+    network_form.addEventListener("submit", function (e) {
+      formHandler(e, this, "network/post");
     });
     // handle input_form
-    let input_form = document.getElementById("input");
+    const input_form = document.getElementById("input");
     input_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (validateForm(input_form)) {
-        saveSettings(input_form, "input/post");
-        input_form.reset();
-        getSettings();
-        getLogs();
-      }
+      formHandler(e, this, "input/post");
     });
     // handle output_form
-    let output_form = document.getElementById("output");
+    const output_form = document.getElementById("output");
     output_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (validateForm(output_form)) {
-        saveSettings(output_form, "output/post");
-        output_form.reset();
-        getSettings();
-        getLogs();
-      }
+      formHandler(e, this, "output/post");
     });
     // handle wiegand_form
-    let wiegand_form = document.getElementById("wiegand");
+    const wiegand_form = document.getElementById("wiegand");
     wiegand_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (validateForm(wiegand_form)) {
-        saveSettings(wiegand_form, "wiegand/post");
-        wiegand_form.reset();
-        getSettings();
-        getLogs();
-      }
+      formHandler(e, this, "wiegand/post");
     });
     // handle rfid_form
-    let rfid_form = document.getElementById("rfid");
+    const rfid_form = document.getElementById("rfid");
     rfid_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (validateForm(rfid_form)) {
-        saveSettings(rfid_form, "rfid/post");
-        rfid_form.reset();
-        getSettings();
-        getLogs();
-      }
+      formHandler(e, this, "rfid/post");
     });
     // handle update_form
-    let update_form = document.getElementById("update_form");
+    const update_form = document.getElementById("update_form");
     update_form.addEventListener("submit", function (e) {
-      let update_file = document.getElementById("update_file");
-      let filename = update_file.files[0].name;
+      const update_file = document.getElementById("update_file");
+      const filename = update_file.files[0].name;
       if (update_file.files.length > 0) {
         switch (filename) {
           case "spiffs.bin":
@@ -644,11 +738,11 @@ if (document.getElementById("settings")) {
       getSettings();
       getLogs();
     });
-    // handle restore_form
-    let restore_form = document.getElementById("restore_form");
+    // handle backup / restore_form
+    const restore_form = document.getElementById("restore_form");
     restore_form.addEventListener("submit", function (e) {
-      let restore_file = document.getElementById("restore_file");
-      let filename = restore_file.files[0].name;
+      const restore_file = document.getElementById("restore_file");
+      const filename = restore_file.files[0].name;
       if (restore_file.files.length > 0) {
         switch (filename) {
           case "config.json":
@@ -663,50 +757,8 @@ if (document.getElementById("settings")) {
       getSettings();
       getLogs();
     });
-    // handle soft_reset_form
-    let soft_reset_form = document.getElementById("soft_reset_form");
-    soft_reset_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      fetch("/api/soft-reset")
-        .then((response) => {
-          if (!response.ok) {
-            toast("Soft Reset failed !", false);
-            throw new Error(`HTTP error, status = ${response.status}`);
-          }
-          toast("Soft resetting !", true);
-          return response.text();
-        })
-        .then((text) => {
-          toast(text, true);
-        });
-      getSettings();
-      getLogs();
-    });
-    // handle factory_reset_form
-    let factory_reset_form = document.getElementById("factory_reset_form");
-    factory_reset_form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      fetch("/api/factory-reset")
-        .then((response) => {
-          if (!response.ok) {
-            toast("Factory Reset failed !", false);
-            throw new Error(`HTTP error, status = ${response.status}`);
-          }
-          toast("Factory resetting !", true);
-          return response.text();
-        })
-        .then((text) => {
-          updatingToast(
-            `Please wait 10 seconds then navigate to ${text}`,
-            true,
-            text
-          );
-        });
-      getSettings();
-      getLogs();
-    });
 
-    let check_network_connection = document.getElementById(
+    const check_network_connection = document.getElementById(
       "check_network_connection"
     );
     check_network_connection.addEventListener(
@@ -715,7 +767,7 @@ if (document.getElementById("settings")) {
       false
     );
 
-    let check_ip_type = document.getElementById("check_ip_type");
+    const check_ip_type = document.getElementById("check_ip_type");
     check_ip_type.addEventListener("change", checkIpType, false);
   });
 }
