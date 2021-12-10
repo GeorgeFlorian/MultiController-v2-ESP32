@@ -3,7 +3,7 @@
 // Live state of the controller
 
 // Network Settings state
-Settings::Settings() : connection(""), ip_type(""), ssid(""), password(""), mac_address(""), ip_address(""), gateway(""), subnet(""), dns(""){};
+Settings::Settings() : connection(""), ip_type(""), ssid(""), password(""), ip_address(""), gateway(""), subnet(""), dns(""){};
 
 Settings network_settings;
 
@@ -130,7 +130,8 @@ StaticJsonDocument<1024> getLiveState()
     doc["network_settings"]["ssid"] = network_settings.ssid;
     doc["network_settings"]["password"] = network_settings.password;
 
-    doc["network_settings"]["mac_address"] = network_settings.mac_address;
+    doc["network_settings"]["mac_address_wifi"] = WiFi.macAddress();
+    doc["network_settings"]["mac_address_eth"] = ETH.macAddress();
     doc["network_settings"]["ip_address"] = network_settings.ip_address;
     doc["network_settings"]["gateway"] = network_settings.gateway;
     doc["network_settings"]["subnet"] = network_settings.subnet;
@@ -209,8 +210,9 @@ void updateLiveState(StaticJsonDocument<1024> &doc)
         }
     }
 
-    doc["network_settings"]["mac_address"] = network_settings.mac_address;
-    
+    doc["network_settings"]["mac_address_wifi"] = WiFi.macAddress();
+    doc["network_settings"]["mac_address_eth"] = ETH.macAddress();
+
     if (network_settings.ip_type == "Static")
     {
         network_settings.ip_address = doc["network_settings"]["ip_address"] | "Not working";

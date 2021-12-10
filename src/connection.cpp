@@ -9,9 +9,6 @@ IPAddress dns;
 
 void WiFiEvent(WiFiEvent_t event)
 {
-    uint8_t mac[] = {};
-    esp_wifi_get_mac(WIFI_IF_STA, &mac[0]);
-    esp_eth_set_mac(&mac[0]);
     switch (event)
     {
     case SYSTEM_EVENT_ETH_START:
@@ -103,7 +100,7 @@ void ethConnection()
     // esp_eth_set_mac(&mac[0]);
     // Serial.print("ETH MAC: ");
     // Serial.println(ETH.macAddress());
-    
+
     ETH.begin();
 
     if (network_settings.ip_type == "Static")
@@ -147,12 +144,6 @@ void ethConnection()
 
 void startConnection()
 {
-    // esp_base_mac_addr_set;
-    // uint8_t mac[] = {};
-    // esp_efuse_mac_get_custom(&mac[0]);
-    // for (int i = 0; i < 6; i++)
-    //     Serial.print(mac[i]);
-
     if (!WiFi.mode(WIFI_STA))
     {
         logOutput("ERROR: Controller couldn't go in STA_MODE. Restarting in 5 seconds.");
@@ -161,9 +152,6 @@ void startConnection()
     }
 
     Serial.println((String) "WiFi.getMode() [1 = STA / 2 = AP] : " + WiFi.getMode());
-    network_settings.mac_address = WiFi.macAddress();
-    // uint8_t wifi_mac[] = {0x7C, 0x9E, 0xBD, 0x30, 0x2D, 0xA8};
-    // uint8_t eth_mac[] = {0x7C, 0x9E, 0xBD, 0x30, 0x2D, 0xAN};
 
     WiFi.onEvent(WiFiEvent);
 
