@@ -170,6 +170,22 @@ a:visited#copyright {
   text-decoration: none !important;
 }
 
+.input-port {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 30px;
+  grid-template-areas: "ip-address port";
+}
+.ip-address {
+  grid-area: ip-address;
+  padding-left: 10px;
+}
+.port {
+  grid-area: port;
+  padding-left: 10px;
+}
+
 @media only screen and (max-width: 767px) {
   #nav_wrapper {
     position: fixed;
