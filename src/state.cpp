@@ -477,6 +477,9 @@ StaticJsonDocument<1024> softReset()
         doc["network_settings"]["dns"] = network_settings.dns;
     }
 
+    doc["network_settings"]["mac_address_wifi"] = "";
+    doc["network_settings"]["mac_address_eth"] = "";
+
     doc["input"]["ip_1"] = "not set";
     doc["input"]["port_1"] = "not set";
     doc["input"]["ip_2"] = "not set";
@@ -524,6 +527,9 @@ StaticJsonDocument<1024> factoryReset()
     // doc["network_settings"]["gateway"] = "192.168.100.1";
     doc["network_settings"]["subnet"] = "255.255.255.0";
     doc["network_settings"]["dns"] = "8.8.8.8";
+
+    doc["network_settings"]["mac_address_wifi"] = "";
+    doc["network_settings"]["mac_address_eth"] = "";
 
     doc["input"]["ip_1"] = "not set";
     doc["input"]["port_1"] = "not set";

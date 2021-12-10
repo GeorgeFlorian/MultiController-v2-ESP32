@@ -88,9 +88,9 @@ void setup()
   // wiegand_state.wiegand_flag = true;
   // wiegand_state.plate_number = "B059811";
   // wiegand_state.database_url = "https://dev2.metrici.ro/io/lpr/get_wiegand_id.php";
-  Serial.print("WiFi Mac:");
+  Serial.print("WiFi MAC - ");
   Serial.println(WiFi.macAddress());
-  Serial.print("ETH Mac:");
+  Serial.print("ETH MAC - ");
   Serial.println(ETH.macAddress());
 }
 

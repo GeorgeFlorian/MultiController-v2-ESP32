@@ -24,7 +24,7 @@ void WiFiEvent(WiFiEvent_t event)
         break;
     case SYSTEM_EVENT_ETH_GOT_IP:
         eth_connected = true;
-        Serial.print(F("ETH MAC: "));
+        Serial.print(F("ETH MAC - "));
         Serial.print(ETH.macAddress());
         Serial.print(F(", IPv4: "));
         Serial.print(ETH.localIP());
