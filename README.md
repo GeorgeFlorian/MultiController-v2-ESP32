@@ -18,7 +18,6 @@ It has a faster and powerful processor with an input voltage of 12/38Vcc.
 
 - Current Live State of the Multi-controller
 - Relays State
-- Restart
 
 ### Settings View
 
@@ -30,14 +29,13 @@ It has a faster and powerful processor with an input voltage of 12/38Vcc.
 - RFID Settings
 - Backup/Restore
 - Update
-- Reset
+- Factory Reset
 
 ### User View
 
 ![User](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/raw_data/18.%20Poza%20pagina%20User.PNG?raw=true)
 
 - Create Username and Password used for basic HTTP Authentication
-- STA and AP pages for User Page
 
 ## Implemented
 
