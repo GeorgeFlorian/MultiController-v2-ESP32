@@ -12,17 +12,17 @@ It has a faster and powerful processor with an input voltage of 12/38Vcc.
 
 ## Interface
 
-## Dashboard View
+### Dashboard View
 
-![Dashboard](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/un_data/1.%20Poza%20cu%20dashboard%20%E2%80%93%20startup.PNG?raw=true)
+![Dashboard](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/raw_data/1.%20Poza%20cu%20dashboard%20%E2%80%93%20startup.PNG?raw=true)
 
 - Current Live State of the Multi-controller
 - Relays State
 - Restart
 
-## Settings View
+### Settings View
 
-![Settings](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/un_data/3.%20Poza%20cu%20Settings.PNG?raw=true)
+![Settings](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/raw_data/3.%20Poza%20cu%20Settings.PNG?raw=true)
 
 - Network Settings
 - Input Settings
@@ -32,9 +32,9 @@ It has a faster and powerful processor with an input voltage of 12/38Vcc.
 - Update
 - Reset
 
-## User View
+### User View
 
-![User](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/un_data/18.%20Poza%20pagina%20User.PNG?raw=true)
+![User](https://github.com/GeorgeFlorian/MultiController-v2-ESP32/blob/main/raw_data/18.%20Poza%20pagina%20User.PNG?raw=true)
 
 - Create Username and Password used for basic HTTP Authentication
 - STA and AP pages for User Page
