@@ -5,6 +5,7 @@
 #include <SPIFFS.h>
 #include <HTTPClient.h>
 #include <logs.h>
+#include <ezButton.h>
 
 #define RELAY1 32
 #define RELAY2 33
@@ -14,14 +15,19 @@
 #define INPUT_1 15
 #define INPUT_2 17
 
-#define BUTTON 34
+#define RST_BTN 34
 #define BUZZER 16
+
+#define DEBOUNCE_TIME 20
 
 extern bool changed_network_config;
 extern bool restart_flag;
 
-void waitDelay(unsigned long, unsigned long, unsigned long);
+extern ezButton input_1;
+extern ezButton input_2;
 
 void restartSequence(unsigned int);
 
 void listAllFiles();
+
+void setPins();

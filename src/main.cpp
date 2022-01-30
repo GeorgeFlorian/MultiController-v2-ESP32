@@ -5,37 +5,14 @@
 #include <input_output.h>
 #include <RFID.h>
 
-void setPins()
-{
-  //setting the pins for Inputs
-  pinMode(INPUT_1, INPUT_PULLUP);
-  pinMode(INPUT_2, INPUT_PULLUP);
-  pinMode(BUTTON, INPUT_PULLUP);
-
-  //setting the pins for Outputs
-  pinMode(RELAY1, OUTPUT);
-  pinMode(RELAY2, OUTPUT);
-  digitalWrite(RELAY1, LOW);
-  digitalWrite(RELAY2, LOW);
-
-  //setting the pins for Wiegand
-  pinMode(W0, OUTPUT);
-  pinMode(W1, OUTPUT);
-  digitalWrite(W0, HIGH);
-  digitalWrite(W1, HIGH);
-
-  pinMode(BUZZER, OUTPUT);
-  digitalWrite(BUZZER, LOW);
-}
-
 void checkResetBtn()
 {
   int q = 0;
-  if (digitalRead(BUTTON) == LOW)
+  if (digitalRead(RST_BTN) == LOW)
   {
     q++;
     delay(2000);
-    if (digitalRead(BUTTON) == LOW)
+    if (digitalRead(RST_BTN) == LOW)
     {
       q++;
     }
@@ -107,6 +84,7 @@ void loop()
     Serial.println("Changed other configuration. Restarting...");
     restartSequence(2);
   }
+  
   inputRoutine();
   outputRoutine();
   wiegandRoutine();
