@@ -13,7 +13,7 @@ void WiFiEvent(WiFiEvent_t event)
     {
     case SYSTEM_EVENT_ETH_START:
         Serial.println(F("ETH Started"));
-        //set eth hostname here
+        // set eth hostname here
         if (!ETH.setHostname("Metrici-MultiController-Eth"))
         {
             Serial.println(F("Ethernet hostname failed to configure"));
@@ -62,9 +62,11 @@ void wifiConnection()
         {
             logOutput("WARNING: Couldn't configure STATIC IP ! Obtaining DHCP IP !");
         }
+        delay(50);
     }
 
     WiFi.begin(network_settings.ssid.c_str(), network_settings.password.c_str());
+    delay(50);
     WiFi.setHostname("Metrici-MultiController-WiFi");
 
     int k = 0;
@@ -102,6 +104,7 @@ void ethConnection()
     // Serial.println(ETH.macAddress());
 
     ETH.begin();
+    delay(50);
 
     if (network_settings.ip_type == "Static")
     {
@@ -114,6 +117,7 @@ void ethConnection()
         {
             logOutput("WARNING: Couldn't configure STATIC IP ! Obtaining DHCP IP !");
         }
+        delay(50);
     }
 
     int k = 0;
@@ -144,6 +148,8 @@ void ethConnection()
 
 void startConnection()
 {
+    WiFi.onEvent(WiFiEvent);
+
     if (!WiFi.mode(WIFI_STA))
     {
         logOutput("ERROR: Controller couldn't go in STA_MODE. Restarting in 5 seconds.");
@@ -152,8 +158,6 @@ void startConnection()
     }
 
     Serial.println((String) "WiFi.getMode() [1 = STA / 2 = AP] : " + WiFi.getMode());
-
-    WiFi.onEvent(WiFiEvent);
 
     if (network_settings.connection == "WiFi")
         wifiConnection();

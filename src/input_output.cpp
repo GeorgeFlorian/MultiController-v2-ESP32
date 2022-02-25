@@ -61,7 +61,7 @@ void inputRoutine()
         {
             udp1.beginPacket(input.ip_1.c_str(), input.port_1.toInt());
             udp1.write(buffer, sizeof(buffer));
-            // delay(30);
+            delay(30);
             logOutput(udp1.endPacket() ? "UDP Packet 1 sent" : "WARNING: UDP Packet 1 not sent.");
             memset(buffer, 0, 19);
         }
@@ -116,7 +116,7 @@ void inputRoutine()
         {
             udp2.beginPacket(input.ip_2.c_str(), input.port_2.toInt());
             udp2.write(buffer, sizeof(buffer));
-            // delay(30);
+            delay(30);
             logOutput(udp2.endPacket() ? "UDP Packet 2 sent" : "WARNING: UDP Packet 2 not sent.");
             memset(buffer, 0, 19);
         }

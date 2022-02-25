@@ -35,7 +35,11 @@ void checkResetBtn()
 
 void setup()
 {
+  enableCore1WDT();
+  delay(100);
   Serial.begin(115200);
+  delay(100);
+
   if (!SPIFFS.begin(true))
   {
     Serial.println(F("An Error has occurred while mounting SPIFFS ! Formatting in progress"));
@@ -84,7 +88,7 @@ void loop()
     Serial.println("Changed other configuration. Restarting...");
     restartSequence(2);
   }
-  
+
   inputRoutine();
   outputRoutine();
   wiegandRoutine();
